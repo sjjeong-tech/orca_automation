@@ -1,0 +1,33 @@
+# Operating system and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.tmp
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials*.json
+secrets/
+
+# Runtime and generated files
+logs/
+tmp/
+temp/
+output/
+
+# Local source documents and evidence
+private/
+evidence/
+attachments/
+*.pdf
+*.xlsx
+*.xls
+*.hwp
+*.hwpx
+*.docx
