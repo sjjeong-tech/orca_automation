@@ -5,24 +5,26 @@
 - CASE-01 테일프론티어투자조합3호 분석 완료
 - CASE-02 휴먼비젼 개인투자조합 인터뷰 완료
 - CASE-02 공통·조건부·기관별·예외 규칙 판정 완료
-- VALIDATION-01 대신-HIP 우주항공 신기술투자조합 제1호 세무서 절차 검증 진행 중
+- VALIDATION-01 대신-HIP 우주항공 신기술투자조합 제1호 세무서 절차 검증 완료
+- Notion Source 기반 Process Model Source 추출 준비 중
+- CASE-03 후보 탐색 보류 — Process Model Gap 확인 후 재개
 - Day 1 저장소 구조 및 운영 원칙 정리
 - Notion Tracker 최소 속성과 상태값 초안 작성
 
 ## 다음 작업
 
-1. VALIDATION-01에서 신기술투자조합의 고유번호증·보안카드 절차 검증
-2. CASE-03으로 법인 GP이거나 지원팀 사용자가 계좌개설까지 직접 수행한 사례 탐색
-3. CASE-03 원천자료 위치 확인 및 사전 조사 골격 작성
-4. CASE-04 분석
-5. CASE-01~04의 공통·조건부·기관별·예외 규칙 비교
-6. Tracker 속성 형식, 필수값, 상태 전환 조건 확정
-7. Notion Tracker Pilot 범위와 성공 기준 정의
-8. Pilot 결과를 바탕으로 자동화 후보 선정
+1. Notion 공식 Source 인덱스와 Process Model 오케스트레이션 환경 준비
+2. Source Extract 및 QA를 통해 Process Model의 근거와 Gap 식별
+3. 확인된 Gap에 맞춰 CASE-03 후보 선정 재개
+4. CASE-03 신청서류 합본, 결과물 또는 통장사본, 실제 완료조건 검증
+5. CASE-04 분석
+6. CASE-01~04의 공통·조건부·기관별·예외 규칙 비교
+7. Tracker 속성 형식, 필수값, 상태 전환 조건 확정
+8. Notion Tracker Pilot 범위와 성공 기준 정의
+9. Pilot 결과를 바탕으로 자동화 후보 선정
 
 ## 추가 확인 필요
 
-- VALIDATION-01의 고유번호증·보안카드 원천자료 위치와 세무서 처리 상세
 - CASE-03 후보 중 법인 GP 또는 지원팀 사용자의 계좌개설 직접 수행 여부
 - CASE-03~04의 대상 조합과 원천자료 위치
 - 수탁계좌의 관리역 수행범위 및 향후 지원팀 To-Be 인계 여부
