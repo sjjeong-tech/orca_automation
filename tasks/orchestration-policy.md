@@ -43,3 +43,47 @@
 1. Push는 별도 TAP에서 명시적으로 지시된 경우에만 수행한다.
 2. 강제 Push는 명시적 승인 없이 수행하지 않는다.
 3. 화면 보고는 10줄 이내로 제한한다.
+
+## TAP Completion Reporting Standard
+
+모든 TAP 결과의 마지막에는 다음 항목을 포함한 `TAP COMPLETION` 블록을 출력한다.
+
+- TAP ID
+- TAP 이름
+- 실행 상태
+- Gate 판정
+- 수행한 작업
+- 생성·수정 파일
+- Commit 여부·hash·message
+- Push 여부·결과
+- 현재 병목
+- 다음 실행 가능 TAP
+- 다음 실행 금지 TAP
+- git status
+
+실행 상태에는 다음 값만 사용한다.
+
+- `COMPLETED`
+- `BLOCKED`
+- `FAILED`
+- `PARTIAL`
+
+Gate 판정에는 다음 값만 사용한다.
+
+- `PASS`
+- `PASS WITH ISSUES`
+- `FAIL`
+- `NOT APPLICABLE`
+
+완료 블록의 마지막 줄은 다음 형식을 사용한다.
+
+```text
+[TAP END] <TAP ID> | <PASS/FAIL/BLOCKED>
+```
+
+추가 보고 규칙은 다음과 같다.
+
+1. TAP이 중단되더라도 완료 블록을 출력한다.
+2. 다음 TAP을 자동 실행하지 않는다.
+3. 병목은 직접 원인과 선행 원인을 구분해 기록한다.
+4. 생성·수정한 파일이 없으면 `없음`으로 명시한다.
