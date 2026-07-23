@@ -4,7 +4,7 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 
 **Queue 전체 상태:** `PAUSED_FOR_EXTERNAL_REVIEW`
 
-**현재 Checkpoint:** `CP-04 — As-Is Process Model v1 COMPLETE WITH KNOWN GAPS / 외부 검토`
+**현재 Checkpoint:** `CP-05-P0 — Master Roadmap 설계 완료 / GPT·Claude·사용자 외부 검토`
 
 **최근 Revision:** `TAP P1-R2 — COMPLETED (PASS WITH NON-BLOCKING GAPS)`
 
@@ -12,9 +12,9 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 
 **최근 계획:** `TAP V0 — COMPLETED`
 
-**최근 실행:** `TAP V1-I — COMPLETED (CP-04 COMPLETE WITH KNOWN GAPS)`
+**최근 실행:** `TAP CP-05-P0 — COMPLETED (ROADMAP DESIGN PASS)`
 
-**다음 READY 후보:** `CP-05-PLAN`
+**다음 READY 후보:** `CP-05-P1 — READY_AFTER_GPT_AND_USER_REVIEW`
 
 ## 자동 실행 Checkpoint
 
@@ -73,7 +73,28 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 | V5 | TAP V1-R1 | Claude Findings Source Enrichment | TAP A-V1 | COMPLETED | Source 7개·Disposition·Queue | Source Enrichment 보존 |
 | V6 | TAP V1-R2 | Variation·Process Revision | TAP V1-R1 | COMPLETED | Variation 4개·Process 3개·Mapping·Disposition | Revision 보존 |
 | V7 | TAP V1-I | 통합 Variation QA | TAP V1-R2 | COMPLETED | `reports/variation-integration-qa.md`, `reports/cp-04-completion.md` | CP-04 COMPLETE_WITH_KNOWN_GAPS |
-| V8 | CP-05-PLAN | Gap Resolution & Interview Execution 계획 | TAP V1-I | READY | 계획 산출물은 별도 TAP에서 정의 | 외부 검토 후 실행 |
+| V8 | CP-05-PLAN | Gap Resolution & Interview Execution 계획 | TAP V1-I | CROSS_CUTTING_WORKSTREAM | 단계별 필요한 Gap만 해소 | 독립 선행 실행 금지 |
+
+## Notion Operations Control Plane Queue
+
+기존 `CP-05-PLAN` Gap Resolution은 독립 선행 TAP이 아니라 아래 전 단계의 `CROSS_CUTTING_WORKSTREAM`으로 재배치한다. 이 표의 후속 TAP은 자동 실행하지 않는다.
+
+| 순서 | TAP ID | 역할 | 선행 Gate | 상태 | Master Deliverable | 다음 조치 |
+|---:|---|---|---|---|---|---|
+| C0 | CP-04 | As-Is Process Model v1 | V1-I | COMPLETE_WITH_KNOWN_GAPS | 선행 기반 | 결과 보존 |
+| C1 | CP-05-P0 | Master Roadmap·Operating Model | CP-04 | COMPLETED | MD-01~10 | GPT·Claude·사용자 검토 |
+| C2 | CP-05-P1 | Record Unit·DB Architecture | P0 Roadmap 승인 | READY_AFTER_GPT_AND_USER_REVIEW | MD-01,02 | 승인 전 실행 금지 |
+| C3 | CP-05-P2 | Status & Evidence Model | P1 승인 | BLOCKED_BY_PREVIOUS_APPROVAL | MD-04 | P1 승인 대기 |
+| C4 | CP-05-P3 | Process-to-Notion Mapping | P2 승인 | BLOCKED_BY_PREVIOUS_APPROVAL | MD-02,05 | P2 승인 대기 |
+| C5 | CP-05-P4 | Intake·Collaboration Model | P3 승인 | BLOCKED_BY_PREVIOUS_APPROVAL | MD-03,06 | P3 승인 대기 |
+| C6 | CP-05-P5 | MVP Build Specification | P4 승인 | BLOCKED_BY_PREVIOUS_APPROVAL | MD-01~07 | Build 승인 명세 대기 |
+| C7 | CP-05-B1 | Notion MVP Build | P5 사용자 Build 승인 | BLOCKED_UNTIL_BUILD_APPROVAL | MD-01~06 | Build 승인 대기 |
+| C8 | CP-05-B2 | Manual Pilot | B1 Build QA | BLOCKED_UNTIL_BUILD_QA | MD-07 | Build QA·Pilot 승인 대기 |
+| C9 | CP-05-B3 | Pilot Review·Schema Revision | B2 완료 | BLOCKED_BY_PREVIOUS_APPROVAL | MD-01~08 | Pilot 완료 대기 |
+| C10 | CP-06-P1~B2 | Assisted Automation | MVP Pilot 승인 | BLOCKED_UNTIL_MVP_PILOT | MD-08 | AG-24·25 대기 |
+| C11 | CP-07-P1~B1 | Agent Write Governance·Execution | Write Governance 승인 | BLOCKED_UNTIL_WRITE_GOVERNANCE | MD-09 | AG-26~31·34 대기 |
+| C12 | CP-08-P1 | Operations-team Expansion | 지원팀 MVP 안정화 | FUTURE | MD-10 | AG-32~35 대기 |
+| X1 | Gap Resolution | 단계별 필요한 Known Gap 해소 | 각 TAP Gate | CROSS_CUTTING_WORKSTREAM | MD-01~10 | 독립 선행 실행 금지 |
 
 ## Stage별 범위 및 산출물
 
