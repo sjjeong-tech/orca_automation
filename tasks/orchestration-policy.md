@@ -8,9 +8,46 @@
 
 1. 각 TAP에서는 해당 TAP에 지정된 Stage만 수행한다.
 2. 선행 Stage의 필수 산출물이 없으면 후속 Stage를 실행하지 않는다.
-3. TAP을 연속 예약하거나 다음 Stage를 자동 실행하지 않는다.
+3. 후속 TAP은 Queue에 미리 등록할 수 있으나, 선행 Gate 확인 없이 실행하거나 다음 Stage를 자동 실행하지 않는다.
 4. 각 TAP 완료 후 다음 TAP을 실행하지 않고 중단한다.
 5. Source Extract의 QA가 완료되기 전에는 Process 문서를 생성하지 않는다.
+
+## Conditional TAP Queue
+
+### Queue 상태
+
+각 TAP은 다음 상태 중 하나를 가진다.
+
+- `QUEUED`: 명령이 등록됐으나 선행조건을 아직 평가하지 않음
+- `READY`: 선행 TAP이 허용된 Gate를 통과해 실행 가능
+- `RUNNING`: 현재 실행 중
+- `WAITING`: 선행 TAP이 아직 완료되지 않아 Queue에서 대기
+- `BLOCKED`: 선행 TAP 실패, 사용자 조치 필요 또는 필수 입력 누락으로 실행 중지
+- `COMPLETED`: TAP 작업과 검증 완료
+- `FAILED`: TAP 자체 실행 중 오류 발생
+
+### 평가 및 실행 규칙
+
+1. Queue Controller는 `tasks/tap-queue.md`의 순서대로 TAP을 평가한다.
+2. 다음 TAP은 직전 TAP의 완료 블록을 확인한 후에만 `READY`로 전환한다.
+3. 선행 Gate로 허용되는 판정은 `PASS`와 사전에 비차단으로 정의된 `PASS WITH ISSUES`이다.
+4. 선행 판정이 `FAIL`, `USER ACTION REQUIRED`, `BLOCKED`, `PARTIAL`이거나 완료 블록이 없으면 후속 TAP을 실행하지 않는다.
+5. 선행 TAP이 실행 중이면 후속 TAP은 `WAITING`으로 유지한다.
+6. 동시에 실행 가능하다고 명시된 서브에이전트 작업만 병렬 실행한다.
+7. 한 TAP이 `BLOCKED`되면 이후 TAP을 자동 실행하지 않는다.
+8. 차단 해소 후 사용자가 `QUEUE RESUME`을 지시하면 중단 지점부터 Gate를 재평가한다.
+9. 이미 `COMPLETED`된 TAP은 다시 실행하지 않는다.
+10. 각 TAP은 후속 TAP을 직접 실행하지 않고 Queue Controller에 완료 결과만 반환한다.
+11. Notion·Git 쓰기는 해당 TAP에 명시된 경우에만 수행한다.
+12. 실패한 TAP을 우회해 후속 Stage로 넘어가지 않는다.
+13. Queue 상태가 변경될 때만 `tasks/tap-queue.md`를 갱신한다.
+
+### Commit 및 Push 의존성
+
+1. Commit이 필요한 TAP은 Commit 존재, 메시지 일치, 변경 파일 범위 일치, clean 상태를 모두 확인해야 완료 Gate를 통과한다.
+2. 선행 Commit이 없으면 Push TAP은 `WAITING` 또는 `BLOCKED`로 두고 실행하지 않는다.
+3. Commit 생성 후 Push가 실패하면 Push TAP과 후속 Stage를 `BLOCKED`로 둔다.
+4. Push 성공이 확인된 경우에만 의존하는 다음 TAP을 `READY`로 전환할 수 있다.
 
 ## Agent 파일 소유권
 
@@ -50,16 +87,30 @@
 
 - TAP ID
 - TAP 이름
+- Queue 상태
 - 실행 상태
 - Gate 판정
+- 선행 Gate 결과
 - 수행한 작업
 - 생성·수정 파일
 - Commit 여부·hash·message
 - Push 여부·결과
 - 현재 병목
-- 다음 실행 가능 TAP
-- 다음 실행 금지 TAP
+- Queue 일시정지 여부
+- 다음 READY TAP
+- WAITING TAP
+- BLOCKED TAP
 - git status
+
+완료 블록 앞에는 다음 업무지도 위치를 함께 기록한다.
+
+- 전체 단계
+- Layer
+- Stage
+- 관련 Process
+- 현재 TAP 역할
+- 선행 TAP
+- 후속 TAP
 
 실행 상태에는 다음 값만 사용한다.
 
@@ -78,7 +129,7 @@ Gate 판정에는 다음 값만 사용한다.
 완료 블록의 마지막 줄은 다음 형식을 사용한다.
 
 ```text
-[TAP END] <TAP ID> | <PASS/FAIL/BLOCKED>
+[TAP END] <TAP ID> | <판정> | QUEUE=<상태>
 ```
 
 추가 보고 규칙은 다음과 같다.
