@@ -12,9 +12,9 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 
 **최근 계획:** `TAP V0 — COMPLETED`
 
-**최근 실행:** `TAP V1-C — COMPLETED (DRAFT PASS)`
+**최근 실행:** `TAP V1-R1 — COMPLETED (SOURCE ENRICHMENT PASS)`
 
-**다음 READY 후보:** `TAP A-V1`
+**다음 READY 후보:** `TAP V1-R2`
 
 ## 자동 실행 Checkpoint
 
@@ -69,9 +69,10 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 | V1 | TAP V1-A | 조합 유형·GP 유형 | TAP V0 | COMPLETED | `variations/fund-type.md`, `variations/gp-type.md` | 초안 보존·A-V1 대기 |
 | V2 | TAP V1-B | 계좌 유형 | TAP V1-A | COMPLETED | `variations/account-type.md` | 초안 보존·A-V1 대기 |
 | V3 | TAP V1-C | 기관·지점·처리 방식 | TAP V1-B | COMPLETED | `variations/institution.md` | 초안 보존·A-V1 대기 |
-| V4 | TAP A-V1 | Claude 독립 Source Review | TAP V1-A, V1-B, V1-C | READY | `reports/variation-source-review.md` | A1-VERIFY·Reviewer 설정 Gate 확인 후 실행 |
-| V5 | TAP V1-R | Claude Findings 반영 | TAP A-V1 | WAITING | 지적된 Variation·처리 기록 | Review 대기 |
-| V6 | TAP V1-I | 통합 Variation QA | TAP V1-R | WAITING | `reports/variation-integration-qa.md` | Revision 대기 |
+| V4 | TAP A-V1 | Claude 독립 Source Review | TAP V1-A, V1-B, V1-C | COMPLETED_WITH_PARTIAL_COVERAGE | Claude Review Commit 2개 | 승인 Finding 반영 완료 |
+| V5 | TAP V1-R1 | Claude Findings Source Enrichment | TAP A-V1 | COMPLETED | Source 7개·Disposition·Queue | Source Enrichment 보존 |
+| V6 | TAP V1-R2 | Variation·Process Revision | TAP V1-R1 | READY | 승인된 Model 수정 범위 | 별도 TAP으로 실행 |
+| V7 | TAP V1-I | 통합 Variation QA | TAP V1-R2 | WAITING | `reports/variation-integration-qa.md` | Revision 대기 |
 
 ## Stage별 범위 및 산출물
 
