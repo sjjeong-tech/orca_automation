@@ -13,12 +13,11 @@
 | TAP | 목적 | As-Is | To-Be | Input | Output | 선행 조건 | Exit Criteria | Deliverable | Approval Gate | Claude | GPT | 미확정 항목 | 자동화 금지사항 | Repo 변경 예상 범위 | 다음 허용 TAP |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | CP-05-P0 | Operating Model·Roadmap 통제 | CP-04 Model만 존재 | 책임·Gate·Scope·Roadmap | CP-04 보고서·Queue | Operating Model 9종, Roadmap, Decision 문서 | CP-04 완료 | MD·Gate·TAP 연결 및 사용자 검토 준비 | MD-01~10 | AG-01~06 | 권장 | 필수 | 전체 Roadmap 승인 | 구현·Notion 변경 금지 | `operating-model/**`, `plans/**`, `decisions/**`, 보고서, Queue | CP-05-P0-R |
-| CP-05-P0-R | Skeleton·Pilot A·TI Targeted Revision | P0 Roadmap에 초기 Build가 늦음 | P1 직후 S1·R1 삽입, Pilot A 확정 | P0 문서, 사용자 결정 7건 | Revised Roadmap·Gate·Decision | P0 완료 | 구조 보존, 결정·순서·상태 정합성 검증 | MD-01~11 | AG-01~04,20A | 권장 | 필수 | Revised Roadmap 승인 | Notion·TI·구현 실행 금지 | 기존 Master 문서·Queue | A-CP05-P0-REVIEW |
-| A-CP05-P0-REVIEW | Revised Roadmap 독립 검토 | Codex Revision만 존재 | 상충·누락·과잉통제 Finding | P0-R Commit | Claude Review 보고 | P0-R 완료 | Skeleton 시점, Pilot A, MD-11, Task 경계, Gate 시점 검증 | MD-01~11 | 없음 | 실행 | 결과 통합 | Review Finding | 원본 수정·Build 금지 | Claude Review 보고서 | GPT·사용자 승인 |
+| CP-05-P0-R | Skeleton·Pilot A·Communication Milestone Targeted Revision | P0 Roadmap에 초기 Build가 늦음 | P1 직후 S1 삽입, Pilot A와 CM-01 시점 정의 | P0 문서, 사용자 결정 | Revised Roadmap·Gate·Decision | P0 완료 | 구조 보존, 결정·순서·상태 정합성 검증 | MD-01~10, CM-01 | AG-01~04,20A | 권장 | 필수 | Revised Roadmap 승인 | Notion·보고·구현 실행 금지 | 기존 Master 문서·Queue | A-CP05-P0-REVIEW |
+| A-CP05-P0-REVIEW | Revised Roadmap 독립 검토 | Codex Revision만 존재 | 상충·누락·과잉통제 Finding | P0-R Commit | Claude Review 보고 | P0-R 완료 | Skeleton 시점, Pilot A, Task 경계, Gate 시점 검증 | MD-01~10, CM-01 | 없음 | 실행 | 결과 통합 | Review Finding | 원본 수정·Build 금지 | Claude Review 보고서 | GPT·사용자 승인 |
 | CP-05-P1 | Record Unit·DB Architecture | DB 구조는 결정, Property·Relation 미정 | 상위 조합별 업무 건+하위 Operational Task 명세 | Revised Roadmap, Process 목록, DEC-CP05-01~07 | Record·Relation·최소 Property·View 명세 | Revised Roadmap 승인 | 2개 DB와 Skeleton 생성 범위 명세, AG-S1 판단 준비 | MD-01,02 | AG-02~06,AG-S1 | 선택 | 필수 | 조합 Master는 Pilot 후 | P1에서 DB 생성 금지 | `notion/schema/**`, `operating-model/**`, `decisions/**` | CP-05-S1 |
-| CP-05-S1 | Fast Notion Skeleton Build | 실제 UI·Relation 검증 없음 | 최소 2개 DB Skeleton·Relation·View·테스트 Record | P1 Architecture, 생성 위치·권한 | 업무 DB·Task DB Skeleton, Build Log, Skeleton QA | P1 완료, AG-02~04 결정, AG-S1 승인 | 2개 DB·Relation·테스트 연결·수동 상태변경·UI 확인, Scope 외 0 | MD-01,02,06 | AG-S1 | 검토 준비 | 필수 | 최소 Property 최종값 | Automation·Slack·Agent Write·전체 Mapping·P05/06/09/10/11 금지 | 승인된 Notion Skeleton과 Build 기록 | CP-05-R1 |
-| CP-05-R1 | Notion AI Intermediate Reporting TI | Skeleton 현황 보고 지시문 없음 | 사실·제안·미확정을 분리한 중간보고 TI | S1 결과, Roadmap, Decision, Pending, Build Log, Pilot A | `notion/reporting/intermediate-report-ti.md`, `intermediate-report-structure.md` | S1 완료 | 11개 필수 섹션, Skeleton 한계·승인 요청·과장 방지, GPT 검토, 사용자 공유 준비 완료 | MD-11 | 별도 Gate 없음 | 선택 | 필수 | 대표님 응답은 Optional Feedback이며 P2 차단 아님 | Notion AI 실행·기능 구현 금지 | `notion/reporting/**` | CP-05-P2 |
-| CP-05-P2 | Status & Evidence Model | Skeleton에 최소 상태만 존재 | 업무/Task 상태·Blocker·전이·증빙 | P1 Architecture, S1 UI 관찰, Process 완료조건 | 상태·증빙·전이 명세 | S1·R1 완료 | AG-07~09·15·18 결정 | MD-04 | AG-07~09,15,18 | 선택 | 필수 | 대기 세분화·최소 증빙 | 상태 Automation 금지 | `notion/schema/**`, `notion/mappings/**`, `decisions/**` | CP-05-P3 |
+| CP-05-S1 | Fast Notion Skeleton Build | 실제 UI·Relation 검증 없음 | 최소 2개 DB Skeleton·Relation·View·테스트 Record | P1 Architecture, 생성 위치·권한 | 업무 DB·Task DB Skeleton, Build Log, Skeleton QA | P1 완료, AG-02~04 결정, AG-S1 승인 | 2개 DB·Relation·테스트 연결·수동 상태변경·UI 확인, Scope 외 0 | MD-01,02,06 | AG-S1 | 검토 준비 | 필수 | 최소 Property 최종값 | Automation·Slack·Agent Write·전체 Mapping·P05/06/09/10/11 금지 | 승인된 Notion Skeleton과 Build 기록 | CP-05-P2 |
+| CP-05-P2 | Status & Evidence Model | Skeleton에 최소 상태만 존재 | 업무/Task 상태·Blocker·전이·증빙 | P1 Architecture, S1 UI 관찰, Process 완료조건 | 상태·증빙·전이 명세 | S1 Review 완료 | AG-07~09·15·18 결정 | MD-04 | AG-07~09,15,18 | 선택 | 필수 | 대기 세분화·최소 증빙 | 상태 Automation 금지 | `notion/schema/**`, `notion/mappings/**`, `decisions/**` | CP-05-P3 |
 | CP-05-P3 | Process-to-Notion Mapping | Process Atomic Task와 운영 추적 단위 연결 없음 | Atomic→Operational Task 집약·Milestone·Agent 재분해 Mapping | Pilot A Process 03·04·07·08, Variation, P1~P2, S1 | Mapping Coverage와 Task Template 명세 | P2 승인 | Atomic ID, Operational ID, 집약 근거, 추적가치, 재분해, 증빙, Milestone 검증 | MD-02,05 | AG-10~12 | 필수 | 필수 | 집약·Rework·P11 | Process 전체 복제·Task 생성 구현 금지 | `notion/mappings/**`, 보고서, decisions | CP-05-P4 |
 | CP-05-P4 | Intake·Collaboration | Slack·구두·실물 분산 | Form·Mention·알림 Event | P1~P3, 역할 모델 | Form·Dashboard·알림 명세 | P3 승인 | AG-13~19 결정 | MD-03,06 | AG-13~19 | 선택 | 필수 | 작성자·채널·자동 댓글 | 댓글·알림 구현 금지 | `notion/schema/**`, `notion/mappings/**`, decisions | CP-05-P5 |
 | CP-05-P5 | Pilot-ready MVP Build Specification | Skeleton과 설계 조각 존재 | Skeleton Revision 가능한 단일 명세 | P1~P4, S1 관찰 | Build Spec·QA·Rollback 계획 | P4 승인 | 미결 Build Gate 0, 사용자 Build 승인 | MD-01~07 | AG-04~22,AG-S1 | 필수 | 필수 | 실제 Pilot 조합·Threshold | Build 착수 금지 | `notion/**` 명세, reports, decisions | CP-05-B1 |
@@ -38,7 +37,6 @@
 |---|---|---|---|---|---|
 | CP-05-P1 | 업무 Record·조합 구분 미정 | 상위 조합별 업무 건, 하위 Operational Task | Record·DB Architecture | AG-02~06,AG-S1 | 최소 Property·Relation |
 | CP-05-S1 | 실제 UI·Relation 없음 | 최소 2개 DB Skeleton | Skeleton·Build Log·QA | AG-S1 | 최소 Property 확정 |
-| CP-05-R1 | 중간보고 TI 없음 | Skeleton 기반 Notion AI TI | TI·보고 구조 | 별도 Gate 없음 | 보고 대상·표현 수준 |
 | CP-05-P2 | 상태·증빙 기준 없음 | 업무·Task 상태, Blocker, 완료조건, 증빙, 전이 | Status & Evidence Model | AG-07~09,15,18 | 외부/관리역 대기, 최소 증빙 |
 | CP-05-P3 | Process 문서만 존재 | Process→Task Template·Trigger·IO·Actor·Evidence·Next·Exception | Mapping Spec | AG-10~12 | 전체 Task, Milestone, 반복 보완 |
 | CP-05-P4 | 분산 Intake·알림 없음 | Form·Mention·Slack Event·알림 상태 | Intake & Collaboration Spec | AG-13~19 | 작성 주체, 채널 우선, 자동 댓글 |
@@ -58,21 +56,16 @@
 - Task DB: Task명, 상위 업무, Process ID, 운영 Task ID, Task 상태, 담당 Actor, 담당자, 목표일, 완료 증빙, Blocker, 다음 Task, 비고
 - 위 Property는 후보이며 P1과 AG-S1 승인 전 확정값이 아니다.
 
-## CP-05-R1 TI 필수 구조
+## GPT-USER-COMMUNICATION-MILESTONE
 
-1. 추진 목적
-2. 기존 As-Is
-3. 현재 구축 완료 내용
-4. Notion DB Skeleton 구조
-5. Process 연결 예정 범위
-6. Pilot A안
-7. 확정된 운영기준
-8. 미확정 운영기준
-9. 현재 리스크
-10. 다음 단계
-11. 대표님·승인자 확인 요청사항
-
-TI는 확정 사실·제안·미확정을 분리하고 Skeleton 단계임을 명시한다. Process 11, Automation, 미완성 기능을 완료로 표현하거나 Notion AI가 근거 없이 추정하도록 지시하지 않는다.
+- 명칭: Skeleton Intermediate Reporting
+- 성격: 비실행·선택적 Roadmap Milestone; Codex TAP과 Claude Review TAP이 아님
+- Owner: GPT + 사용자 정상준
+- 시점: CP-05-S1 완료 후 사용자가 필요하다고 판단할 때
+- 산출물: 대표님 중간보고 구성, Notion AI용 TI, 공유 문구, 확인 요청사항
+- 저장: 기본적으로 ChatGPT·Notion에서 관리하며 Repo 저장은 필수가 아님
+- P2 의존성: 없음; P2와 병렬 또는 전후 수행 가능
+- 보고 내용·표현 수준·확인 요청사항은 GPT와 사용자가 결정하며 Codex·Claude가 명세하지 않는다.
 
 ## Pilot A
 
@@ -95,4 +88,4 @@ TI는 확정 사실·제안·미확정을 분리하고 Skeleton 단계임을 명
 
 ## Claude A-CP05-P0-REVIEW 검토 항목
 
-Skeleton Build 시점, Pilot A 범위, MD-11, Atomic/Operational Task 구분, AG-05·06 시점, 문서 과잉 통제, P1→S1→R1→P2 연결성과 CP-04 정합성을 검토한다.
+Skeleton Build 시점, Pilot A 범위, Atomic/Operational Task 구분, AG-05·06 시점, 문서 과잉 통제, P1→S1→P2 연결성과 CP-04 정합성을 검토한다.

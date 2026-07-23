@@ -19,7 +19,6 @@ Codex 설계 → Claude 독립 검토 → GPT 결과 통합 → 사용자 승인
 | CP-05-P0-R | Revised Roadmap 상충·누락 권장 | 필수 | Skeleton·Pilot A·TI 경로 |
 | CP-05-P1 | 선택 | 필수 | Record 단위·DB 개수 |
 | CP-05-S1 | Skeleton 범위·과잉 Build 검토 | 필수 | 실제 Skeleton Build |
-| CP-05-R1 | 선택 | 필수 | 보고 내용·공유 대상 확인 |
 | CP-05-P2 | 선택 | 필수 | 상태·완료 기준 |
 | CP-05-P3 | Mapping Coverage 권장 | 필수 | Build 입력 적합성 |
 | CP-05-P4 | 선택 | 필수 | Form·알림 기준 |
@@ -29,16 +28,17 @@ Codex 설계 → Claude 독립 검토 → GPT 결과 통합 → 사용자 승인
 | CP-06-P1 | 위험·Human-only 권장 | 필수 | Assisted 범위 |
 | CP-07-P1 | Write Governance 필수 | 필수 | Agent Write 권한 |
 
-### CP-05-R1 상세 Handoff
+## Communication Milestone
 
-- Input: S1 Build Log, Decision Log, Pending Approval, Pilot A
-- Output: Notion AI TI와 중간보고 구조
-- Exit: TI 작성 완료, GPT 검토 완료, 사용자에게 공유 준비 완료
-- 대표님 응답: Optional Feedback Input
-- Next: CP-05-P2
-- P2 차단: 대표님 응답 수신은 차단 조건이 아니다.
-- 실제 피드백이 수신되면 Decision Log 또는 Pending Approval에 후속 Input으로 기록한다.
-- 대표님 확인이 필요한 운영기준은 기존 Approval Gate 통과 전 확정하지 않는다.
+- 명칭: Skeleton Intermediate Reporting (`CM-01`)
+- Owner: GPT + 사용자 정상준
+- Codex: 관여하지 않음
+- Claude: 관여하지 않음
+- Notion AI: GPT가 작성한 TI를 사용해 보고 페이지 생성
+- 대표님 공유: 사용자 판단
+- Repo TAP 또는 Commit: 필수 아님
+- 후속 TAP 차단: 없음
+- 실제 운영결정이 발생한 경우에만 Decision Log 또는 Approval Gate에 반영한다.
 
 ## Revision과 Handoff
 

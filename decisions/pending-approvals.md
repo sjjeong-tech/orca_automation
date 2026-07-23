@@ -45,5 +45,4 @@
 |---|---|---|---|---|
 | 인터뷰 v1·V2 통합 | Known Gap 해소 | MD-04,05,07 | P1~B2 | BACKLOG |
 | 미검토 Source·재시연 | Pilot 대표성 | MD-07 | B2 | BACKLOG |
-| Notion AI TI 보고 대상·표현 수준 | 중간보고 적합성 | MD-11 | R1 | BACKLOG |
 | Pilot A 실제 조합·기간·Threshold | Pilot 대표성·판정 | MD-07 | B2 | APPROVAL_REQUIRED |

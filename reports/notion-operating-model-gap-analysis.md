@@ -77,12 +77,12 @@ CP-04 As-Is Process Model은 보존한다. CP-05의 기존 Gap Resolution 계획
 
 ## CP-05-P0-R Targeted Revision
 
-- 전면 재설계 대신 P1 뒤 `CP-05-S1` Fast Skeleton과 `CP-05-R1` Intermediate Reporting TI를 삽입한다.
+- 전면 재설계 대신 P1 뒤 `CP-05-S1` Fast Skeleton을 삽입한다. 중간보고는 GPT·사용자의 선택적 `CM-01`이며 실행 TAP이 아니다.
 - Pilot A를 Process 03·04·07·08로 제한한다. 실제 Pilot 조합과 Threshold는 미결이다.
 - Process Atomic Task와 Notion Operational Task를 분리해 과도한 수동 Task 생성을 방지한다.
 - AG-01~04와 AG-20A만 사용자 결정으로 확정하고 AG-05·06의 결정 시점을 늦춘다.
 - Skeleton은 완성 MVP가 아니며 B1에서 P2~P5 결과를 반영한 Pilot-ready Revision을 수행한다.
-- 신규 비차단 Backlog: Skeleton 최소 Property 검증, TI 보고 대상·표현 수준, 실제 Pilot 조합·기간·Threshold.
+- 신규 비차단 Backlog: Skeleton 최소 Property 검증, 실제 Pilot 조합·기간·Threshold. 보고 내용·TI는 GPT·사용자 책임이다.
 
 ## Interview Candidate Reference
 

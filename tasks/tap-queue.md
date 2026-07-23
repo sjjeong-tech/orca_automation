@@ -4,7 +4,7 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 
 **Queue 전체 상태:** `READY_FOR_CP-05-P1`
 
-**현재 Checkpoint:** `CP-05-P0-R2 — Claude Finding 처분 완료 / GPT 검증 대기`
+**현재 Checkpoint:** `CP-05-P0-R3 — Intermediate Reporting Ownership 정정 완료 / GPT 검증 대기`
 
 **최근 Revision:** `TAP P1-R2 — COMPLETED (PASS WITH NON-BLOCKING GAPS)`
 
@@ -12,7 +12,7 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 
 **최근 계획:** `TAP V0 — COMPLETED`
 
-**최근 실행:** `TAP CP-05-P0-R2 — COMPLETED (FINDING DISPOSITION PASS)`
+**최근 실행:** `TAP CP-05-P0-R3 — COMPLETED (OWNERSHIP CORRECTION PASS)`
 
 **다음 READY 후보:** `CP-05-P1 — READY`
 
@@ -85,11 +85,13 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 | C1 | CP-05-P0 | Master Roadmap·Operating Model | CP-04 | COMPLETED | MD-01~10 | Revision 보존 |
 | C2 | CP-05-P0-R | Skeleton·Pilot A·TI Targeted Revision | P0 | COMPLETED | MD-01~11 | 결과 보존 |
 | C3 | A-CP05-P0-REVIEW | Revised Roadmap 독립 검토 | P0-R | COMPLETED_PASS_WITH_REVISIONS | MD-01~11 | Finding 처분 완료 |
-| C4 | CP-05-P0-R2 | Claude Finding 처분·문서 정합성 | Claude Review | COMPLETED | MD-01~11 | GPT 검증 |
+| C4 | CP-05-P0-R2 | Claude Finding 처분·문서 정합성 | Claude Review | COMPLETED | MD-01~10,CM-01 | 결과 보존 |
+| C4A | CP-05-P0-R3 | Intermediate Reporting Ownership 정정 | P0-R2 | COMPLETED | CM-01 | GPT 검증 |
 | C5 | CP-05-P1 | Record Unit·DB Architecture | Revised Roadmap APPROVED_FOR_P1 | READY | MD-01,02 | 자동 실행 금지 |
 | C6 | CP-05-S1 | Fast Notion Skeleton Build | P1·AG-S1 승인 | BLOCKED_UNTIL_P1_AND_AG-S1 | MD-01,02,06 | 실제 DB 생성 금지 |
-| C7 | CP-05-R1 | Notion AI Intermediate Reporting TI | S1 완료 | BLOCKED_UNTIL_S1 | MD-11 | TI 작성 금지 |
-| C8 | CP-05-P2 | Status & Evidence Model | R1 GPT Review | BLOCKED_UNTIL_R1_GPT_REVIEW | MD-04 | 대표님 응답은 차단 조건 아님 |
+| C7 | CP-05-R1 | 이전 Codex TI TAP | DEC-CP05-08 | REMOVE_AS_CODEX_TAP | 없음 | 실행 금지 |
+| C7A | GPT-USER-COMMUNICATION-MILESTONE | Skeleton Intermediate Reporting | S1 완료 후 사용자 판단 | OPTIONAL_AFTER_S1 | CM-01 | P2 비차단 |
+| C8 | CP-05-P2 | Status & Evidence Model | S1 Review | BLOCKED_UNTIL_S1_REVIEW | MD-04 | 대표님 응답 NOT_A_BLOCKING_GATE |
 | C9 | CP-05-P3 | Process-to-Notion Mapping | P2 승인 | BLOCKED_BY_PREVIOUS_APPROVAL | MD-02,05 | P2 승인 대기 |
 | C10 | CP-05-P4 | Intake·Collaboration Model | P3 승인 | BLOCKED_BY_PREVIOUS_APPROVAL | MD-03,06 | P3 승인 대기 |
 | C11 | CP-05-P5 | Pilot-ready MVP Build Spec | P4 승인 | BLOCKED_BY_PREVIOUS_APPROVAL | MD-01~07 | Build 승인 명세 대기 |

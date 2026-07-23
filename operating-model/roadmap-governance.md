@@ -2,7 +2,7 @@
 
 ## 고정 순서
 
-`CP-05-P0 → P0-R → A-CP05-P0-REVIEW → GPT·사용자 승인 → P1 → S1 → R1 → P2 → P3 → P4 → P5 → B1 → B2 → B3 → CP-06-P1 → B1 → B2 → CP-07-P1 → B1 → CP-08-P1`
+`CP-05-P0 → P0-R → A-CP05-P0-REVIEW → GPT·사용자 승인 → P1 → S1 → P2 → P3 → P4 → P5 → B1 → B2 → B3 → CP-06-P1 → B1 → B2 → CP-07-P1 → B1 → CP-08-P1`
 
 ## Gate 원칙
 
@@ -18,8 +18,16 @@
 - S1은 완성 MVP가 아닌 최소 Skeleton이며 P2~P5 설계의 UI 관찰 Input이다.
 - S1은 P1 Architecture의 최소 범위만 구현하며 Automation·Slack·전체 Mapping·Agent Write를 수행하지 않는다.
 - S1 이후 구조는 P2~P5에서 변경·재작업될 수 있다.
-- R1은 Skeleton 결과를 보고하는 TI 작성 단계이며 Notion AI 실행이나 기능 구현 단계가 아니다.
 - B1은 P2~P5 결과를 Skeleton에 적용하는 Pilot-ready Revision이다.
+
+## Communication Ownership
+
+- 중간보고는 Master Roadmap 실행 TAP이 아니다.
+- Skeleton 완료 후 필요 시점만 `CM-01` 선택 Milestone으로 표시한다.
+- 보고 구성·TI 작성·수정·공유는 GPT와 사용자 정상준이 수행한다.
+- Codex·Claude는 대표님 보고 문구 또는 Notion AI TI를 작성·검토하지 않는다.
+- 보고 결과에서 새로운 운영결정이 나온 경우에만 Git Decision Log 또는 Approval Gate에 반영한다.
+- 보고 작성·공유·응답을 기다리느라 CP-05-P2를 차단하지 않는다.
 
 ## Gap Resolution
 
