@@ -97,3 +97,16 @@ Claude Source Coverage Audit 1차·R2 Finding에 대한 GPT 승인 범위와 Cod
 
 - `KEEP_UNKNOWN`, `CASE_ONLY`, `DEFER_BACKLOG` 결정은 기존 상태를 유지한다.
 - GAP-R2-05는 `NO_CHANGE` 결정에 따라 Process 06·09 선후관계의 `UNKNOWN`·`REJECTED` 상태를 유지하며 V1-I에서 재확인한다.
+
+## 7. V1-I 통합 QA 확인
+
+| 항목 | 결과 |
+|---|---|
+| ACCEPT_MODEL_NEXT 7건 | 7/7 APPLIED / VERIFIED |
+| KEEP_UNKNOWN 유지 | PASS |
+| CASE_ONLY 일반화 방지 | PASS |
+| DEFER_BACKLOG 유지 | PASS |
+| Source 없는 CONFIRMED 승격 | 0 |
+| CP-04 판정 | COMPLETE_WITH_KNOWN_GAPS |
+
+세부 검증 근거는 `reports/variation-integration-qa.md`에 기록한다.

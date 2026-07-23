@@ -4,7 +4,7 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 
 **Queue 전체 상태:** `PAUSED_FOR_EXTERNAL_REVIEW`
 
-**현재 Checkpoint:** `CP-04 — 전체 Process 생성·QA·배포 완료 / 외부 검토`
+**현재 Checkpoint:** `CP-04 — As-Is Process Model v1 COMPLETE WITH KNOWN GAPS / 외부 검토`
 
 **최근 Revision:** `TAP P1-R2 — COMPLETED (PASS WITH NON-BLOCKING GAPS)`
 
@@ -12,9 +12,9 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 
 **최근 계획:** `TAP V0 — COMPLETED`
 
-**최근 실행:** `TAP V1-R2 — COMPLETED (MODEL REVISION PASS)`
+**최근 실행:** `TAP V1-I — COMPLETED (CP-04 COMPLETE WITH KNOWN GAPS)`
 
-**다음 READY 후보:** `TAP V1-I`
+**다음 READY 후보:** `CP-05-PLAN`
 
 ## 자동 실행 Checkpoint
 
@@ -72,7 +72,8 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 | V4 | TAP A-V1 | Claude 독립 Source Review | TAP V1-A, V1-B, V1-C | COMPLETED_WITH_PARTIAL_COVERAGE | Claude Review Commit 2개 | 승인 Finding 반영 완료 |
 | V5 | TAP V1-R1 | Claude Findings Source Enrichment | TAP A-V1 | COMPLETED | Source 7개·Disposition·Queue | Source Enrichment 보존 |
 | V6 | TAP V1-R2 | Variation·Process Revision | TAP V1-R1 | COMPLETED | Variation 4개·Process 3개·Mapping·Disposition | Revision 보존 |
-| V7 | TAP V1-I | 통합 Variation QA | TAP V1-R2 | READY | `reports/variation-integration-qa.md` | 별도 TAP으로 실행 |
+| V7 | TAP V1-I | 통합 Variation QA | TAP V1-R2 | COMPLETED | `reports/variation-integration-qa.md`, `reports/cp-04-completion.md` | CP-04 COMPLETE_WITH_KNOWN_GAPS |
+| V8 | CP-05-PLAN | Gap Resolution & Interview Execution 계획 | TAP V1-I | READY | 계획 산출물은 별도 TAP에서 정의 | 외부 검토 후 실행 |
 
 ## Stage별 범위 및 산출물
 
