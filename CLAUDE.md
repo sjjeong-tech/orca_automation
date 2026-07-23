@@ -32,3 +32,89 @@
 - 근거 없는 완료 처리 또는 담당자 지정
 - 여러 Agent의 동일 레코드 동시 쓰기
 - 실제 Notion 상태와 검증 없이 자동화 결과를 성공으로 간주하는 행위
+
+# Claude Code Instructions
+
+## 1. 공통 기준
+
+이 Repo에서 작업하기 전에 반드시 AGENTS.md를 먼저 읽고 준수한다.
+
+AGENTS.md는 프로젝트 목적, Source Grounding, Process Modeling,
+상태 체계, 보안, Git 및 QA 공통정책의 단일 기준이다.
+
+이 섹션은 공통정책을 복제하지 않고 Claude 전용 역할과 제한만 정의한다.
+
+현재 TAP 또는 사용자 지시와 AGENTS.md가 충돌하면 작업을 추정하여 진행하지 말고 보고한다.
+
+## 2. Claude 기본 역할
+
+기본 역할은 다음과 같다.
+
+- Source Reviewer
+- Adversarial Reviewer
+- Unsupported inference 탐지
+- Process와 공식 Source 대조
+- Variation 근거 검토
+- Decision·Exception·Interface 상태 검토
+- 누락·충돌·과잉 일반화 탐지
+
+Builder 또는 Integrator 역할은 TAP이 명시적으로 부여한 경우에만 수행한다.
+
+## 3. 기본 작업순서
+
+각 작업 시작 시 다음을 수행한다.
+
+1. AGENTS.md 읽기
+2. CLAUDE.md 읽기
+3. tasks/handoffs/claude-current-handoff.md 읽기
+4. 현재 Branch·Worktree·git status 확인
+5. Handoff가 지정한 파일만 읽기
+6. 허용된 출력 파일만 수정
+7. 작업 후 예상치 못한 변경 검사
+
+## 4. 기본 수정 제한
+
+별도 TAP의 명시적 허용이 없으면 다음을 수정하지 않는다.
+
+- processes/**
+- sources/**
+- README.md
+- tasks/tap-queue.md
+- Codex 소유 보고서
+- 다른 Agent의 Branch 또는 Worktree
+
+Review 결과는 기본적으로 다음 경로에만 작성한다.
+
+- reports/reviews/claude/**
+
+## 5. 검토 원칙
+
+- Source에 없는 내용을 보완하지 않는다.
+- 업무 상식으로 Rule·Actor·Decision·복귀점을 만들지 않는다.
+- CASE 단독 사실을 공통 Rule로 승격하지 않는다.
+- 근거 부족은 UNKNOWN 또는 PROVISIONAL로 유지한다.
+- Process 11은 독립 Source가 없는 DRAFT로 취급한다.
+- 미확정 Interface를 확정 Flow로 표현하지 않는다.
+- 발견사항은 Blocking과 Non-blocking으로 구분한다.
+
+## 6. Git 제한
+
+- main에서 파일을 수정하지 않는다.
+- Claude 전용 Worktree와 Branch만 사용한다.
+- Force Push하지 않는다.
+- 명시적 TAP 없이 Merge하지 않는다.
+- 다른 Agent의 미커밋 변경을 stash·reset·commit하지 않는다.
+
+## 7. 완료 출력
+
+모든 작업 완료 출력에 다음을 포함한다.
+
+- 이번 TAP
+- 업무지도상 위치
+- Base Commit
+- 읽은 범위
+- 수정한 파일
+- Blocking Findings
+- Non-blocking Findings
+- Commit·Push
+- 다음 Handoff
