@@ -42,12 +42,54 @@
 12. 실패한 TAP을 우회해 후속 Stage로 넘어가지 않는다.
 13. Queue 상태가 변경될 때만 `tasks/tap-queue.md`를 갱신한다.
 
+### Auto-Run Until Checkpoint
+
+1. Queue가 시작되면 `PASS`, 사전에 비차단으로 정의된 `PASS WITH ISSUES`, Commit 성공, Push 성공 및 clean 상태를 확인한 뒤 다음 TAP을 자동 실행한다.
+2. 매 TAP마다 수동 `QUEUE RESUME`을 요구하지 않으며, 지정 Checkpoint 또는 중단 조건까지 순차 실행한다.
+3. 각 TAP의 전체 결과와 Queue 상태는 실행 기록에 유지하고, 화면에는 성공 TAP당 최대 두 줄만 출력한다.
+4. Checkpoint 도달 시 Queue를 `PAUSED_AT_CHECKPOINT`로 전환하고 다음 TAP을 실행하지 않는다.
+5. 실패·차단·사용자 조작 필요가 발생하면 Queue를 `STOPPED_ON_FAILURE`로 전환하고 후속 TAP을 실행하지 않는다.
+6. Queue 상태 파일 갱신만을 위한 별도 Commit은 만들지 않는다. 자동 실행 중 상태 변경은 다음 실질 작업 Commit 또는 Checkpoint 기록에 함께 반영한다.
+7. Queue Controller가 만든 `tasks/tap-queue.md` 상태 변경만 존재하는 작업트리는 자동 실행 제어 변경으로 간주하며, 예상 범위와 내용이 일치할 때 후속 작업의 clean Gate를 방해하지 않는다.
+
+자동 실행 상태는 다음 값을 추가로 사용한다.
+
+- `RUNNING_UNTIL_CHECKPOINT`
+- `PAUSED_AT_CHECKPOINT`
+- `STOPPED_ON_FAILURE`
+
+### Checkpoint
+
+| Checkpoint | 정지 TAP | 검토 범위 | 다음 시작 TAP |
+|---|---|---|---|
+| CP-01 | TAP S2 | Pilot Source와 QA, Atomic Task, 추적성, 템플릿 적합성 | TAP S2-P |
+| CP-02 | TAP S4-I | Source 13개 완전성, 충돌, PROCESS READY WITH GAPS | TAP S4-I-P |
+| CP-03 | TAP P1-QA | 핵심 E2E 및 Process Wave 1 | TAP P1-P |
+| CP-04 | TAP P2-QA | Process 12개 구조와 인터페이스·예외·Rework | TAP P2-P |
+| CP-05 | TAP V1-QA | 조합·GP·계좌·기관 Variation | TAP V1-P |
+| CP-06 | TAP F1 | Gap, CASE-03, 인터뷰, Tracker·자동화 차단요인 | TAP F1-P |
+
+모든 실행 TAP은 직전 Checkpoint의 다음 시작 TAP부터 다음 Checkpoint 정지 TAP까지 하나의 구간에 포함한다.
+
+### 즉시 중단 조건
+
+- `FAIL`, `BLOCKED`, `USER ACTION REQUIRED`, `PARTIAL`, 완료 블록 누락
+- 민감정보 검출, Source 누락, 예상 변경 파일 범위 위반
+- Commit 또는 Push 실패, 허용되지 않은 dirty 상태
+- 판정과 본문 결과의 모순
+- Source 근거 누락, Actor·Trigger·완료조건 충돌, Atomic Task 구조 불충분
+- 공식 Source와 Case 혼동, 핵심 Rule의 사용자 판단 필요, Process 진행 가능 여부 불명확
+
+보조 도구 미작동, 형식 정규화, 공식 Source의 기존 `UNKNOWN`, 후속 Gap 분석 대상으로 명시된 미확정 항목은 비차단 이슈로 기록하고 자동 진행할 수 있다.
+
 ### Commit 및 Push 의존성
 
 1. Commit이 필요한 TAP은 Commit 존재, 메시지 일치, 변경 파일 범위 일치, clean 상태를 모두 확인해야 완료 Gate를 통과한다.
 2. 선행 Commit이 없으면 Push TAP은 `WAITING` 또는 `BLOCKED`로 두고 실행하지 않는다.
 3. Commit 생성 후 Push가 실패하면 Push TAP과 후속 Stage를 `BLOCKED`로 둔다.
 4. Push 성공이 확인된 경우에만 의존하는 다음 TAP을 `READY`로 전환할 수 있다.
+5. QA가 `PASS`이면 지정 Commit을 생성하고, Commit Gate 통과 후 별도 Push TAP을 자동 실행할 수 있다.
+6. 강제 Push는 자동 실행에서도 금지하며 Push 실패 시 재시도하지 않는다.
 
 ## Agent 파일 소유권
 

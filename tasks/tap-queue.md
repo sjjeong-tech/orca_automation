@@ -2,7 +2,20 @@
 
 Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될 때만 이 파일을 갱신하며, 선행 Gate를 통과하지 않은 TAP은 실행하지 않는다.
 
-**Queue 전체 상태:** `PAUSED_AFTER_TAP`
+**Queue 전체 상태:** `RUNNING_UNTIL_CHECKPOINT`
+
+**현재 자동 실행 구간:** `TAP 3-A2-P → TAP S2 (CP-01)`
+
+## 자동 실행 Checkpoint
+
+| Checkpoint | 정지 TAP | 다음 시작 TAP | 상태 |
+|---|---|---|---|
+| CP-01 | TAP S2 | TAP S2-P | RUNNING |
+| CP-02 | TAP S4-I | TAP S4-I-P | WAITING |
+| CP-03 | TAP P1-QA | TAP P1-P | WAITING |
+| CP-04 | TAP P2-QA | TAP P2-P | WAITING |
+| CP-05 | TAP V1-QA | TAP V1-P | WAITING |
+| CP-06 | TAP F1 | TAP F1-P | WAITING |
 
 | 순서 | TAP ID | TAP 이름 | 업무지도 위치 | 선행 TAP | 필수 Gate | 상태 | Commit 요구 | Push 요구 | 병목 | 다음 조치 |
 |---:|---|---|---|---|---|---|---|---|---|---|
