@@ -15,3 +15,12 @@
 13. Notion에는 민감정보 실제 값을 저장하지 않고 승인된 비민감 상태·경로·메타데이터만 기록한다.
 14. 실패·Rollback·재시도 기준이 없는 Write 자동화는 허용하지 않는다.
 15. 후속 TAP은 자동 실행하지 않는다.
+
+## Process Atomic Task와 Notion Operational Task
+
+- Process Atomic Task는 AI가 업무를 이해·실행하기 위한 최소 행동 단위다.
+- Notion Operational Task는 사람이 진행상태를 추적할 가치가 있는 운영 단위다.
+- 여러 Atomic Task를 하나의 Operational Task로 집약하거나 핵심 Milestone을 별도 Task로 만들 수 있다.
+- Agent 실행 시 Operational Task를 Atomic Task로 다시 분해할 수 있다.
+- Process 문서를 그대로 Task DB에 복제하거나 클릭·출력·정렬 등 추적 가치가 낮은 미세행동을 대량 생성하지 않는다.
+- 집약 관계, 집약 근거, 사용자 추적 필요성, Agent 재분해 여부와 완료 증빙을 Mapping에 남긴다.

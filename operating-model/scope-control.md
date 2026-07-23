@@ -32,3 +32,7 @@
 - 권한·보안·외부 발송 영향이 있음
 
 Backlog 등록은 승인이나 구현을 의미하지 않는다.
+
+## Skeleton 예외 범위
+
+CP-05-S1은 P1과 AG-S1 승인 후에만 최소 2개 DB, Relation, 최소 Property·View, 테스트 Record를 만들 수 있다. Automation, Slack, Agent Write, 전체 Process Mapping, Process 05·06·09·10·11, 미확정 상태 전이와 미승인 Formula·Rollup은 범위 밖이다.

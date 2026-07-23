@@ -16,7 +16,9 @@ Codex 설계 → Claude 독립 검토 → GPT 결과 통합 → 사용자 승인
 | TAP | Claude | GPT | 사용자 승인 |
 |---|---|---|---|
 | CP-05-P0 | Roadmap 상충·누락 권장 | 필수 | 전체 업무지도 |
+| CP-05-P0-R | Revised Roadmap 상충·누락 권장 | 필수 | Skeleton·Pilot A·TI 경로 |
 | CP-05-P1 | 선택 | 필수 | Record 단위·DB 개수 |
+| CP-05-S1 | Skeleton 범위·과잉 Build 검토 | 필수 | 실제 Skeleton Build |
 | CP-05-P2 | 선택 | 필수 | 상태·완료 기준 |
 | CP-05-P3 | Mapping Coverage 권장 | 필수 | Build 입력 적합성 |
 | CP-05-P4 | 선택 | 필수 | Form·알림 기준 |

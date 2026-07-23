@@ -2,7 +2,7 @@
 
 ## 고정 순서
 
-`CP-05-P0 → P1 → P2 → P3 → P4 → P5 → B1 → B2 → B3 → CP-06-P1 → B1 → B2 → CP-07-P1 → B1 → CP-08-P1`
+`CP-05-P0 → P0-R → A-CP05-P0-REVIEW → GPT·사용자 승인 → P1 → S1 → R1 → P2 → P3 → P4 → P5 → B1 → B2 → B3 → CP-06-P1 → B1 → B2 → CP-07-P1 → B1 → CP-08-P1`
 
 ## Gate 원칙
 
@@ -15,6 +15,9 @@
 - 운영팀 확장은 지원팀 MVP 안정화 전 금지한다.
 - 각 TAP은 하나 이상의 Master Deliverable과 종료 Gate를 가진다.
 - 승인되지 않은 운영기준은 확정값으로 기록하지 않는다.
+- S1은 완성 MVP가 아닌 최소 Skeleton이며 P2~P5 설계의 UI 관찰 Input이다.
+- R1은 Skeleton 결과를 보고하는 TI 작성 단계이며 Notion AI 실행이나 기능 구현 단계가 아니다.
+- B1은 P2~P5 결과를 Skeleton에 적용하는 Pilot-ready Revision이다.
 
 ## Gap Resolution
 

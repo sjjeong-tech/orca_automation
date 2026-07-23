@@ -28,6 +28,8 @@
 
 각 Phase는 이전 Phase의 QA와 사용자 승인 없이는 시작하지 않는다.
 
+Phase 1은 P1 Architecture 뒤 최소 Skeleton을 먼저 확인하고, P2~P5 설계를 반영한 Pilot-ready Revision으로 발전한다. Skeleton은 완성 MVP나 자동화 완료를 의미하지 않는다.
+
 ## 계획된 Repo Layer
 
 - `operating-model/**`: 책임, 원칙, Gate, Governance
