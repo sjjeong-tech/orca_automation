@@ -14,7 +14,7 @@ GPT
 
 ## Current TAP
 
-A-V1-SOURCE-COVERAGE (완료, PARTIAL 범위)
+A-V1-SOURCE-COVERAGE-R2 (완료, PARTIAL 범위)
 
 ## 수행 단계
 
@@ -23,13 +23,14 @@ FINDING_APPROVAL_AND_TAP_DESIGN
 ## 업무지도상 위치
 
 V1-A/B/C 완료
-→ Claude Notion·Repo Source·Model Coverage Audit (PARTIAL 완료)
+→ Claude Notion·Repo Source·Model Coverage Audit R1 (PARTIAL)
+→ Claude Coverage Audit R2 — 미검토 범위 보완 (PARTIAL)
 → GPT Finding 검토
 → Codex V1-R
 
 ## Last Completed Claude TAP
 
-A-V1-SOURCE-COVERAGE
+A-V1-SOURCE-COVERAGE-R2
 
 ## Completed Codex TAP
 
@@ -45,23 +46,26 @@ A-V1-SOURCE-COVERAGE
 
 https://app.notion.com/p/Process-Model-8e3bafb3e64f448d8e06d63127d1155e?t=3a472a41d9d780819e5800a95e4c4439
 
-## Review Result Summary
+## R2 Review Result Summary
 
-- 판정: PARTIAL — institution/account-type/gp-type/fund-type 4개 Variation을 지정 우선순위대로 검토했으며, E2E-00/07/08/10 상세 페이지와 CASE-01(테일프론티어투자조합3호), 재시연 파일럿 일부를 fetch했다.
-- Blocking Findings: 0
-- Non-blocking Findings: 9 (`reports/reviews/claude/a-v1-gap-register.md` GAP-REG-01~09)
-- TYPE-A(SOURCE_IMPORT_CANDIDATE): 8 / TYPE-B(MODEL_GAP): 2 / TYPE-C(UNSUPPORTED_MODEL): 0 / TYPE-D(CASE_ONLY): 6 / TYPE-E(INTERVIEW_REQUIRED): 8
-- 미검토 범위: E2E-01~06·09 상세, CASE-02(고유번호증·보안카드·홈택스), 7-1/7-2 관리역 인터뷰, [AI Cross-check], [REC_S3_01] — 다음 라운드에서 필요 시 확장 검토 대상.
+- 판정: PARTIAL — Priority 1(E2E-03·04·05·06·09) 전부 완료, Priority 2(CASE-02) 완료, Priority 3(7-2 관리역 인터뷰 v2) 완료.
+- 미검토: 7-1, [AI Cross-check], [REC_S3_01], 재시연 파일럿 잔여 구간
+- NEW 5 / REFINES 4 / CONFIRMS 2 / DUPLICATE 0 / CONFLICTS 0 (findings 간 관계, 중복 계산 있음)
+- TYPE-A 4 / TYPE-B 2 / TYPE-C 0 / TYPE-D 2 / TYPE-E(신규 인터뷰) 5
+- Blocking 0 / Non-blocking 7
+- 자동화 차단 Gap: 2건 (GAP-R2-04 계좌해지 표준 수행주체 미확정, GAP-R2-07 V2 인터뷰 프로그램 미착수로 인한 일정 리스크)
+- 핵심 발견: (1) CASE-02가 Notion 속성상 1차 CASE-01(계좌개설)과 **동일 사례번호** — Variation 근거로 독립 검증된 사례는 여전히 1건뿐. (2) 관리역 1:1 인터뷰(V2, 60문항)가 "대표님 사전 검토 단계"로 **아직 미착수** — 기존 TYPE-E 항목을 "인터뷰로 곧 해소"로 가정하면 안 됨. (3) Process 09(계좌해지)의 Main Flow가 "확인 사례 1건" 한정임을 명시하지 않아 자동화 시 오작동 위험(GAP-R2-04).
 
 ## 산출물
 
-- `reports/reviews/claude/a-v1-source-coverage.md`
-- `reports/reviews/claude/a-v1-gap-register.md`
-- `reports/reviews/claude/a-v1-interview-candidates.md`
+- `reports/reviews/claude/a-v1-source-coverage-r2.md`
+- `reports/reviews/claude/a-v1-gap-register-r2.md`
+- `reports/reviews/claude/a-v1-interview-candidates-r2.md`
+- (1차 산출물 `a-v1-source-coverage.md`, `a-v1-gap-register.md`, `a-v1-interview-candidates.md`는 수정하지 않음, R2는 참조만)
 
 ## Allowed Reads (GPT 검토용 참고)
 
-- 위 산출물 3종
+- 위 R1·R2 산출물 6종
 - variations/**, 관련 processes/**, sources/notion/**
 - plans/variation-model-plan.md, mappings/variation-source-index.md, conflicts/unresolved.md
 
