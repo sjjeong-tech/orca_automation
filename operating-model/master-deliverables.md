@@ -4,8 +4,8 @@
 
 | Deliverable ID | 최종 산출물 | 목적 | 완료조건 | 관련 TAP | 현재 상태 | 승인 Gate | 선행 의존성 | 후속 의존성 | 미확정 항목 |
 |---|---|---|---|---|---|---|---|---|---|
-| MD-01 | Notion 지원팀 업무 DB | 업무 건의 상위 Live Record | Record 단위·Relation·필수 Property 승인, S1 Skeleton QA 및 Pilot 검증 | P1,S1,P5,B1~B3 | PLANNING | AG-02~05,AG-S1 | CP-04 Model | MD-02,03,06,07 | 조합 Master 도입 시점 |
-| MD-02 | Notion 지원팀 Task DB | Operational Task·Milestone·Rework 추적 | 업무 Relation, Task 상태, 완료조건, Atomic Task 집약 기준과 반복 이력 검증 | P1,S1,P3,P5,B1~B3 | PLANNING | AG-04,06,10,11,AG-S1 | MD-01,04,05 | MD-06~09 | Operational Task 집약 기준 |
+| MD-01 | Notion 지원팀 업무 DB | 업무 건의 상위 Live Record | P1 Architecture 완료, Record 단위·Relation·필수 Property 승인, S1 Skeleton QA 및 Pilot 검증 | P1,S1,P5,B1~B3 | PLANNING | AG-02~05,AG-S1 | CP-04 Model | MD-02,03,06,07 | 조합 Master 도입 시점; AG-S1 승인 대기 |
+| MD-02 | Notion 지원팀 Task DB | Operational Task·Milestone·Rework 추적 | P1 Architecture 완료, 업무 Relation, Task 상태, 완료조건, Atomic Task 집약 기준과 반복 이력 검증 | P1,S1,P3,P5,B1~B3 | PLANNING | AG-04,06,10,11,AG-S1 | MD-01,04,05 | MD-06~09 | Operational Task 집약 기준; P1 후보 23개는 P3 전 미확정 |
 | MD-03 | Intake Form | 요청 유입 표준화 | 작성자·필수항목·정보부족 처리 승인 및 Pilot 입력 성공 | P4,P5,B1~B3 | NOT_STARTED | AG-13~15 | MD-01 | MD-06,07 | 작성 주체·필수항목 |
 | MD-04 | Status & Evidence Model | 상태·대기·Blocker·증빙·전이 표준 | 업무/Task 상태, 최소 증빙, 대기·완료 Gate 승인 | P2,P5,B1~B3 | NOT_STARTED | AG-07~09,15,18 | CP-04 Gaps | MD-01,02,07~09 | 대기 세분화·최소 증빙 |
 | MD-05 | Process-to-Notion Mapping | Process Rule을 Task Template로 연결 | Process ID, Trigger, Input, Output, Actor, Evidence, Next, Exception Coverage 검증 | P3,P5,B1~B3 | NOT_STARTED | AG-10~12 | CP-04 Process·Variation | MD-02,07,08 | Task 생성 수준·Process 11 |

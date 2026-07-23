@@ -2,7 +2,7 @@
 
 Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될 때만 이 파일을 갱신하며, 선행 Gate를 통과하지 않은 TAP은 실행하지 않는다.
 
-**Queue 전체 상태:** `READY_FOR_CP-05-P1`
+**Queue 전체 상태:** `PAUSED_FOR_AG-S1_REVIEW`
 
 **현재 Checkpoint:** `CP-05-P0-R3 — Intermediate Reporting Ownership 정정 완료 / GPT 검증 대기`
 
@@ -14,7 +14,7 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 
 **최근 실행:** `TAP CP-05-P0-R3 — COMPLETED (OWNERSHIP CORRECTION PASS)`
 
-**다음 READY 후보:** `CP-05-P1 — READY`
+**다음 READY 후보:** `AG-S1 — READY_FOR_GPT_USER_APPROVAL`
 
 ## 자동 실행 Checkpoint
 
@@ -87,8 +87,9 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 | C3 | A-CP05-P0-REVIEW | Revised Roadmap 독립 검토 | P0-R | COMPLETED_PASS_WITH_REVISIONS | MD-01~11 | Finding 처분 완료 |
 | C4 | CP-05-P0-R2 | Claude Finding 처분·문서 정합성 | Claude Review | COMPLETED | MD-01~10,CM-01 | 결과 보존 |
 | C4A | CP-05-P0-R3 | Intermediate Reporting Ownership 정정 | P0-R2 | COMPLETED | CM-01 | GPT 검증 |
-| C5 | CP-05-P1 | Record Unit·DB Architecture | Revised Roadmap APPROVED_FOR_P1 | READY | MD-01,02 | 자동 실행 금지 |
-| C6 | CP-05-S1 | Fast Notion Skeleton Build | P1·AG-S1 승인 | BLOCKED_UNTIL_P1_AND_AG-S1 | MD-01,02,06 | 실제 DB 생성 금지 |
+| C5 | CP-05-P1 | Record Unit·DB Architecture | Revised Roadmap APPROVED_FOR_P1 | COMPLETED | MD-01,02 | Architecture·AG-S1 판단자료 완료 |
+| C5A | AG-S1 | Fast Skeleton Build 승인 검토 | CP-05-P1 완료 | READY_FOR_GPT_USER_APPROVAL | MD-01,02,06 | 실제 위치·권한·범위 승인 필요 |
+| C6 | CP-05-S1 | Fast Notion Skeleton Build | P1·AG-S1 승인 | BLOCKED_UNTIL_AG-S1_APPROVAL | MD-01,02,06 | 실제 DB 생성 금지 |
 | C7 | CP-05-R1 | 이전 Codex TI TAP | DEC-CP05-08 | REMOVE_AS_CODEX_TAP | 없음 | 실행 금지 |
 | C7A | GPT-USER-COMMUNICATION-MILESTONE | Skeleton Intermediate Reporting | S1 완료 후 사용자 판단 | OPTIONAL_AFTER_S1 | CM-01 | P2 비차단 |
 | C8 | CP-05-P2 | Status & Evidence Model | S1 Review | BLOCKED_UNTIL_S1_REVIEW | MD-04 | 대표님 응답 NOT_A_BLOCKING_GATE |
