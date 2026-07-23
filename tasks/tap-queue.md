@@ -23,9 +23,9 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 | 2 | TAP Q-00 | Conditional TAP Queue 정책 설정 | 오케스트레이션 제어 계층 / 공통 Queue Gate 설정 | TAP 3-B2-FIX | PASS 또는 비차단 PASS WITH ISSUES | COMPLETED | 예 | 아니요 | 없음 | 완료 유지 |
 | 3 | TAP Q-00-P | Conditional TAP Queue 정책 Push | 오케스트레이션 제어 계층 / 공통 Queue Gate 배포 | TAP Q-00 | 지정 Commit 및 clean | COMPLETED | 예 | 예 | 없음 | 완료 유지 |
 | 4 | TAP 3-A2 | Notion Source Index 직접 반입·검증 | Source 확보 / 구조 인덱스 | TAP Q-00-P | PASS 또는 PASS WITH FORMAT NORMALIZATION | COMPLETED | 예 | 아니요 | 없음 | 완료 유지 |
-| 5 | TAP 3-A2-P | Source Index Commit Push | Source 확보 / 구조 인덱스 배포 | TAP 3-A2 | 지정 Commit 존재 및 clean | READY | 예 | 예 | 없음 | 선행 Commit 검증 후 Push |
-| 6 | TAP S0 | Process Model Repo Stage 0 초기화 | Source 확보 / Repo 실행환경 | TAP 3-A2-P | PASS | WAITING | 예 | 아니요 | 선행 TAP 대기 | 실행환경 파일 3종 생성 |
-| 7 | TAP S0-P | Stage 0 Commit Push | Source 확보 / Repo 실행환경 배포 | TAP S0 | 지정 Commit 존재 및 clean | WAITING | 예 | 예 | 선행 TAP 대기 | Stage 0 Commit 검증 후 Push |
+| 5 | TAP 3-A2-P | Source Index Commit Push | Source 확보 / 구조 인덱스 배포 | TAP 3-A2 | 지정 Commit 존재 및 clean | COMPLETED | 예 | 예 | 없음 | 완료 유지 |
+| 6 | TAP S0 | Process Model Repo Stage 0 초기화 | Source 확보 / Repo 실행환경 | TAP 3-A2-P | PASS | COMPLETED | 예 | 아니요 | 없음 | 완료 유지 |
+| 7 | TAP S0-P | Stage 0 Commit Push | Source 확보 / Repo 실행환경 배포 | TAP S0 | 지정 Commit 존재 및 clean | READY | 예 | 예 | 없음 | Stage 0 Commit 검증 후 Push |
 | 8 | TAP S1 | Pilot Source Extract N-05-03 | 세무서 업무 / 고유번호증 신청 | TAP S0-P | PASS | WAITING | 아니요 | 아니요 | 선행 TAP 대기 | N-05-03 Source Extract 생성 |
 | 9 | TAP S2 | Pilot Source QA | Source 검증 / 고유번호증 신청 | TAP S1 | PASS; FAIL 시 Queue BLOCKED | WAITING | 예 | 아니요 | 선행 TAP 대기 | Pilot Source QA 작성 |
 | 10 | TAP S2-P | Pilot Source Commit Push | Source 검증 / Pilot 배포 | TAP S2 | QA PASS 및 지정 Commit 존재 | WAITING | 예 | 예 | 선행 TAP 대기 | Pilot Commit 검증 후 Push |
