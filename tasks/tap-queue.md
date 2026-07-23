@@ -4,9 +4,11 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 
 **Queue 전체 상태:** `PAUSED_FOR_EXTERNAL_REVIEW`
 
-**현재 Checkpoint:** `CP-03 — Process Wave 1 실행가능성 Revision 완료 / 외부 검토`
+**현재 Checkpoint:** `CP-04 — 전체 Process 생성·QA·배포 완료 / 외부 검토`
 
 **최근 Revision:** `TAP P1-R2 — COMPLETED (PASS WITH NON-BLOCKING GAPS)`
+
+**최근 실행:** `TAP P2-R — COMPLETED (PASS WITH NON-BLOCKING GAPS)`
 
 ## 자동 실행 Checkpoint
 
@@ -15,7 +17,7 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 | CP-01 | TAP S2 | TAP S2-P | REACHED |
 | CP-02 | TAP S4-I | TAP S4-I-P | REACHED |
 | CP-03 | TAP P1-QA | TAP P1-P | REACHED |
-| CP-04 | TAP P2-QA | TAP P2-P | WAITING |
+| CP-04 | TAP P2-QA | TAP P2-P | REACHED |
 | CP-05 | TAP V1-QA | TAP V1-P | WAITING |
 | CP-06 | TAP F1 | TAP F1-P | WAITING |
 
@@ -42,10 +44,10 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 | 19 | TAP P1 | Process Model Wave 1 생성 | Process Model / 핵심 E2E·세무서·은행 | TAP S4-I-P | PASS | COMPLETED | 아니요 | 아니요 | 없음 | 완료 유지 |
 | 20 | TAP P1-QA | Process Wave 1 QA | Process 검증 / 핵심 Process | TAP P1 | PASS; FAIL 시 Queue BLOCKED | COMPLETED | 예 | 아니요 | 없음 | CP-03 검토 대기 |
 | 21 | TAP P1-P | Process Wave 1 Commit Push | Process 검증 / 핵심 Process 배포 | TAP P1-QA | QA PASS 및 지정 Commit 존재 | COMPLETED | 예 | 예 | 없음 | 완료 유지 |
-| 22 | TAP P2 | Process Model Wave 2 생성 | Process Model / 지원 Process | TAP P1-R2 | Revision QA 및 Push 성공 | READY | 아니요 | 아니요 | 외부 검토 대기 | 검토 승인 후 지원 Process 7종 생성 |
-| 23 | TAP P2-QA | Process Wave 2 QA | Process 검증 / 지원 Process | TAP P2 | PASS; FAIL 시 Queue BLOCKED | WAITING | 예 | 아니요 | 선행 TAP 대기 | Wave 2 QA 수행 |
-| 24 | TAP P2-P | Process Wave 2 Commit Push | Process 검증 / 지원 Process 배포 | TAP P2-QA | QA PASS 및 지정 Commit 존재 | WAITING | 예 | 예 | 선행 TAP 대기 | Wave 2 Commit 검증 후 Push |
-| 25 | TAP V1 | Variation 통합 | 업무 변형 / 조합·GP·계좌·기관 | TAP P2-P | PASS | WAITING | 아니요 | 아니요 | 선행 TAP 대기 | Variation 4종 통합 |
+| 22 | TAP P2 | Process Model Wave 2 생성 | Process Model / 지원 Process | TAP P1-R2 | Revision QA 및 Push 성공 | COMPLETED | 아니요 | 아니요 | Process 11 DRAFT | 완료 유지 |
+| 23 | TAP P2-QA | Process Wave 2 QA | Process 검증 / 지원 Process | TAP P2 | PASS; FAIL 시 Queue BLOCKED | COMPLETED | 예 | 아니요 | 비차단 Gap | 완료 유지 |
+| 24 | TAP P2-P | Process Wave 2 Commit Push | Process 검증 / 지원 Process 배포 | TAP P2-QA | QA PASS 및 지정 Commit 존재 | COMPLETED | 예 | 예 | 없음 | 완료 유지 |
+| 25 | TAP V1 | Variation 통합 | 업무 변형 / 조합·GP·계좌·기관 | TAP P2-P | PASS | READY | 아니요 | 아니요 | 외부 검토 대기 | 검토 승인 후 Variation 4종 통합 |
 | 26 | TAP V1-QA | Variation QA | 업무 변형 / Variation 검증 | TAP V1 | PASS; FAIL 시 Queue BLOCKED | WAITING | 예 | 아니요 | 선행 TAP 대기 | Variation QA 수행 |
 | 27 | TAP V1-P | Variation Commit Push | 업무 변형 / Variation 배포 | TAP V1-QA | QA PASS 및 지정 Commit 존재 | WAITING | 예 | 예 | 선행 TAP 대기 | Variation Commit 검증 후 Push |
 | 28 | TAP F1 | Process Model 최종 통합 QA | 전체 E2E / Process·Variation·Evidence 정합성 | TAP V1-P | PASS | WAITING | 예 | 아니요 | 선행 TAP 대기 | 최종 QA 산출물 4종 작성 |

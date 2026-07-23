@@ -13,8 +13,8 @@
 | 1 | Notion Source 확보 | 완료 |
 | 2 | Source Extract | 완료 |
 | 3 | Source QA | 완료 — `PROCESS READY WITH GAPS` |
-| 4 | Process Model | 진행 중 — Wave 1 실행가능성 Revision 완료 |
-| 5 | Process QA | 진행 중 — Wave 1 Revision QA 완료 |
+| 4 | Process Model | 완료 — Process 12개 생성, Process 11은 DRAFT |
+| 5 | Process QA | 완료 — CP-04 통합 QA |
 | 6 | Variation Model | 예정 |
 | 7 | E2E 통합 QA | 예정 |
 | 8 | Gap 기반 CASE 검증 | 예정 |
@@ -24,7 +24,7 @@
 
 ## 3. 현재 진행상황
 
-현재 위치는 **CP-03 외부 독립검토 후 Process Wave 1 실행가능성 Revision 완료**입니다.
+현재 위치는 **CP-04 전체 Process 생성·QA 완료**입니다.
 
 완료된 작업:
 
@@ -35,6 +35,8 @@
 - Process Wave 1 생성 및 [QA 5/5 통과](reports/process-wave-1-qa.md)
 - CP-03 외부 독립검토 Findings 반영
 - Decision·Exception·Interface 보강 및 [Revision QA 통과](reports/process-wave-1-revision-qa.md)
+- Process Wave 2 지원 Process 7개 생성
+- [Wave 2 개별 QA](reports/process-wave-2-qa.md), [Source Grounding QA](reports/process-source-grounding-qa.md), [전체 Process 통합 QA](reports/process-integration-qa.md) 완료
 
 Process Wave 1:
 
@@ -44,12 +46,21 @@ Process Wave 1:
 - [07 계좌개설](processes/07-account-opening.md)
 - [08 계좌개설 보완](processes/08-account-supplement.md)
 
+Process Wave 2:
+
+- [01 명판·인감 제작](processes/01-stamp-seal.md)
+- [02 우편·등기 발송](processes/02-mail-dispatch.md)
+- [05 고유번호증 정정](processes/05-unique-number-correction.md)
+- [06 폐업·청산](processes/06-closure-liquidation.md)
+- [09 계좌해지](processes/09-account-closure.md)
+- [10 잔액증명서](processes/10-balance-certificate.md)
+- [11 결과물 전달·후속 완수](processes/11-result-handover.md) — `DRAFT`, Source Coverage 0/7
+
 다음 작업:
 
-1. Process Wave 2 생성·QA
-2. Variation Model
-3. 최종 통합 QA
-4. Gap 기반 CASE·인터뷰 검증
+1. Variation Model
+2. 최종 통합 QA
+3. Gap 기반 CASE·인터뷰 검증
 
 ## 4. 현재 품질 상태
 
@@ -58,6 +69,9 @@ Process Wave 1:
 | Source | `PROCESS READY WITH GAPS` |
 | Process Wave 1 | QA `PASS 5/5` |
 | Process Wave 1 Revision | `PASS WITH NON-BLOCKING GAPS` |
+| Process Wave 2 | `PASS WITH NON-BLOCKING GAPS` |
+| 전체 Process 통합 QA | `PASS WITH NON-BLOCKING GAPS` |
+| Process 11 | `DRAFT` — 0/7 |
 | 차단 Conflict | 없음 |
 
 주요 미확정 항목:
@@ -76,7 +90,7 @@ Process Wave 1:
 | 경로 | 역할 | 현재 상태 |
 |---|---|---|
 | `sources/notion/` | 공식 Notion Source Index와 Source Extract | 생성됨 |
-| `processes/` | Process Model | Wave 1 생성됨 |
+| `processes/` | Process Model | 12개 생성됨; Process 11 DRAFT |
 | `variations/` | 조합·GP·계좌·기관 Variation | 예정 — 디렉터리 미생성 |
 | `reports/` | Source·Process QA 보고서 | 생성됨 |
 | `mappings/` | Source·Process 관계와 인터페이스 | 일부 생성됨 |
@@ -112,12 +126,14 @@ Process Wave 1:
 - [Process Wave 1](processes/)
 - [Process Wave 1 QA](reports/process-wave-1-qa.md)
 - [Process Wave 1 Revision QA](reports/process-wave-1-revision-qa.md)
+- [Process Wave 2 QA](reports/process-wave-2-qa.md)
+- [Process Source Grounding QA](reports/process-source-grounding-qa.md)
+- [Process 통합 QA](reports/process-integration-qa.md)
 - [Source 관계맵](mappings/source-relationship-map.md)
 - [미해결 Gap](conflicts/unresolved.md)
 
 예정:
 
-- Process Wave 2
 - Variation Model
 - E2E Interface Map
 - Gap Analysis
