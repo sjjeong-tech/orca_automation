@@ -2,7 +2,7 @@
 
 ## Status
 
-WAITING_FOR_GPT_FINDING_REVIEW
+WAITING_FOR_GPT_AND_USER_ROADMAP_REVIEW
 
 ## From
 
@@ -14,74 +14,73 @@ GPT
 
 ## Current TAP
 
-A-V1-SOURCE-COVERAGE-R2 (완료, PARTIAL 범위)
+A-CP05-P0-REVIEW (완료, PASS_WITH_REVISIONS)
 
 ## 수행 단계
 
-FINDING_APPROVAL_AND_TAP_DESIGN
+ROADMAP_FINDING_DISPOSITION
 
 ## 업무지도상 위치
 
-V1-A/B/C 완료
-→ Claude Notion·Repo Source·Model Coverage Audit R1 (PARTIAL)
-→ Claude Coverage Audit R2 — 미검토 범위 보완 (PARTIAL)
-→ GPT Finding 검토
-→ Codex V1-R
+CP-05-P0 → CP-05-P0-R (Codex)
+→ Claude Master Roadmap 독립 검토 (완료, PASS_WITH_REVISIONS)
+→ GPT Finding Disposition
+→ 사용자 Master Roadmap 승인
+→ Codex CP-05-P1
 
 ## Last Completed Claude TAP
 
-A-V1-SOURCE-COVERAGE-R2
+A-CP05-P0-REVIEW
 
-## Completed Codex TAP
+## Codex CP-05-P1
 
-- V1-A
-- V1-B
-- V1-C
+BLOCKED_UNTIL_ROADMAP_APPROVAL
 
 ## Review Target Commit
 
-6c3a38c4890ed914b211ecea74dd9db05a900c8f
+origin/main HEAD `86834d64b5f9590e3ac05c529727f2687d9c117d` (`f1e3810` P0 + `86834d6` P0-R)
 
-## Notion Root
+## 기준 CP-04 Commit
 
-https://app.notion.com/p/Process-Model-8e3bafb3e64f448d8e06d63127d1155e?t=3a472a41d9d780819e5800a95e4c4439
+c3ae544b0dab046fc6d979a0bc2c4ee9f2c1cbbe
 
-## R2 Review Result Summary
+## Review Result Summary
 
-- 판정: PARTIAL — Priority 1(E2E-03·04·05·06·09) 전부 완료, Priority 2(CASE-02) 완료, Priority 3(7-2 관리역 인터뷰 v2) 완료.
-- 미검토: 7-1, [AI Cross-check], [REC_S3_01], 재시연 파일럿 잔여 구간
-- NEW 5 / REFINES 4 / CONFIRMS 2 / DUPLICATE 0 / CONFLICTS 0 (findings 간 관계, 중복 계산 있음)
-- TYPE-A 4 / TYPE-B 2 / TYPE-C 0 / TYPE-D 2 / TYPE-E(신규 인터뷰) 5
-- Blocking 0 / Non-blocking 7
-- 자동화 차단 Gap: 2건 (GAP-R2-04 계좌해지 표준 수행주체 미확정, GAP-R2-07 V2 인터뷰 프로그램 미착수로 인한 일정 리스크)
-- 핵심 발견: (1) CASE-02가 Notion 속성상 1차 CASE-01(계좌개설)과 **동일 사례번호** — Variation 근거로 독립 검증된 사례는 여전히 1건뿐. (2) 관리역 1:1 인터뷰(V2, 60문항)가 "대표님 사전 검토 단계"로 **아직 미착수** — 기존 TYPE-E 항목을 "인터뷰로 곧 해소"로 가정하면 안 됨. (3) Process 09(계좌해지)의 Main Flow가 "확인 사례 1건" 한정임을 명시하지 않아 자동화 시 오작동 위험(GAP-R2-04).
+- 전체 판정: `PASS_WITH_REVISIONS` — Blocking 0, Major 4, Minor 3
+- 목표 수렴성·단계 연결성·CP-04 정합성·Scope Governance·역할 분리 축은 모두 PASS
+- 핵심 이슈(RM-01/SG-01, USER_DECISION_REQUIRED): `CP-05-R1`(Notion AI TI) Exit Criteria가 대표님의 실제 응답 수신을 요구하지 않아, 응답 전에도 P2가 시작될 수 있는 Handoff 공백
+- 문서 정합성 이슈 3건(RM-02~04): review-and-approval-protocol.md에 R1 누락, roadmap-governance.md의 S1 예외 미기재, pending-approvals.md·approval-gates.md 간 동기화 책임 불명
+- 경미 이슈 2건(RM-06/RM-07): 13개 인터뷰 후보 질문(INT-01~08, INT-R2-01~05) 미참조, Backlog·Gate 표 경계 흐림
 
 ## 산출물
 
-- `reports/reviews/claude/a-v1-source-coverage-r2.md`
-- `reports/reviews/claude/a-v1-gap-register-r2.md`
-- `reports/reviews/claude/a-v1-interview-candidates-r2.md`
-- (1차 산출물 `a-v1-source-coverage.md`, `a-v1-gap-register.md`, `a-v1-interview-candidates.md`는 수정하지 않음, R2는 참조만)
+- `reports/reviews/claude/cp-05-p0-roadmap-review.md`
+- `reports/reviews/claude/cp-05-p0-approval-gate-review.md`
+- `reports/reviews/claude/cp-05-p0-scope-governance-review.md`
 
 ## Allowed Reads (GPT 검토용 참고)
 
-- 위 R1·R2 산출물 6종
-- variations/**, 관련 processes/**, sources/notion/**
-- plans/variation-model-plan.md, mappings/variation-source-index.md, conflicts/unresolved.md
+- 위 3종 산출물
+- operating-model/**, plans/**, decisions/**, reports/notion-operating-model-gap-analysis.md (origin/main)
+- 이전 Variation Coverage Audit 6종 (`a-v1-source-coverage*.md`, `a-v1-gap-register*.md`, `a-v1-interview-candidates*.md`)
 
 ## Do Not Modify
 
-- variations/**
-- processes/**
-- sources/**
+- operating-model/**
 - plans/**
+- decisions/**
+- processes/**
+- variations/**
+- sources/**
 - mappings/**
 - conflicts/**
-- README.md
+- reports/cp-04-completion.md
+- reports/variation-integration-qa.md
 - tasks/tap-queue.md
+- README.md
 - Notion 원본
 - Codex Branch·Worktree
 
 ## Required Next Output
 
-GPT Finding 승인·분류 결과 및 Codex V1-R TAP 설계
+GPT Finding 승인·분류 (특히 RM-01/SG-01 USER_DECISION_REQUIRED 항목) 및 사용자 Master Roadmap 승인
