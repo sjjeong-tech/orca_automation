@@ -15,7 +15,7 @@
 
 ### S1 결과
 
-`DEFERRED_TECHNICAL_CONSTRAINT`. 실제 View와 Person·Relation Property 형식은 확인했으나, 기존 DB·Record 무변경 조건에서 Form 제출 Record가 `결성(진행)` Filter를 충족하는지 검증할 안전한 TEST FUND Record가 없었다. 기존 Form View도 존재하므로 신규 Form은 만들지 않았다.
+사용자가 생성한 Form을 확인했고 View 이름을 `조합 결성 예정 등록`으로 변경했다. Form 제목은 `결성(진행)_행 추가 입력 폼`, 질문은 15개다. 질문 축소·필수 여부·설명·기본값과 제출 결과는 `UI_VERIFICATION_REQUIRED`다. 신규 Form은 만들지 않았다.
 
 ## 2차 Form — 지원팀 행정업무 요청
 
@@ -30,7 +30,7 @@
 
 ### S1 결과
 
-`지원팀 행정업무 요청` Form View를 생성했다. 다만 API를 통한 질문 노출 설정은 Title인 `요청명`만 유지되어 최소 입력 10개 Form으로는 완성되지 않았다. DB Record 직접 입력은 가능하며, Form 질문 구성은 Notion UI에서 확인하거나 CP-05-P4에서 확정한다.
+`지원팀 행정업무 요청` Form View에는 `요청명` 1개 질문만 존재한다. DB Record 직접 입력은 가능하지만 수동 운영 Form은 UI 질문 보완이 필요하다. 상세 조건부 항목은 CP-05-P4에서 확정한다.
 
 ## 경계
 

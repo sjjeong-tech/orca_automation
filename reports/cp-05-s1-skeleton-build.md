@@ -37,18 +37,21 @@
 
 ### 1차 Form
 
-- 현재 상태: `USER_CREATED_IN_NOTION_UI / STRUCTURE_REVIEW_PENDING`
+- 현재 상태: `USER_CREATED_IN_NOTION_UI / PARTIAL_WITH_UI_ACTIONS`
+- View 이름: `조합 결성 예정 등록`
+- Form 제목: `결성(진행)_행 추가 입력 폼`
+- 질문: 15개, 목표 범위보다 과다
 - 실제 `결성(진행)` View 확인 완료
 - Person·Relation Property 존재 확인
 - 기존 DB에 이미 Form View가 존재
 - CP-05-S1 실행 당시 Codex는 안전한 TEST FUND Record 없이 제출 결과의 View Filter 충족을 검증할 수 없어 신규 Form을 생성하지 않았다.
-- 이후 사용자가 Notion UI에서 1차 Form을 생성했다. 구조 검토·운영 검증은 CP-05-S1-R1 범위다.
+- 이후 사용자가 Notion UI에서 1차 Form을 생성했다. S1-R1에서 구조를 확인하고 View 이름을 변경했으나 질문·기본값·제출 결과는 사용자 UI 검증이 남았다.
 
 ### 2차 Form
 
 - `지원팀 행정업무 요청` Form View 생성
 - API로 지정한 전체 질문 중 `요청명`만 Form 질문으로 유지됨
-- View 골조 생성 완료, 질문 구성 보완 필요
+- View 골조 생성 완료, 질문은 `요청명` 1개로 구성 보완 필요
 
 ## View·Linked View
 

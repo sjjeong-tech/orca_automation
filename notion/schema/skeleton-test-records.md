@@ -24,6 +24,9 @@ A가 없거나 안전성이 확인되지 않으면 **B를 별도 승인 후 사�
 - 요청자·담당 관리역·Task 담당자: Workspace Member 형식 저장 확인
 - 실제 조합명·개인정보·계좌정보: 사용하지 않음
 - `원본 폴더`: `TEST_PATH_ONLY`가 URL 형식이 아니므로 비워 두고 테스트 경로는 본문·비고에만 기록
+- S1-R1 TEST 제출·신규 Record: 0건
+- 기존 TEST 요청–Task 8건 Relation과 Person 저장 형식은 재검증했다.
+- FUND Relation·Rollup 실제값은 `USER_TEST_REQUIRED`다.
 
 ## TEST 요청
 

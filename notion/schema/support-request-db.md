@@ -7,6 +7,9 @@
 - 구축 상태: `PARTIAL_WITH_SAFE_CONSTRAINTS`
 - Property: 13개
 - 기존 `TO DO LIST (FUND)`에는 역방향 Property를 추가하지 않고 `관련 조합` 단방향 Relation만 생성했다.
+- S1-R1에서 Property 13개가 유지됨을 재확인했다.
+- Form 질문은 `요청명` 1개이며 UI 보완이 필요하다.
+- 명명된 3개 운영 View의 Filter는 비어 있다.
 
 ## Record 정의
 

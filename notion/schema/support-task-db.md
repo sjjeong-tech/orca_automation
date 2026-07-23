@@ -7,6 +7,8 @@
 - 구축 상태: `PARTIAL_WITH_SAFE_CONSTRAINTS`
 - Property: 14개
 - `상위 요청`–`관련 Task` 양방향 Relation과 `관련 조합` Rollup Schema를 생성했다.
+- S1-R1에서 Property 14개와 TEST 요청–Task 8건 연결을 재확인했다.
+- `내 Task`, `진행 중`, `대기·보완`, `완료 전` View의 Filter는 비어 있다.
 
 ## Record 정의
 

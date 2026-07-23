@@ -4,9 +4,9 @@
 
 | View | 유형 | 목적 | S1 |
 |---|---|---|---|
-| 조합 결성 예정 등록 | Form View 후보 | 실제 `결성(진행)` 범위 Record 생성 | `DEFERRED_TECHNICAL_CONSTRAINT` |
+| 조합 결성 예정 등록 | Form View | 실제 `결성(진행)` 범위 Record 생성 | 사용자 생성·View 이름 정렬, UI 조치 필요 |
 
-실제 View명이 `결성(진행)`임을 확인했다. 기존 View·Filter는 수정하지 않았고, 안전한 TEST FUND Record 없이 제출 결과가 해당 View 조건을 충족하는지 검증할 수 없어 1차 Form은 생성하지 않았다.
+실제 View명이 `결성(진행)`임을 확인했다. 사용자 생성 Form은 15개 질문을 노출하며 Form 제목은 기존 값이다. 기존 View·Filter는 수정하지 않았고 제출 결과는 미검증이다.
 
 ## 지원팀 업무요청 DB
 
@@ -35,4 +35,4 @@
 - Task DB: 기본 View(`전체 Task` 역할), `내 Task`, `진행 중`, `대기·보완`, `완료 전` — 표 View 5개
 - 업무요청 Form: `지원팀 행정업무 요청` 1개
 
-현재 Notion API가 Filter DSL을 View에 유지하지 않아 명명된 View는 표시·정렬용 Skeleton이다. 필터와 세부 Status 옵션은 CP-05-P2에서 UI 검증 후 확정한다.
+S1-R1에서도 Filter 적용 요청이 유지되지 않았다. 명명된 View는 표시·정렬용 Skeleton이며 Filter 적용 수는 0이다. 필터와 세부 Status 옵션은 CP-05-P2 승인 또는 사용자 UI 조치 후 확정한다.

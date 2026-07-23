@@ -255,8 +255,9 @@ Pilot A 제외 범위:
 | CP-05-P1-R1 | 기존 Notion 구조 기반 Architecture 정렬 완료 |
 | CP-05-S1 | `PARTIAL_WITH_SAFE_CONSTRAINTS` — 요청 DB·Task DB·TEST Relation 구축, 기존 FUND DB 무변경 |
 | CP-05-N1 | Repository Rename·Remote·현행 참조 정렬 완료 |
+| CP-05-S1-R1 | `PARTIAL_WITH_UI_ACTIONS` — 1차 Form 이름 정렬, 질문·Filter·Rollup UI 검증 과제 명시 |
 
-S1에서 [지원팀 업무요청](https://app.notion.com/p/c60e9bc03a214735be082ed54905970d)과 [지원팀 Task](https://app.notion.com/p/b7f50ee986714213befb4268fdd36920)를 생성했다. 1차 Form은 사용자가 Notion UI에서 생성했으며 구조 검토·운영 검증을 기다린다. 2차 Form은 View 골조만 생성되어 질문 구성 보완이 필요하다. 실제 FUND 기반 Rollup·현재 Page Filter도 검증 대기이며, 상세 결과는 [Skeleton Build Report](reports/cp-05-s1-skeleton-build.md)에 기록한다. Automation과 Agent Write는 아직 구현하지 않았다.
+S1에서 [지원팀 업무요청](https://app.notion.com/p/c60e9bc03a214735be082ed54905970d)과 [지원팀 Task](https://app.notion.com/p/b7f50ee986714213befb4268fdd36920)를 생성했다. 사용자 생성 1차 Form은 `조합 결성 예정 등록`으로 이름을 정렬했지만 질문 축소·필수값·제출 검증이 필요하다. 2차 Form은 질문 1개의 골조 상태이며, 상세 결과는 [S1-R1 Stabilization Report](reports/cp-05-s1-r1-skeleton-stabilization.md)에 기록한다. Automation과 Agent Write는 아직 구현하지 않았다.
 
 ### 9.9 관련 설계문서
 
