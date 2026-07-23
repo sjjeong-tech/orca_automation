@@ -12,9 +12,9 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 
 **최근 계획:** `TAP V0 — COMPLETED`
 
-**최근 실행:** `TAP V1-R1 — COMPLETED (SOURCE ENRICHMENT PASS)`
+**최근 실행:** `TAP V1-R2 — COMPLETED (MODEL REVISION PASS)`
 
-**다음 READY 후보:** `TAP V1-R2`
+**다음 READY 후보:** `TAP V1-I`
 
 ## 자동 실행 Checkpoint
 
@@ -71,8 +71,8 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 | V3 | TAP V1-C | 기관·지점·처리 방식 | TAP V1-B | COMPLETED | `variations/institution.md` | 초안 보존·A-V1 대기 |
 | V4 | TAP A-V1 | Claude 독립 Source Review | TAP V1-A, V1-B, V1-C | COMPLETED_WITH_PARTIAL_COVERAGE | Claude Review Commit 2개 | 승인 Finding 반영 완료 |
 | V5 | TAP V1-R1 | Claude Findings Source Enrichment | TAP A-V1 | COMPLETED | Source 7개·Disposition·Queue | Source Enrichment 보존 |
-| V6 | TAP V1-R2 | Variation·Process Revision | TAP V1-R1 | READY | 승인된 Model 수정 범위 | 별도 TAP으로 실행 |
-| V7 | TAP V1-I | 통합 Variation QA | TAP V1-R2 | WAITING | `reports/variation-integration-qa.md` | Revision 대기 |
+| V6 | TAP V1-R2 | Variation·Process Revision | TAP V1-R1 | COMPLETED | Variation 4개·Process 3개·Mapping·Disposition | Revision 보존 |
+| V7 | TAP V1-I | 통합 Variation QA | TAP V1-R2 | READY | `reports/variation-integration-qa.md` | 별도 TAP으로 실행 |
 
 ## Stage별 범위 및 산출물
 

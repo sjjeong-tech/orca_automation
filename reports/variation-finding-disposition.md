@@ -73,3 +73,27 @@ Claude Source Coverage Audit 1차·R2 Finding에 대한 GPT 승인 범위와 Cod
 - V1-R2는 보강된 Source를 근거로 Variation과 승인된 Process Finding만 수정한다.
 - Source의 `PROVISIONAL`, `UNKNOWN`, `CASE_ONLY`를 임의로 `CONFIRMED`로 승격하지 않는다.
 - Deferred Backlog는 V1-R2와 V1-I의 비차단 항목으로 유지한다.
+
+## 6. V1-R2 ACCEPT_MODEL_NEXT 처리 결과
+
+| Finding | 결과 | 실제 수정 파일 | 실제 Variation·Process ID | 미반영·제한 사유 | V1-I 확인 항목 |
+|---|---|---|---|---|---|
+| GAP-REG-01 | APPLIED | `variations/account-type.md`, `processes/10-balance-certificate.md`, `mappings/variation-source-index.md` | AT-12~AT-14, BC-01~BC-09 | Actor·시스템·선택 Rule은 UNKNOWN | 유형별 경로와 기존 Main Flow 정합성 |
+| GAP-REG-02 | APPLIED | `variations/institution.md`, `processes/10-balance-certificate.md`, `mappings/variation-source-index.md` | IV-06~IV-08, IV-14, BC-07~BC-09 | 채널 선택·수신 완료 Rule은 UNKNOWN | AO-11·AS-06·BC-07 추적성 |
+| GAP-REG-09 | APPLIED | `variations/account-type.md`, `mappings/variation-source-index.md` | account-type Actor 차이 | 오픈플랫폼팀은 후보 Actor, 표준 RACI는 UNKNOWN | Actor 후보와 책임 주체 분리 |
+| GAP-R2-01 | APPLIED | `variations/fund-type.md`, `mappings/variation-source-index.md` | FT-01~FT-04 | 신투 Trigger·근거자료와 공통 적용 Rule은 UNKNOWN | 네 유형 상태·Source 연결 |
+| GAP-R2-02 | APPLIED | `processes/05-unique-number-correction.md` | R-5, UC-02 | 카테고리 완전성·빈도·우선순위는 UNKNOWN | PROVISIONAL 카테고리 경계 |
+| GAP-R2-03 | APPLIED | `processes/05-unique-number-correction.md` | UC-D03, UC-EX03~UC-EX04 | 감지조건·Actor·복귀 Task·자동 선택 Rule은 UNKNOWN | 세 하위 경로와 예외 정합성 |
+| GAP-R2-04 | APPLIED | `processes/09-account-closure.md`, `variations/account-type.md` | AC-01~AC-08, Scope Limitation | 지원팀 경로는 CASE_ONLY, GP 직접·기타 Actor는 후보 | CASE_SUPPORTED DRAFT와 자동화 차단 상태 |
+
+### 처리 결과 집계
+
+| 결과 | 수 |
+|---|---:|
+| APPLIED | 7 |
+| PARTIALLY_APPLIED | 0 |
+| NO_CHANGE_JUSTIFIED | 0 |
+| DEFERRED | 0 |
+
+- `KEEP_UNKNOWN`, `CASE_ONLY`, `DEFER_BACKLOG` 결정은 기존 상태를 유지한다.
+- GAP-R2-05는 `NO_CHANGE` 결정에 따라 Process 06·09 선후관계의 `UNKNOWN`·`REJECTED` 상태를 유지하며 V1-I에서 재확인한다.
