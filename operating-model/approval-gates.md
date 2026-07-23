@@ -42,16 +42,16 @@
 | AG-33 | GP 직접 소통 | 금지 / 초안 / 자동 | Human 승인 초안만 | Expansion 전 | 외부 커뮤니케이션 위험 | 사용자·정상준 | APPROVAL_REQUIRED_BEFORE_AUTOMATION | CP-08-P1 | MD-10 |
 | AG-34 | 외부 발송 전 승인 | 항상 / 조건부 / 불필요 | 항상 Human 승인 | Expansion 전 | 오발송·법적 위험 | 사용자·정상준 | APPROVAL_REQUIRED_BEFORE_AUTOMATION | CP-07-P1,CP-08-P1 | MD-09,10 |
 | AG-35 | 운영팀·지원팀 경계 | 요청/실행 / Process별 / 공동 | 요청·판단 vs 실행·기록 | Expansion 전 | 소유권 충돌 | 사용자·정상준 | APPROVAL_REQUIRED_BEFORE_AUTOMATION | CP-08-P1 | MD-10 |
-| AG-S1 | Fast Skeleton Build 승인 | 승인 / 보완 후 승인 / 미승인 | P1 명세 범위의 최소 2개 DB Skeleton 승인 | P1 완료 후 | 실제 UI·Relation 조기 검증 불가 | 사용자·정상준 | APPROVAL_REQUIRED_BEFORE_BUILD | S1 | MD-01,02,06 |
+| AG-S1 | Fast Skeleton Build 승인 | 승인 / 보완 후 승인 / 미승인 | `APPROVED_WITH_EXECUTION_CONSTRAINTS`; 기존 FUND 무변경·신규 DB 2개·TEST 데이터만 구축 | 2026-07-23 실행 | 실제 UI·Relation 조기 검증 수행; 제한 항목은 P2·P4로 유예 | 사용자·정상준 | DECIDED | S1 | MD-01,02,06 |
 
 ## 상태 집계
 
 | 상태 | 수 |
 |---|---:|
 | APPROVAL_REQUIRED_NOW | 0 |
-| APPROVAL_REQUIRED_BEFORE_BUILD | 15 |
+| APPROVAL_REQUIRED_BEFORE_BUILD | 14 |
 | APPROVAL_REQUIRED_BEFORE_PILOT | 3 |
 | APPROVAL_REQUIRED_BEFORE_AUTOMATION | 11 |
 | DEFER_UNTIL_PILOT | 3 |
-| DECIDED | 5 |
+| DECIDED | 6 |
 | 합계 | 37 |

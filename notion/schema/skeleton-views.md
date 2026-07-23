@@ -4,9 +4,9 @@
 
 | View | 유형 | 목적 | S1 |
 |---|---|---|---|
-| 조합 결성 예정 등록 | Form View 후보 | 1차 Form으로 `조합(결성)` Record 생성 | 후보 1개 |
+| 조합 결성 예정 등록 | Form View 후보 | 실제 `결성(진행)` 범위 Record 생성 | `DEFERRED_TECHNICAL_CONSTRAINT` |
 
-기존 View는 수정하지 않는다.
+실제 View명이 `결성(진행)`임을 확인했다. 기존 View·Filter는 수정하지 않았고, 안전한 TEST FUND Record 없이 제출 결과가 해당 View 조건을 충족하는지 검증할 수 없어 1차 Form은 생성하지 않았다.
 
 ## 지원팀 업무요청 DB
 
@@ -28,3 +28,11 @@
 | 완료 전 | 완료·제외 제외 | 목표일 오름차순 | Task명, Process ID, 상태, 담당자, 목표일 | Optional |
 
 요청 DB 최대 4개, Task DB 최대 5개를 넘기지 않는다.
+
+## S1 실제 View
+
+- 업무요청 DB: 기본 View(`전체 요청` 역할), `신규 접수`, `정보보완 필요`, `진행 중 요청` — 표 View 4개
+- Task DB: 기본 View(`전체 Task` 역할), `내 Task`, `진행 중`, `대기·보완`, `완료 전` — 표 View 5개
+- 업무요청 Form: `지원팀 행정업무 요청` 1개
+
+현재 Notion API가 Filter DSL을 View에 유지하지 않아 명명된 View는 표시·정렬용 Skeleton이다. 필터와 세부 Status 옵션은 CP-05-P2에서 UI 검증 후 확정한다.

@@ -5,7 +5,7 @@
 | 항목 | 설계 |
 |---|---|
 | 원본 DB | 기존 `TO DO LIST (FUND)` |
-| 적용 범위 | `조합(결성)` View용 Record |
+| 적용 범위 | 실제 `결성(진행)` View용 Record |
 | 작성자 | 원칙: 운영팀 관리역 / 예외: 지원팀 대리등록 |
 | 목적 | 예정 건·조합 Record·내부 Page 생성, 2차 요청의 기준 Record 확보 |
 | 필수 입력 목표 | 기존 Property 중심 5~8개 |
@@ -13,7 +13,9 @@
 | 신규 Property | 0~3개 후보, 확정 금지 |
 | 제외 | 상세 행정정보 |
 
-실제 기존 Property와 Form 지원 범위는 S1 직전 읽기 검증이 필요하다.
+### S1 결과
+
+`DEFERRED_TECHNICAL_CONSTRAINT`. 실제 View와 Person·Relation Property 형식은 확인했으나, 기존 DB·Record 무변경 조건에서 Form 제출 Record가 `결성(진행)` Filter를 충족하는지 검증할 안전한 TEST FUND Record가 없었다. 기존 Form View도 존재하므로 신규 Form은 만들지 않았다.
 
 ## 2차 Form — 지원팀 행정업무 요청
 
@@ -25,6 +27,10 @@
 | 업무 유형 | 고유번호증 신청, 명판·인감, 보안카드·홈택스, 계좌개설, 계좌개설 보완 |
 | 재사용 | 관련 조합 Relation과 기존 공통정보 |
 | 유예 | 업무별 Toggle·조건부 입력은 P4에서 확정 |
+
+### S1 결과
+
+`지원팀 행정업무 요청` Form View를 생성했다. 다만 API를 통한 질문 노출 설정은 Title인 `요청명`만 유지되어 최소 입력 10개 Form으로는 완성되지 않았다. DB Record 직접 입력은 가능하며, Form 질문 구성은 Notion UI에서 확인하거나 CP-05-P4에서 확정한다.
 
 ## 경계
 

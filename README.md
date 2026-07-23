@@ -240,8 +240,10 @@ Pilot A 제외 범위:
 |---|---|
 | CP-04 | As-Is Process Model v1 완료 — Known Gaps 유지 |
 | CP-05-P0~R3 | Operating Model·Master Roadmap·책임 경계 정리 완료 |
-| CP-05-P1-R1 | 기존 Notion 구조 기반 Architecture 정렬 완료 — AG-S1 검토 대기 |
-| CP-05-S1 | 실제 Notion Fast Skeleton Build 예정 — 미실행 |
+| CP-05-P1-R1 | 기존 Notion 구조 기반 Architecture 정렬 완료 |
+| CP-05-S1 | `PARTIAL_WITH_SAFE_CONSTRAINTS` — 요청 DB·Task DB·TEST Relation 구축, 기존 FUND DB 무변경 |
+
+S1에서 [지원팀 업무요청](https://app.notion.com/p/c60e9bc03a214735be082ed54905970d)과 [지원팀 Task](https://app.notion.com/p/b7f50ee986714213befb4268fdd36920)를 생성했다. 1차 Form과 실제 FUND 기반 Rollup·현재 Page Filter는 안전 제약으로 유예했으며, 상세 결과는 [Skeleton Build Report](reports/cp-05-s1-skeleton-build.md)에 기록한다. Automation과 Agent Write는 아직 구현하지 않았다.
 
 ### 9.9 관련 설계문서
 

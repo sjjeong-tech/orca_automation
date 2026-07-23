@@ -1,5 +1,13 @@
 # 지원팀 Task DB — Existing FUND Architecture 명세
 
+## S1 구축 결과
+
+- Notion DB: [지원팀 Task](https://app.notion.com/p/b7f50ee986714213befb4268fdd36920)
+- Data source: `collection://382ba3b6-8062-4ef1-a0ed-fc51adadff6b`
+- 구축 상태: `PARTIAL_WITH_SAFE_CONSTRAINTS`
+- Property: 14개
+- `상위 요청`–`관련 Task` 양방향 Relation과 `관련 조합` Rollup Schema를 생성했다.
+
 ## Record 정의
 
 지원팀이 실제로 추적·수행하는 Operational Task다. Process Atomic Task를 그대로 복제하지 않으며, 사람이 담당·상태·기한·완료조건을 관리할 가치가 있는 단위로 집약한다.
@@ -25,6 +33,6 @@
 
 Property는 14개다. Task Instance ID, Input·Output, 예외 유형, 다음 Task Relation, 자동화 수준과 Agent 상태는 P2~Post-Pilot로 유예한다.
 
-## 임시 Task 상태
+## S1 실제 임시 Task 상태
 
-`예정`, `진행 중`, `대기`, `보완`, `완료`, `제외`를 `PROVISIONAL_FOR_SKELETON`으로 사용한다. Formula와 자동 전이는 금지한다.
+Notion 도구가 생성한 Status 옵션은 `시작 전`, `진행 중`, `완료`다. `대기`, `보완`, `제외`의 구분과 전이 규칙은 CP-05-P2로 유예한다. 현재 값은 모두 `PROVISIONAL_FOR_SKELETON`이며 Formula와 자동 전이는 없다.

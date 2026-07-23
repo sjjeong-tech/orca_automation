@@ -37,11 +37,10 @@
 | AG-33 | GP 직접 소통 | APPROVAL_REQUIRED_BEFORE_AUTOMATION | Expansion 전 | CP-08-P1 |
 | AG-34 | 외부 발송 전 Human 승인 | APPROVAL_REQUIRED_BEFORE_AUTOMATION | Expansion 전 | CP-07-P1,CP-08-P1 |
 | AG-35 | 운영팀·지원팀 책임 경계 | APPROVAL_REQUIRED_BEFORE_AUTOMATION | Expansion 전 | CP-08-P1 |
-| AG-S1 | 최소 2개 DB Fast Skeleton Build | APPROVAL_REQUIRED_BEFORE_BUILD | P1 완료 후 | S1 |
 
 ## CP-05-P1-R1 — AG-S1 판단 Input
 
-AG-S1의 Canonical 상태는 변경하지 않았다. 아래는 GPT·사용자 승인에 필요한 파생 요약이다.
+AG-S1은 2026-07-23 `APPROVED_WITH_EXECUTION_CONSTRAINTS`로 승인·실행되었다. 아래 표는 당시 판단 Input의 이력이며 현재 미결 Gate가 아니다.
 
 | 항목 | P1 결과 |
 |---|---|
