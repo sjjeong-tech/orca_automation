@@ -13,8 +13,8 @@
 | 1 | Notion Source 확보 | 완료 |
 | 2 | Source Extract | 완료 |
 | 3 | Source QA | 완료 — `PROCESS READY WITH GAPS` |
-| 4 | Process Model | 진행 중 — Wave 1 완료 |
-| 5 | Process QA | 진행 중 — Wave 1 QA 완료 |
+| 4 | Process Model | 진행 중 — Wave 1 실행가능성 Revision 완료 |
+| 5 | Process QA | 진행 중 — Wave 1 Revision QA 완료 |
 | 6 | Variation Model | 예정 |
 | 7 | E2E 통합 QA | 예정 |
 | 8 | Gap 기반 CASE 검증 | 예정 |
@@ -24,7 +24,7 @@
 
 ## 3. 현재 진행상황
 
-현재 위치는 **CP-03 Process Wave 1 QA 및 원격 배포 완료**입니다.
+현재 위치는 **CP-03 외부 독립검토 후 Process Wave 1 실행가능성 Revision 완료**입니다.
 
 완료된 작업:
 
@@ -33,6 +33,8 @@
 - 공식 Source 13개 Extract
 - [Source 통합 QA](reports/source-extract-qa.md)
 - Process Wave 1 생성 및 [QA 5/5 통과](reports/process-wave-1-qa.md)
+- CP-03 외부 독립검토 Findings 반영
+- Decision·Exception·Interface 보강 및 [Revision QA 통과](reports/process-wave-1-revision-qa.md)
 
 Process Wave 1:
 
@@ -55,6 +57,7 @@ Process Wave 1:
 |---|---|
 | Source | `PROCESS READY WITH GAPS` |
 | Process Wave 1 | QA `PASS 5/5` |
+| Process Wave 1 Revision | `PASS WITH NON-BLOCKING GAPS` |
 | 차단 Conflict | 없음 |
 
 주요 미확정 항목:
@@ -108,6 +111,7 @@ Process Wave 1:
 - [Source QA](reports/source-extract-qa.md)
 - [Process Wave 1](processes/)
 - [Process Wave 1 QA](reports/process-wave-1-qa.md)
+- [Process Wave 1 Revision QA](reports/process-wave-1-revision-qa.md)
 - [Source 관계맵](mappings/source-relationship-map.md)
 - [미해결 Gap](conflicts/unresolved.md)
 
