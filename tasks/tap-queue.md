@@ -4,14 +4,14 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 
 **Queue 전체 상태:** `PAUSED_AT_CHECKPOINT`
 
-**현재 Checkpoint:** `CP-01 — Pilot Source 검증 완료`
+**현재 Checkpoint:** `CP-02 — Source 전체 통합 QA 완료`
 
 ## 자동 실행 Checkpoint
 
 | Checkpoint | 정지 TAP | 다음 시작 TAP | 상태 |
 |---|---|---|---|
 | CP-01 | TAP S2 | TAP S2-P | REACHED |
-| CP-02 | TAP S4-I | TAP S4-I-P | WAITING |
+| CP-02 | TAP S4-I | TAP S4-I-P | REACHED |
 | CP-03 | TAP P1-QA | TAP P1-P | WAITING |
 | CP-04 | TAP P2-QA | TAP P2-P | WAITING |
 | CP-05 | TAP V1-QA | TAP V1-P | WAITING |
@@ -34,9 +34,9 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 | 13 | TAP S4-A-P | Wave A Commit Push | Source 검증 / Wave A 배포 | TAP S4-A | QA PASS 및 지정 Commit 존재 | COMPLETED | 예 | 예 | 없음 | 완료 유지 |
 | 14 | TAP S3-B | Source Extract Wave B | Source Extract / 나머지 업무 | TAP S4-A-P | PASS | COMPLETED | 아니요 | 아니요 | 없음 | 완료 유지 |
 | 15 | TAP S4-B | Source QA Wave B | Source 검증 / Wave B | TAP S3-B | PASS; FAIL 시 Queue BLOCKED | COMPLETED | 예 | 아니요 | 없음 | 완료 유지 |
-| 16 | TAP S4-B-P | Wave B Commit Push | Source 검증 / Wave B 배포 | TAP S4-B | QA PASS 및 지정 Commit 존재 | READY | 예 | 예 | 없음 | Wave B Commit 검증 후 Push |
-| 17 | TAP S4-I | Source Extract 통합 QA | Source 검증 / 전체 Source 정합성 | TAP S4-B-P | PROCESS READY WITH GAPS; NOT READY 시 BLOCKED | WAITING | 예 | 아니요 | 선행 TAP 대기 | 통합 QA·충돌·관계맵 작성 |
-| 18 | TAP S4-I-P | Source 통합 QA Commit Push | Source 검증 / 통합 결과 배포 | TAP S4-I | 허용 판정 및 지정 Commit 존재 | WAITING | 예 | 예 | 선행 TAP 대기 | 통합 QA Commit 검증 후 Push |
+| 16 | TAP S4-B-P | Wave B Commit Push | Source 검증 / Wave B 배포 | TAP S4-B | QA PASS 및 지정 Commit 존재 | COMPLETED | 예 | 예 | 없음 | 완료 유지 |
+| 17 | TAP S4-I | Source Extract 통합 QA | Source 검증 / 전체 Source 정합성 | TAP S4-B-P | PROCESS READY WITH GAPS; NOT READY 시 BLOCKED | COMPLETED | 예 | 아니요 | 비차단 Gap 12개 | CP-02 검토 대기 |
+| 18 | TAP S4-I-P | Source 통합 QA Commit Push | Source 검증 / 통합 결과 배포 | TAP S4-I | 허용 판정 및 지정 Commit 존재 | READY | 예 | 예 | 없음 | Checkpoint 재개 후 Push |
 | 19 | TAP P1 | Process Model Wave 1 생성 | Process Model / 핵심 E2E·세무서·은행 | TAP S4-I-P | PASS | WAITING | 아니요 | 아니요 | 선행 TAP 대기 | 핵심 Process 5종 생성 |
 | 20 | TAP P1-QA | Process Wave 1 QA | Process 검증 / 핵심 Process | TAP P1 | PASS; FAIL 시 Queue BLOCKED | WAITING | 예 | 아니요 | 선행 TAP 대기 | Wave 1 QA 수행 |
 | 21 | TAP P1-P | Process Wave 1 Commit Push | Process 검증 / 핵심 Process 배포 | TAP P1-QA | QA PASS 및 지정 Commit 존재 | WAITING | 예 | 예 | 선행 TAP 대기 | Wave 1 Commit 검증 후 Push |
