@@ -8,11 +8,13 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 
 **최근 Revision:** `TAP P1-R2 — COMPLETED (PASS WITH NON-BLOCKING GAPS)`
 
-**최근 실행:** `TAP P2-R — COMPLETED (PASS WITH NON-BLOCKING GAPS)`
+**최근 Process 실행:** `TAP P2-R — COMPLETED (PASS WITH NON-BLOCKING GAPS)`
 
 **최근 계획:** `TAP V0 — COMPLETED`
 
-**다음 READY 후보:** `TAP V1-A`
+**최근 실행:** `TAP V1-A — COMPLETED (DRAFT PASS)`
+
+**다음 READY 후보:** `TAP V1-B`
 
 ## 자동 실행 Checkpoint
 
@@ -64,8 +66,8 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 | 순서 | TAP ID | TAP 이름 | 선행 TAP | 상태 | 수정 범위 | 다음 조치 |
 |---:|---|---|---|---|---|---|
 | V0 | TAP V0 | Variation Model 사전설계·작업분할 | TAP P2-R | COMPLETED | 기획 3개·Queue 상태 | 외부 검토 |
-| V1 | TAP V1-A | 조합 유형·GP 유형 | TAP V0 | READY | `variations/fund-type.md`, `variations/gp-type.md` | 승인 후 실행 |
-| V2 | TAP V1-B | 계좌 유형 | TAP V1-A | WAITING | `variations/account-type.md` | 선행 Gate 대기 |
+| V1 | TAP V1-A | 조합 유형·GP 유형 | TAP V0 | COMPLETED | `variations/fund-type.md`, `variations/gp-type.md` | 초안 보존·A-V1 대기 |
+| V2 | TAP V1-B | 계좌 유형 | TAP V1-A | READY | `variations/account-type.md` | 승인 후 실행 |
 | V3 | TAP V1-C | 기관·지점·처리 방식 | TAP V1-B | WAITING | `variations/institution.md` | 선행 Gate 대기 |
 | V4 | TAP A-V1 | Claude 독립 Source Review | TAP V1-A, V1-B, V1-C | WAITING | `reports/variation-source-review.md` | 초안 완료 대기 |
 | V5 | TAP V1-R | Claude Findings 반영 | TAP A-V1 | WAITING | 지적된 Variation·처리 기록 | Review 대기 |
