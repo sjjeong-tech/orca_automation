@@ -2,15 +2,15 @@
 
 Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될 때만 이 파일을 갱신하며, 선행 Gate를 통과하지 않은 TAP은 실행하지 않는다.
 
-**Queue 전체 상태:** `PAUSED_AFTER_REGISTRATION`
+**Queue 전체 상태:** `PAUSED_AFTER_TAP`
 
 | 순서 | TAP ID | TAP 이름 | 업무지도 위치 | 선행 TAP | 필수 Gate | 상태 | Commit 요구 | Push 요구 | 병목 | 다음 조치 |
 |---:|---|---|---|---|---|---|---|---|---|---|
 | 1 | TAP 3-B2-FIX | Notion MCP 검증 판정 정정 | Source 접근 / Notion 연결 검증 | TAP 3-B2 | 비차단 PASS WITH ISSUES | COMPLETED | 아니요 | 아니요 | 없음 | 완료 유지 |
 | 2 | TAP Q-00 | Conditional TAP Queue 정책 설정 | 오케스트레이션 제어 계층 / 공통 Queue Gate 설정 | TAP 3-B2-FIX | PASS 또는 비차단 PASS WITH ISSUES | COMPLETED | 예 | 아니요 | 없음 | 완료 유지 |
 | 3 | TAP Q-00-P | Conditional TAP Queue 정책 Push | 오케스트레이션 제어 계층 / 공통 Queue Gate 배포 | TAP Q-00 | 지정 Commit 및 clean | COMPLETED | 예 | 예 | 없음 | 완료 유지 |
-| 4 | TAP 3-A2 | Notion Source Index 직접 반입·검증 | Source 확보 / 구조 인덱스 | TAP Q-00-P | PASS 또는 PASS WITH FORMAT NORMALIZATION | READY | 예 | 아니요 | 없음 | Source Index 반입·검증 |
-| 5 | TAP 3-A2-P | Source Index Commit Push | Source 확보 / 구조 인덱스 배포 | TAP 3-A2 | 지정 Commit 존재 및 clean | WAITING | 예 | 예 | 선행 TAP 대기 | 선행 Commit 검증 후 Push |
+| 4 | TAP 3-A2 | Notion Source Index 직접 반입·검증 | Source 확보 / 구조 인덱스 | TAP Q-00-P | PASS 또는 PASS WITH FORMAT NORMALIZATION | COMPLETED | 예 | 아니요 | 없음 | 완료 유지 |
+| 5 | TAP 3-A2-P | Source Index Commit Push | Source 확보 / 구조 인덱스 배포 | TAP 3-A2 | 지정 Commit 존재 및 clean | READY | 예 | 예 | 없음 | 선행 Commit 검증 후 Push |
 | 6 | TAP S0 | Process Model Repo Stage 0 초기화 | Source 확보 / Repo 실행환경 | TAP 3-A2-P | PASS | WAITING | 예 | 아니요 | 선행 TAP 대기 | 실행환경 파일 3종 생성 |
 | 7 | TAP S0-P | Stage 0 Commit Push | Source 확보 / Repo 실행환경 배포 | TAP S0 | 지정 Commit 존재 및 clean | WAITING | 예 | 예 | 선행 TAP 대기 | Stage 0 Commit 검증 후 Push |
 | 8 | TAP S1 | Pilot Source Extract N-05-03 | 세무서 업무 / 고유번호증 신청 | TAP S0-P | PASS | WAITING | 아니요 | 아니요 | 선행 TAP 대기 | N-05-03 Source Extract 생성 |
