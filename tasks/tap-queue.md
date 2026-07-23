@@ -10,6 +10,10 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 
 **최근 실행:** `TAP P2-R — COMPLETED (PASS WITH NON-BLOCKING GAPS)`
 
+**최근 계획:** `TAP V0 — COMPLETED`
+
+**다음 READY 후보:** `TAP V1-A`
+
 ## 자동 실행 Checkpoint
 
 | Checkpoint | 정지 TAP | 다음 시작 TAP | 상태 |
@@ -47,13 +51,25 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 | 22 | TAP P2 | Process Model Wave 2 생성 | Process Model / 지원 Process | TAP P1-R2 | Revision QA 및 Push 성공 | COMPLETED | 아니요 | 아니요 | Process 11 DRAFT | 완료 유지 |
 | 23 | TAP P2-QA | Process Wave 2 QA | Process 검증 / 지원 Process | TAP P2 | PASS; FAIL 시 Queue BLOCKED | COMPLETED | 예 | 아니요 | 비차단 Gap | 완료 유지 |
 | 24 | TAP P2-P | Process Wave 2 Commit Push | Process 검증 / 지원 Process 배포 | TAP P2-QA | QA PASS 및 지정 Commit 존재 | COMPLETED | 예 | 예 | 없음 | 완료 유지 |
-| 25 | TAP V1 | Variation 통합 | 업무 변형 / 조합·GP·계좌·기관 | TAP P2-P | PASS | READY | 아니요 | 아니요 | 외부 검토 대기 | 검토 승인 후 Variation 4종 통합 |
+| 25 | TAP V1 | Variation 통합 | 업무 변형 / 조합·GP·계좌·기관 | TAP P2-P | PASS | WAITING | 아니요 | 아니요 | 분할 Queue 실행 대기 | V1-A부터 분할 실행 |
 | 26 | TAP V1-QA | Variation QA | 업무 변형 / Variation 검증 | TAP V1 | PASS; FAIL 시 Queue BLOCKED | WAITING | 예 | 아니요 | 선행 TAP 대기 | Variation QA 수행 |
 | 27 | TAP V1-P | Variation Commit Push | 업무 변형 / Variation 배포 | TAP V1-QA | QA PASS 및 지정 Commit 존재 | WAITING | 예 | 예 | 선행 TAP 대기 | Variation Commit 검증 후 Push |
 | 28 | TAP F1 | Process Model 최종 통합 QA | 전체 E2E / Process·Variation·Evidence 정합성 | TAP V1-P | PASS | WAITING | 예 | 아니요 | 선행 TAP 대기 | 최종 QA 산출물 4종 작성 |
 | 29 | TAP F1-P | 최종 QA Commit Push | 전체 E2E / 검증 결과 배포 | TAP F1 | QA PASS 및 지정 Commit 존재 | WAITING | 예 | 예 | 선행 TAP 대기 | 최종 QA Commit 검증 후 Push |
 | 30 | TAP F2 | 최종 오케스트레이션 보고 | Gap 분석 / CASE·인터뷰·자동화 준비도 | TAP F1-P | PASS | WAITING | 예 | 아니요 | 선행 TAP 대기 | 최종 보고서 작성 |
 | 31 | TAP F2-P | 최종 보고 Commit Push | Gap 분석 / 최종 결과 배포 | TAP F2 | 지정 Commit 존재 및 clean | WAITING | 예 | 예 | 선행 TAP 대기 | 최종 보고 Commit 검증 후 Push |
+
+## Variation 분할 Queue
+
+| 순서 | TAP ID | TAP 이름 | 선행 TAP | 상태 | 수정 범위 | 다음 조치 |
+|---:|---|---|---|---|---|---|
+| V0 | TAP V0 | Variation Model 사전설계·작업분할 | TAP P2-R | COMPLETED | 기획 3개·Queue 상태 | 외부 검토 |
+| V1 | TAP V1-A | 조합 유형·GP 유형 | TAP V0 | READY | `variations/fund-type.md`, `variations/gp-type.md` | 승인 후 실행 |
+| V2 | TAP V1-B | 계좌 유형 | TAP V1-A | WAITING | `variations/account-type.md` | 선행 Gate 대기 |
+| V3 | TAP V1-C | 기관·지점·처리 방식 | TAP V1-B | WAITING | `variations/institution.md` | 선행 Gate 대기 |
+| V4 | TAP A-V1 | Claude 독립 Source Review | TAP V1-A, V1-B, V1-C | WAITING | `reports/variation-source-review.md` | 초안 완료 대기 |
+| V5 | TAP V1-R | Claude Findings 반영 | TAP A-V1 | WAITING | 지적된 Variation·처리 기록 | Review 대기 |
+| V6 | TAP V1-I | 통합 Variation QA | TAP V1-R | WAITING | `reports/variation-integration-qa.md` | Revision 대기 |
 
 ## Stage별 범위 및 산출물
 
