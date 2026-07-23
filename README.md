@@ -139,3 +139,115 @@ Process Wave 2:
 - Gap Analysis
 - Tracker Schema 현행화
 - Agent Architecture
+
+## 9. Notion Operations Control Plane
+
+> 현재는 운영구조와 DB Architecture를 설계한 단계입니다. 실제 Notion Skeleton, Form, 자동화와 Agent Write는 아직 구축하지 않았습니다.
+
+### 9.1 적용 위치
+
+- 기존 Notion DB: [`TO DO LIST (FUND)`](https://app.notion.com/p/14d72a41d9d7806b878ef2459f181cfa?v=26c72a41d9d78021880e000c6508539e)
+- 적용 범위: `조합(결성)` View
+- 기존 다른 View와 Template: 유지
+- 상위 DB Property: 필요한 항목만 최소 추가
+
+### 9.2 목표 운영 흐름
+
+```mermaid
+flowchart LR
+    A[조합 결성 예정 인지] --> B[1차 Form<br/>조합 결성 예정 등록]
+    B --> C[TO DO LIST FUND<br/>조합 결성 Record 생성]
+    C --> D[조합 내부 Page]
+    D --> E[2차 Form<br/>지원팀 행정업무 요청]
+    E --> F[지원팀 업무요청 DB]
+    F --> G[지원팀 Task 생성]
+    G --> H[운영팀·지원팀 상태 공유]
+    H --> I[AI 다음 Action 제안]
+    I --> J[승인 기반 Agent 실행]
+```
+
+### 9.3 1차 Form — 조합 결성 예정 등록
+
+| 항목 | 내용 |
+|---|---|
+| 목적 | 예정 건 조기 가시화, 조합 Record·내부 Page 생성, 후속 지원팀 요청의 기준 Record 확보, 계좌개설 예상 건 연결 |
+| 작성자 | 원칙: 운영팀 관리역 / 예외: 지원팀 대리등록 |
+| 입력 원칙 | 기존 `TO DO LIST (FUND)` Property 최대 활용, 신규 Property 2~3개 이내 검토 |
+| 사용성 | 1분 내 작성 가능한 최소 입력 |
+| 제외 | 상세 행정정보 수집 |
+
+### 9.4 2차 Form — 지원팀 행정업무 요청
+
+- Trigger: 지원팀이 실제 업무에 착수할 수 있는 확정정보와 서류가 준비된 시점
+- 목적: 실제 업무 착수, 공통정보 재사용, 업무별 확정정보·서류 수집, Operational Task 생성 Input 제공
+- 대상 업무: 고유번호증 신청, 명판·인감, 보안카드·홈택스, 계좌개설, 계좌개설 보완
+- 원칙:
+  - 1차 Form 정보 재입력 금지
+  - 기존 조합 Record와 Relation
+  - 업무별 Toggle 또는 조건부 입력
+  - 요청 원문과 실행 Task 분리 가능
+
+1차 Form은 예정 건과 기준 Record를 만드는 최소 Intake이고, 2차 Form은 실제 지원팀 착수를 위한 확정정보 Intake다. Form의 최종 Property와 조건부 입력은 CP-05-P4 전까지 미확정이다.
+
+### 9.5 Notion DB와 Repository 역할
+
+| 영역 | 역할 |
+|---|---|
+| `TO DO LIST (FUND)` | 조합 단위 상위 Record와 조기 예정 관리 |
+| 조합 내부 Page | 결성 매뉴얼, 지원팀 요청, 관련 Task 확인 |
+| 지원팀 업무요청 DB | 2차 Form 응답과 요청 원문 저장 |
+| 지원팀 Task DB | 상태, 다음 Action, Blocker, 증빙 관리 |
+| Orca Repository | Process Rule, Mapping, Automation Logic의 기준 저장소 |
+| Notion | 실제 운영상태의 System of Record |
+
+기존 조합별 내부 결성 DB는 당장 삭제하거나 대체하지 않는다. 기존 DB는 결성 전체 업무 매뉴얼·체크리스트를 유지하고, 신규 중앙 DB는 실제 지원팀 업무 실행을 관리한다. 신규 DB의 명칭·Relation·Property는 Skeleton 승인 전까지 설계안이다.
+
+### 9.6 Pilot A
+
+```text
+고유번호증 신청
+→ 보안카드·홈택스
+→ 계좌개설
+→ 필요 시 계좌개설 보완
+```
+
+Pilot A 제외 범위:
+
+- 고유번호증 정정
+- 폐업·청산
+- 계좌해지
+- 잔액증명서
+- Process 11
+- Slack 자동화
+- Agent Write
+
+### 9.7 단계별 To-Be
+
+| 단계 | 목표 |
+|---|---|
+| To-Be 1 | 운영팀–지원팀 업무요청 표준화 및 Notion 문서화 |
+| To-Be 2 | 지원팀 업무의 AI 제안·검수·승인 기반 Agent화 |
+| To-Be 3 | 운영팀 결성업무의 Notion Process화 |
+| To-Be 4 | 운영팀 업무의 승인 기반 Agent화 |
+
+수동 운영 검증 후 AI 제안, 승인 기반 Write, 운영팀 확장 순으로 진행한다. 현재 Agent가 실제 운영업무를 자동 실행하고 있지는 않다.
+
+### 9.8 현재 진행상태
+
+| 단계 | 상태 |
+|---|---|
+| CP-04 | As-Is Process Model v1 완료 — Known Gaps 유지 |
+| CP-05-P0~R3 | Operating Model·Master Roadmap·책임 경계 정리 완료 |
+| CP-05-P1 | DB Architecture 설계 완료 — AG-S1 검토 대기 |
+| CP-05-S1 | 실제 Notion Fast Skeleton Build 예정 — 미실행 |
+
+### 9.9 관련 설계문서
+
+- [Notion Control Plane Master Roadmap](plans/notion-control-plane-roadmap.md)
+- [As-Is Operating Model](operating-model/as-is.md)
+- [To-Be Operating Model](operating-model/to-be.md)
+- [Operating Principles](operating-model/principles.md)
+- [Master Deliverables](operating-model/master-deliverables.md)
+- [Decision Log](decisions/decision-log.md)
+- [CP-05-P0 Claude Finding Disposition](reports/cp-05-p0-claude-finding-disposition.md)
+- [CP-05-P1 DB Architecture](reports/cp-05-p1-db-architecture.md)
