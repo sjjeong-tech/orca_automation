@@ -12,3 +12,4 @@
 | DEC-CP05-06 | P1 직후 Fast Notion Skeleton Build | Roadmap 순서·AG-S1 | DECIDED | 사용자·정상준 | S1 | 2026-07-23 |
 | DEC-CP05-07 | Skeleton 후 필요 시 중간보고 수행 | Communication 필요 시점; Owner는 DEC-CP05-08에서 정정 | DECIDED | 사용자·정상준 | CM-01 | 2026-07-23 |
 | DEC-CP05-08 | 대표님 중간보고와 Notion AI TI는 GPT·사용자 전담이며 Codex·Claude TAP이 아니고 P2를 차단하지 않음 | MD-11을 CM-01로 분리, CP-05-R1 제거, Roadmap·Queue 단순화 | DECIDED | 사용자·정상준 | P0-R3,CM-01 | 2026-07-23 |
+| DEC-CP05-09 | Pilot A 상위 Record는 기존 `TO DO LIST (FUND)`의 `조합(결성)` Record를 사용하고, 신규 DB는 지원팀 업무요청 DB와 Task DB로 구성하며 1차 Form은 기존 DB, 2차 Form은 요청 DB를 원본으로 사용 | DEC-CP05-04의 Pilot A 구현을 기존 Notion 구조에 맞게 구체화; 별도 지원팀 업무 DB는 Post-Pilot 재검토 | DECIDED | 사용자·정상준 | P1-R1,S1 | 2026-07-23 |

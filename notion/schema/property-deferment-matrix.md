@@ -1,61 +1,28 @@
-# Property 단계별 유예 Matrix
+# Realigned Property 유예 Matrix
 
-`Required`와 `Optional`은 S1 DB에 생성하고, `Deferred`는 후속 TAP 전 생성하지 않는다.
+| 영역 | Property | S1 | 후속 TAP | 사유 |
+|---|---|---|---|---|
+| 기존 FUND | 기존 Property | REUSE | S1 | 삭제·Type 변경 금지 |
+| 기존 FUND | 지원팀 요청 단계 | CANDIDATE | P4 | 기존 Property 대체 확인 |
+| 기존 FUND | 결성 확정 수준 | CANDIDATE | P2/P4 | 상태 의미 미확정 |
+| 기존 FUND | 예상 결성일 | CANDIDATE | P4 | 기존 일정 Property 확인 |
+| 요청 DB | 요청명·관련 조합·유형·요청자·관리역 | REQUIRED | P4 | 2차 Form 최소 Input |
+| 요청 DB | 요청일·목표일·상태 | REQUIRED_PROVISIONAL | P2/P4 | 상태·기한 Rule 미확정 |
+| 요청 DB | 원본 폴더·실물 전달·요청 내용 | REQUIRED | P2/P4 | 착수 Input |
+| 요청 DB | 특이사항 | OPTIONAL | P4 | 조건부 입력 전 Text |
+| 요청 DB | 관련 Task | REQUIRED | P3 | 핵심 1:N Relation |
+| Task DB | Task명·상위 요청·관련 조합 | REQUIRED | P3 | 계층·문맥 |
+| Task DB | Process ID·Operational Task ID | REQUIRED | P3 | Mapping 추적 |
+| Task DB | 상태·담당자·Actor·목표일 | REQUIRED_PROVISIONAL | P2/P3 | 상태·책임 Rule 미확정 |
+| Task DB | 다음 Action·Blocker·완료조건 | REQUIRED | P2/P3 | 수동 가시성 |
+| Task DB | 완료증빙·비고 | OPTIONAL | P2 | 증빙 모델 전 Text |
+| Task DB | Input·Output·다음 Task·예외 유형 | DEFERRED | P3 | Mapping 전 생성 금지 |
+| Task DB | 자동화·Agent 상태 | DEFERRED | CP-06/07 | Pilot·Governance 전 금지 |
+| 지원팀 업무 DB | 기존 P1 Property 전체 | POST_PILOT_OPTION | B3 | Pilot A Build 대상 아님 |
 
-| DB | Property | 현재 단계 | S1 | 후속 TAP | 사유 |
-|---|---|---|---|---|---|
-| 업무 | 업무명 | S1_REQUIRED | Required | P4 | 사람이 즉시 식별해야 함 |
-| 업무 | 업무 ID | S1_REQUIRED | Required | Post-Pilot | 수동 안정 식별자 |
-| 업무 | 조합명 | S1_REQUIRED | Required | Post-Pilot | AG-05 전 Text 사용 |
-| 업무 | 업무 유형 | S1_REQUIRED | Required | P3/P4 | Pilot 업무 분류 |
-| 업무 | 조합 유형 | S1_OPTIONAL | Optional | P3 | Variation Mapping 전 선택값 |
-| 업무 | GP 유형 | S1_OPTIONAL | Optional | P3 | Variation Mapping 전 선택값 |
-| 업무 | 계좌 유형 | S1_OPTIONAL | Optional | P3 | 미확정 가능 |
-| 업무 | 담당 관리역 | S1_REQUIRED | Required | P4 | 요청·판단 담당 가시성 |
-| 업무 | 지원팀 담당자 | S1_REQUIRED | Required | P4 | 수행 담당 가시성 |
-| 업무 | 요청일 | S1_REQUIRED | Required | P4 | 접수 시점 |
-| 업무 | 목표일 | S1_REQUIRED | Required | P2 | 임시 일자, Rule 미확정 |
-| 업무 | 완료일 | DEFER_TO_P2 | Deferred | P2 | 완료 Gate와 함께 설계 |
-| 업무 | 현재 단계 | S1_REQUIRED | Required | P2 | 임시 단계 |
-| 업무 | 전체 상태 | S1_REQUIRED | Required | P2 | 임시 상태 |
-| 업무 | 다음 Action | S1_REQUIRED | Required | P3 | S1 Text, 향후 생성 Rule |
-| 업무 | Blocker | S1_REQUIRED | Required | P2 | S1 Text, 향후 유형화 |
-| 업무 | 긴급 여부 | DEFER_TO_P2 | Deferred | P2 | 긴급 기준 미승인 |
-| 업무 | 관리역 확인 필요 | S1_OPTIONAL | Optional | P2/P4 | 알림 없는 가시성 시험 |
-| 업무 | 확인 요청 대상 | DEFER_TO_P4 | Deferred | P4 | Mention 모델 전 제외 |
-| 업무 | 확인 요청 내용 | DEFER_TO_P4 | Deferred | P4 | 협업 Event 전 제외 |
-| 업무 | 원본 Drive 경로 | S1_REQUIRED | Required | P4 | 원본 위치 연결 |
-| 업무 | 결과물 Drive 경로 | S1_OPTIONAL | Optional | P2/P4 | 결과 저장 가시성 시험 |
-| 업무 | 실물서류 수령 여부 | S1_OPTIONAL | Optional | P2 | 증빙 기준 미확정 |
-| 업무 | 관련 Task | S1_REQUIRED | Required | P3 | 핵심 1:N Relation |
-| 업무 | 최근 업데이트 | S1_OPTIONAL | Optional | P2/P4 | 내장 시간으로 최신성 관찰 |
-| 업무 | 비고 | S1_OPTIONAL | Optional | P2~P4 | 관찰 메모 |
-| Task | Task명 | S1_REQUIRED | Required | P3 | 사람이 추적할 항목 |
-| Task | Task ID | S1_OPTIONAL | Optional | Post-Pilot | 자동 생성 전 수동 시험 |
-| Task | 상위 업무 | S1_REQUIRED | Required | P3 | 핵심 N:1 Relation |
-| Task | Process ID | S1_REQUIRED | Required | P3 | Pilot A 범위 식별 |
-| Task | Operational Task ID | S1_REQUIRED | Required | P3 | Atomic Task와 구분 |
-| Task | Task 상태 | S1_REQUIRED | Required | P2 | 임시 상태 |
-| Task | 현재 Actor | S1_REQUIRED | Required | P3 | 역할 가시성 시험 |
-| Task | 담당자 | S1_REQUIRED | Required | P4 | 실제 수행자 |
-| Task | 목표일 | S1_REQUIRED | Required | P2 | 기한 Rule 미확정 |
-| Task | 완료일 | S1_OPTIONAL | Optional | P2 | 완료 입력 시험 |
-| Task | 다음 Task | DEFER_TO_P3 | Deferred | P3 | Mapping 전 선후관계 금지 |
-| Task | Input | DEFER_TO_P3 | Deferred | P3 | Process Mapping 후 |
-| Task | Output | DEFER_TO_P3 | Deferred | P3 | Process Mapping 후 |
-| Task | 완료조건 | S1_REQUIRED | Required | P2/P3 | 후보 문구로 UI 시험 |
-| Task | 완료 증빙 | S1_OPTIONAL | Optional | P2 | 증빙 모델 전 Text |
-| Task | Blocker | S1_REQUIRED | Required | P2 | S1 Text |
-| Task | 예외 유형 | DEFER_TO_P3 | Deferred | P3 | 예외 Mapping 후 |
-| Task | 비고 | S1_OPTIONAL | Optional | P2~P4 | 관찰 메모 |
-| Task | 자동화 수준 | POST_PILOT | Deferred | CP-06 | Pilot 전 자동화 금지 |
-| Task | Agent 실행 상태 | POST_PILOT | Deferred | CP-07 | Write Governance 전 금지 |
+## S1 목표
 
-## 집계
-
-| 구분 | 업무 DB | Task DB | 합계 |
-|---|---:|---:|---:|
-| S1 Required | 14 | 10 | 24 |
-| S1 Optional | 8 | 4 | 12 |
-| Deferred | 4 | 6 | 10 |
-| 전체 후보 | 26 | 20 | 46 |
+- 기존 FUND 신규 Property 후보: 최대 3개, 실제 추가 수는 0개일 수 있음
+- 요청 DB: 13개
+- Task DB: 14개
+- 신규 DB Property 합계: 27개

@@ -200,7 +200,9 @@ flowchart LR
 | Orca Repository | Process Rule, Mapping, Automation Logic의 기준 저장소 |
 | Notion | 실제 운영상태의 System of Record |
 
-기존 조합별 내부 결성 DB는 당장 삭제하거나 대체하지 않는다. 기존 DB는 결성 전체 업무 매뉴얼·체크리스트를 유지하고, 신규 중앙 DB는 실제 지원팀 업무 실행을 관리한다. 신규 DB의 명칭·Relation·Property는 Skeleton 승인 전까지 설계안이다.
+Pilot A에서는 신규 상위 업무 DB를 만들지 않고 기존 `TO DO LIST (FUND)`의 `조합(결성)` Record를 상위 기준으로 재사용한다. 신규 DB는 지원팀 업무요청 DB와 지원팀 Task DB 두 개다.
+
+기존 조합별 내부 결성 DB는 당장 삭제하거나 대체하지 않는다. 기존 DB는 결성 전체 업무 매뉴얼·체크리스트를 유지하고, 신규 중앙 DB는 Linked View로 실제 지원팀 요청·Task를 보여준다. 신규 DB의 Relation·Property는 Skeleton 승인 전까지 설계안이다.
 
 ### 9.6 Pilot A
 
@@ -238,7 +240,7 @@ Pilot A 제외 범위:
 |---|---|
 | CP-04 | As-Is Process Model v1 완료 — Known Gaps 유지 |
 | CP-05-P0~R3 | Operating Model·Master Roadmap·책임 경계 정리 완료 |
-| CP-05-P1 | DB Architecture 설계 완료 — AG-S1 검토 대기 |
+| CP-05-P1-R1 | 기존 Notion 구조 기반 Architecture 정렬 완료 — AG-S1 검토 대기 |
 | CP-05-S1 | 실제 Notion Fast Skeleton Build 예정 — 미실행 |
 
 ### 9.9 관련 설계문서

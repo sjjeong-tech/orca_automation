@@ -4,7 +4,7 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 
 **Queue 전체 상태:** `PAUSED_FOR_AG-S1_REVIEW`
 
-**현재 Checkpoint:** `CP-05-P1 — DB Architecture 완료 / AG-S1 검토 대기`
+**현재 Checkpoint:** `CP-05-P1-R1 — Existing Notion Architecture 정렬 완료 / AG-S1 검토 대기`
 
 **최근 Revision:** `TAP P1-R2 — COMPLETED (PASS WITH NON-BLOCKING GAPS)`
 
@@ -12,7 +12,7 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 
 **최근 계획:** `TAP V0 — COMPLETED`
 
-**최근 실행:** `TAP CP-05-D1 — COMPLETED (README UPDATE PASS)`
+**최근 실행:** `TAP CP-05-P1-R1 — COMPLETED (ARCHITECTURE REALIGNMENT PASS)`
 
 **다음 READY 후보:** `AG-S1 — READY_FOR_GPT_USER_APPROVAL`
 
@@ -89,7 +89,8 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 | C4A | CP-05-P0-R3 | Intermediate Reporting Ownership 정정 | P0-R2 | COMPLETED | CM-01 | GPT 검증 |
 | C5 | CP-05-P1 | Record Unit·DB Architecture | Revised Roadmap APPROVED_FOR_P1 | COMPLETED | MD-01,02 | Architecture·AG-S1 판단자료 완료 |
 | C5D | CP-05-D1 | README Notion 운영구조 안내 | CP-05-P1 Architecture | COMPLETED | 문서 안내 | README 현행화 완료 |
-| C5A | AG-S1 | Fast Skeleton Build 승인 검토 | CP-05-P1 완료 | READY_FOR_GPT_USER_APPROVAL | MD-01,02,06 | 실제 위치·권한·범위 승인 필요 |
+| C5R | CP-05-P1-R1 | Existing Notion Architecture Realignment | CP-05-D1 | COMPLETED | MD-01,02,03 | AG-S1 자료 교체 완료 |
+| C5A | AG-S1 | Realigned Fast Skeleton Build 승인 검토 | CP-05-P1-R1 완료 | READY_FOR_GPT_USER_APPROVAL | MD-01,02,03,06 | 기존 FUND 연계·실제 위치·권한·범위 승인 필요 |
 | C6 | CP-05-S1 | Fast Notion Skeleton Build | P1·AG-S1 승인 | BLOCKED_UNTIL_AG-S1_APPROVAL | MD-01,02,06 | 실제 DB 생성 금지 |
 | C7 | CP-05-R1 | 이전 Codex TI TAP | DEC-CP05-08 | REMOVE_AS_CODEX_TAP | 없음 | 실행 금지 |
 | C7A | GPT-USER-COMMUNICATION-MILESTONE | Skeleton Intermediate Reporting | S1 완료 후 사용자 판단 | OPTIONAL_AFTER_S1 | CM-01 | P2 비차단 |

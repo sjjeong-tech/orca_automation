@@ -2,7 +2,7 @@
 
 ## 사용 원칙
 
-아래 23개 항목은 Fast Skeleton에서 구조와 사용성을 확인하기 위한 후보이며 P3의 확정 Task Template가 아니다. Process Atomic Task를 사람이 추적할 가치가 있는 단위로 집약했고, 신규 Process Rule을 만들지 않았다.
+아래 후보는 Fast Skeleton에서 구조와 사용성을 확인하기 위한 항목이며 P3의 확정 Task Template가 아니다. Process Atomic Task를 사람이 추적할 가치가 있는 단위로 집약했고, 신규 Process Rule을 만들지 않았다.
 
 | Operational Task ID | Process | Operational Task 후보 | 관련 Atomic Task | 생성 조건 | 상태 |
 |---|---|---|---|---|---|
@@ -29,6 +29,24 @@
 | OT-P08-03 | P08 | 보완서류 준비 | AS-03~05 | 보완 경로 결정 후 | CONDITIONAL_CANDIDATE |
 | OT-P08-04 | P08 | 보완서류 재전달 | AS-06~08 | 보완본 준비 후 | CONDITIONAL_CANDIDATE |
 | OT-P08-05 | P08 | 보완 완료 확인 | AS-09 | 재전달 후 | CONDITIONAL_CANDIDATE |
+
+## 지원팀 업무요청 검수 후보
+
+| Operational Task ID | Process | Operational Task 후보 | 관련 Atomic Task | 생성 조건 | 상태 |
+|---|---|---|---|---|---|
+| OT-REQ-01 | INTAKE | 지원팀 요청 접수 | 해당 없음 | 2차 Form 제출 | REQUEST_REVIEW_CANDIDATE |
+| OT-REQ-02 | INTAKE | 필수정보 검수 | 해당 없음 | 요청 접수 후 | REQUEST_REVIEW_CANDIDATE |
+| OT-REQ-03 | INTAKE | 누락정보 보완 요청 | 해당 없음 | 누락 발견 시 | CONDITIONAL_REWORK_CANDIDATE |
+| OT-REQ-04 | INTAKE | 요청 승인·착수 | 해당 없음 | 착수 가능 확인 후 | REQUEST_REVIEW_CANDIDATE |
+
+## 후보 구분
+
+- Intake Task: `OT-INT-*`
+- 지원팀 업무요청 검수: `OT-REQ-*`
+- Pilot A Process Task: `OT-P03-*`, `OT-P04-*`, `OT-P07-*`
+- Conditional Rework Task: `OT-P08-*`, `OT-REQ-03`
+
+총 후보는 27개다. S1에서는 6~9개만 TEST로 생성하며 전체 후보를 일괄 생성하지 않는다.
 
 ## 집약 원칙
 

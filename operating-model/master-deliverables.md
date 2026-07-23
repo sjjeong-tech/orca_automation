@@ -4,9 +4,9 @@
 
 | Deliverable ID | 최종 산출물 | 목적 | 완료조건 | 관련 TAP | 현재 상태 | 승인 Gate | 선행 의존성 | 후속 의존성 | 미확정 항목 |
 |---|---|---|---|---|---|---|---|---|---|
-| MD-01 | Notion 지원팀 업무 DB | 업무 건의 상위 Live Record | P1 Architecture 완료, Record 단위·Relation·필수 Property 승인, S1 Skeleton QA 및 Pilot 검증 | P1,S1,P5,B1~B3 | PLANNING | AG-02~05,AG-S1 | CP-04 Model | MD-02,03,06,07 | 조합 Master 도입 시점; AG-S1 승인 대기 |
-| MD-02 | Notion 지원팀 Task DB | Operational Task·Milestone·Rework 추적 | P1 Architecture 완료, 업무 Relation, Task 상태, 완료조건, Atomic Task 집약 기준과 반복 이력 검증 | P1,S1,P3,P5,B1~B3 | PLANNING | AG-04,06,10,11,AG-S1 | MD-01,04,05 | MD-06~09 | Operational Task 집약 기준; P1 후보 23개는 P3 전 미확정 |
-| MD-03 | Intake Form | 요청 유입 표준화 | 작성자·필수항목·정보부족 처리 승인 및 Pilot 입력 성공 | P4,P5,B1~B3 | NOT_STARTED | AG-13~15 | MD-01 | MD-06,07 | 작성 주체·필수항목 |
+| MD-01 | 기존 FUND 연계·지원팀 업무요청 DB | 기존 조합 Record를 재사용하고 요청 원문과 착수 Input 저장 | P1-R1 Architecture 완료, FUND↔요청 Relation·필수 Property 승인, S1 Skeleton QA 및 Pilot 검증 | P1-R1,S1,P5,B1~B3 | PLANNING | AG-02~05,AG-S1 | 기존 TO DO LIST (FUND), CP-04 Model | MD-02,03,06,07 | 기존 Property 재사용 범위; 별도 업무 DB는 Post-Pilot |
+| MD-02 | Notion 지원팀 Task DB | 요청별 Operational Task·Milestone·Rework 추적 | 요청 Relation, Task 상태, 완료조건, Atomic Task 집약 기준과 반복 이력 검증 | P1-R1,S1,P3,P5,B1~B3 | PLANNING | AG-04,06,10,11,AG-S1 | MD-01,04,05 | MD-06~09 | Operational Task 집약 기준; 후보 27개는 P3 전 미확정 |
+| MD-03 | 1차·2차 Intake Form | 예정 등록과 실제 지원팀 요청을 분리해 표준화 | 1차는 기존 FUND DB, 2차는 요청 DB를 원본으로 작성자·필수항목·정보부족 처리 승인 및 Pilot 입력 성공 | P1-R1,S1,P4,P5,B1~B3 | PLANNING | AG-13~15,AG-S1 | MD-01 | MD-06,07 | 기존 Form 지원 범위·조건부 항목 |
 | MD-04 | Status & Evidence Model | 상태·대기·Blocker·증빙·전이 표준 | 업무/Task 상태, 최소 증빙, 대기·완료 Gate 승인 | P2,P5,B1~B3 | NOT_STARTED | AG-07~09,15,18 | CP-04 Gaps | MD-01,02,07~09 | 대기 세분화·최소 증빙 |
 | MD-05 | Process-to-Notion Mapping | Process Rule을 Task Template로 연결 | Process ID, Trigger, Input, Output, Actor, Evidence, Next, Exception Coverage 검증 | P3,P5,B1~B3 | NOT_STARTED | AG-10~12 | CP-04 Process·Variation | MD-02,07,08 | Task 생성 수준·Process 11 |
 | MD-06 | Dashboard & Collaboration Model | 운영팀·지원팀 실시간 공유와 알림 | View, Mention, Event, 알림 상태와 책임 경계 Pilot 검증 | P4,P5,B1~B3 | NOT_STARTED | AG-06,16~19 | MD-01~04 | MD-07,08 | Slack 우선순위·자동 댓글 |

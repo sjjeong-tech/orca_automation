@@ -39,20 +39,22 @@
 | AG-35 | 운영팀·지원팀 책임 경계 | APPROVAL_REQUIRED_BEFORE_AUTOMATION | Expansion 전 | CP-08-P1 |
 | AG-S1 | 최소 2개 DB Fast Skeleton Build | APPROVAL_REQUIRED_BEFORE_BUILD | P1 완료 후 | S1 |
 
-## CP-05-P1 — AG-S1 판단 Input
+## CP-05-P1-R1 — AG-S1 판단 Input
 
 AG-S1의 Canonical 상태는 변경하지 않았다. 아래는 GPT·사용자 승인에 필요한 파생 요약이다.
 
 | 항목 | P1 결과 |
 |---|---|
-| DB | 지원팀 업무 DB, 지원팀 Task DB — 2개 |
-| S1 Property | 업무 22개, Task 14개 — 합계 36개 |
-| Relation | 업무 1 : Task N 양방향 Relation 1개 |
-| View | 업무 4개, Task 5개 |
-| 테스트 | 가상 업무 1건, 가상 Task 9건 |
+| 기존 DB 재사용 | `TO DO LIST (FUND)`의 `조합(결성)` Record |
+| 신규 DB | 지원팀 업무요청 DB, 지원팀 Task DB — 2개 |
+| S1 Property | 요청 13개, Task 14개 — 합계 27개; 기존 DB 신규 후보 최대 3개 |
+| Relation | FUND↔요청, 요청↔Task — 2개 |
+| View | 기존 Form 후보 1개, 요청 3~4개, Task 3~5개 |
+| Linked View | 조합 Page 내 요청·Task 2개 |
+| 테스트 | 기존 안전한 TEST Record 우선; TEST 요청 1건·Task 8건 |
 | 생성 위치 | 확인 필요 — 사용자가 지정할 Notion 상위 페이지 |
-| 권한 | DB·Property·View·Relation·테스트 Record 생성 및 테스트 정리 |
-| 금지 | Formula, Rollup, Automation, Slack, Agent Write, Pilot A 밖 Mapping |
+| 권한 | 기존 DB 읽기 확인, 신규 DB·Relation·View·Form·TEST Record 생성 |
+| 금지 | 기존 View·Property·Template 변경/삭제, Automation, Slack, Agent Write, 전체 Mapping |
 | 판단 자료 | `reports/cp-05-p1-db-architecture.md` |
 
 ## 신규 Backlog
