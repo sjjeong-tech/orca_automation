@@ -2,9 +2,9 @@
 
 Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될 때만 이 파일을 갱신하며, 선행 Gate를 통과하지 않은 TAP은 실행하지 않는다.
 
-**Queue 전체 상태:** `PAUSED_FOR_EXTERNAL_REVIEW`
+**Queue 전체 상태:** `READY_FOR_CP-05-P1`
 
-**현재 Checkpoint:** `CP-05-P0-R — Revised Master Roadmap 완료 / Claude 독립 검토`
+**현재 Checkpoint:** `CP-05-P0-R2 — Claude Finding 처분 완료 / GPT 검증 대기`
 
 **최근 Revision:** `TAP P1-R2 — COMPLETED (PASS WITH NON-BLOCKING GAPS)`
 
@@ -12,9 +12,9 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 
 **최근 계획:** `TAP V0 — COMPLETED`
 
-**최근 실행:** `TAP CP-05-P0-R — COMPLETED (TARGETED REVISION PASS)`
+**최근 실행:** `TAP CP-05-P0-R2 — COMPLETED (FINDING DISPOSITION PASS)`
 
-**다음 READY 후보:** `A-CP05-P0-REVIEW — READY`
+**다음 READY 후보:** `CP-05-P1 — READY`
 
 ## 자동 실행 Checkpoint
 
@@ -83,13 +83,13 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 |---:|---|---|---|---|---|---|
 | C0 | CP-04 | As-Is Process Model v1 | V1-I | COMPLETE_WITH_KNOWN_GAPS | 선행 기반 | 결과 보존 |
 | C1 | CP-05-P0 | Master Roadmap·Operating Model | CP-04 | COMPLETED | MD-01~10 | Revision 보존 |
-| C2 | CP-05-P0-R | Skeleton·Pilot A·TI Targeted Revision | P0 | COMPLETED | MD-01~11 | Claude 검토 |
-| C3 | A-CP05-P0-REVIEW | Revised Roadmap 독립 검토 | P0-R | READY | MD-01~11 | Claude 실행 |
-| C4 | GPT·User Revised Roadmap Review | Finding 통합·승인 | Claude Review | WAITING | MD-01~11 | Review 결과 대기 |
-| C5 | CP-05-P1 | Record Unit·DB Architecture | Revised Roadmap 승인 | BLOCKED_UNTIL_REVISED_ROADMAP_APPROVAL | MD-01,02 | 승인 전 실행 금지 |
-| C6 | CP-05-S1 | Fast Notion Skeleton Build | P1·AG-S1 승인 | BLOCKED_UNTIL_P1_AND_BUILD_APPROVAL | MD-01,02,06 | 실제 DB 생성 금지 |
-| C7 | CP-05-R1 | Notion AI Intermediate Reporting TI | S1 완료 | BLOCKED_UNTIL_SKELETON_COMPLETE | MD-11 | TI 작성 금지 |
-| C8 | CP-05-P2 | Status & Evidence Model | S1·R1 Review | BLOCKED_UNTIL_SKELETON_REVIEW | MD-04 | Skeleton 관찰 대기 |
+| C2 | CP-05-P0-R | Skeleton·Pilot A·TI Targeted Revision | P0 | COMPLETED | MD-01~11 | 결과 보존 |
+| C3 | A-CP05-P0-REVIEW | Revised Roadmap 독립 검토 | P0-R | COMPLETED_PASS_WITH_REVISIONS | MD-01~11 | Finding 처분 완료 |
+| C4 | CP-05-P0-R2 | Claude Finding 처분·문서 정합성 | Claude Review | COMPLETED | MD-01~11 | GPT 검증 |
+| C5 | CP-05-P1 | Record Unit·DB Architecture | Revised Roadmap APPROVED_FOR_P1 | READY | MD-01,02 | 자동 실행 금지 |
+| C6 | CP-05-S1 | Fast Notion Skeleton Build | P1·AG-S1 승인 | BLOCKED_UNTIL_P1_AND_AG-S1 | MD-01,02,06 | 실제 DB 생성 금지 |
+| C7 | CP-05-R1 | Notion AI Intermediate Reporting TI | S1 완료 | BLOCKED_UNTIL_S1 | MD-11 | TI 작성 금지 |
+| C8 | CP-05-P2 | Status & Evidence Model | R1 GPT Review | BLOCKED_UNTIL_R1_GPT_REVIEW | MD-04 | 대표님 응답은 차단 조건 아님 |
 | C9 | CP-05-P3 | Process-to-Notion Mapping | P2 승인 | BLOCKED_BY_PREVIOUS_APPROVAL | MD-02,05 | P2 승인 대기 |
 | C10 | CP-05-P4 | Intake·Collaboration Model | P3 승인 | BLOCKED_BY_PREVIOUS_APPROVAL | MD-03,06 | P3 승인 대기 |
 | C11 | CP-05-P5 | Pilot-ready MVP Build Spec | P4 승인 | BLOCKED_BY_PREVIOUS_APPROVAL | MD-01~07 | Build 승인 명세 대기 |
@@ -100,6 +100,19 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 | C16 | CP-07-P1~B1 | Agent Write Governance·Execution | Write Governance 승인 | BLOCKED_UNTIL_WRITE_GOVERNANCE | MD-09 | AG-26~31·34 대기 |
 | C17 | CP-08-P1 | Operations-team Expansion | 지원팀 MVP 안정화 | FUTURE | MD-10 | AG-32~35 대기 |
 | X1 | Gap Resolution | 단계별 필요한 Known Gap 해소 | 각 TAP Gate | CROSS_CUTTING_WORKSTREAM | MD-01~11 | 독립 선행 실행 금지 |
+
+### CP-05-P0 Claude Finding 상태
+
+| Finding | 상태 |
+|---|---|
+| RM-01 | DISPOSED_NO_BLOCKING_GATE |
+| RM-02 | APPLIED |
+| RM-03 | APPLIED |
+| RM-04 | APPLIED |
+| RM-05 | DEFER_NO_CHANGE |
+| RM-06 | REFERENCE_LINKED |
+| RM-07 | APPLIED |
+| Revised Master Roadmap | APPROVED_FOR_P1 |
 
 ## Stage별 범위 및 산출물
 

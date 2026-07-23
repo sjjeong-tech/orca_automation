@@ -83,3 +83,15 @@ CP-04 As-Is Process Model은 보존한다. CP-05의 기존 Gap Resolution 계획
 - AG-01~04와 AG-20A만 사용자 결정으로 확정하고 AG-05·06의 결정 시점을 늦춘다.
 - Skeleton은 완성 MVP가 아니며 B1에서 P2~P5 결과를 반영한 Pilot-ready Revision을 수행한다.
 - 신규 비차단 Backlog: Skeleton 최소 Property 검증, TI 보고 대상·표현 수준, 실제 Pilot 조합·기간·Threshold.
+
+## Interview Candidate Reference
+
+- `origin/agent/claude/setup:reports/reviews/claude/a-v1-interview-candidates.md`
+- `origin/agent/claude/setup:reports/reviews/claude/a-v1-interview-candidates-r2.md`
+- 관련 Source Coverage:
+  - `origin/agent/claude/setup:reports/reviews/claude/a-v1-source-coverage.md`
+  - `origin/agent/claude/setup:reports/reviews/claude/a-v1-source-coverage-r2.md`
+- 현재 상태: `REFERENCE_ONLY`
+- 사용 시점: P1~B2 중 특정 Approval Gate 해소에 필요한 질문이 있을 때
+- 현재 실행 여부: `NOT_STARTED`
+- 주의: 인터뷰 후보 내용을 복제하거나 전체 인터뷰를 일괄 실행하지 않는다.

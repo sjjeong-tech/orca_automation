@@ -1,5 +1,7 @@
 # Approval Gates
 
+이 문서는 Approval Gate의 Canonical Source다. Gate 상태·시점·선택안·권장안 변경은 이 문서를 먼저 갱신하고, 같은 TAP에서 파생 작업 목록인 `decisions/pending-approvals.md`를 동기화한다. 해당 Gate를 처리하는 TAP의 실행 AI가 갱신 책임을 가지며 GPT는 Handoff 검토 시 두 문서의 정합성을 확인한다.
+
 미결 Gate의 권장안은 설계 제안이며 확정값이 아니다. 승인자는 정상준·사용자이며 GPT는 검토·통합한다.
 
 | Gate ID | 결정 내용 | 선택안 | 권장안 | 결정 시점 | 미결정 시 영향 | 승인자 | 상태 | 관련 TAP | 관련 Deliverable |
