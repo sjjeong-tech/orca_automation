@@ -38,3 +38,7 @@ Property는 14개다. Task Instance ID, Input·Output, 예외 유형, 다음 Tas
 ## S1 실제 임시 Task 상태
 
 Notion 도구가 생성한 Status 옵션은 `시작 전`, `진행 중`, `완료`다. `대기`, `보완`, `제외`의 구분과 전이 규칙은 CP-05-P2로 유예한다. 현재 값은 모두 `PROVISIONAL_FOR_SKELETON`이며 Formula와 자동 전이는 없다.
+
+## P2 변경 제안
+
+Task 상태는 `TS-TODO`, `TS-ACTIVE`, `TS-WAIT`, `TS-REWORK`, `TS-DONE`, `TS-CANCEL` 6개로 설계했다. 내부·외부기관·GP 대기는 `TS-WAIT + 현재 Actor + Blocker + 다음 Action`으로 구분한다. 실제 Notion 옵션은 AG-P2 승인 후 별도 Build TAP에서만 변경한다.

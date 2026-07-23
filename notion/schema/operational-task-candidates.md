@@ -48,6 +48,8 @@
 
 총 후보는 27개다. S1에서는 6~9개만 TEST로 생성하며 전체 후보를 일괄 생성하지 않는다.
 
+P2 상태·Evidence 적용 원칙은 [Operational Task Status·Evidence Contract](operational-task-catalog.md)를 따른다. 후보는 P3 전까지 확정 Template가 아니다.
+
 ## 집약 원칙
 
 - Actor, 완료조건, 예외 복귀점이 운영상 별도 추적돼야 하면 Task를 분리한다.

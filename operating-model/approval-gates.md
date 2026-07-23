@@ -13,7 +13,7 @@
 | AG-05 | 조합 Master DB | 즉시 / Pilot 후 / 미사용 | Skeleton·MVP에서는 미사용, Pilot 후 판단 | Pilot 후 | Pilot 전에는 업무 DB의 조합명으로 운영 | 사용자·정상준 | DEFER_UNTIL_PILOT | B3 | MD-01 |
 | AG-06 | 알림 Queue DB | 별도 DB / Task·업무 속성 / 외부 로그 | Skeleton은 별도 DB 없음; P4에서 결정 | P4 전 | 알림 Audit 구조 미정 | 사용자·정상준 | APPROVAL_REQUIRED_BEFORE_BUILD | P4 | MD-02,06 |
 | AG-07 | 상태값 체계 | 단일 / 업무·Task 분리 | 업무·Task 분리 | Build 전 | 상태 전이 구현 불가 | 사용자·정상준 | APPROVAL_REQUIRED_BEFORE_BUILD | P2 | MD-04 |
-| AG-08 | 대기 상태 세분화 | 단일 WAITING / 외부·관리역 분리 | 분리 | Build 전 | 병목 측정 불가 | 사용자·정상준 | APPROVAL_REQUIRED_BEFORE_BUILD | P2 | MD-04 |
+| AG-08 | 대기 상태 세분화 | 단일 WAITING+Actor / 외부·관리역별 Status | 단일 `TS-WAIT`와 Actor·Blocker로 원인 구분 | Build 전 | 병목 측정 기준 미정 | 사용자·정상준 | APPROVAL_REQUIRED_BEFORE_BUILD | P2 | MD-04 |
 | AG-09 | 완료 최소 증빙 | 상태만 / 파일·수신 / Process별 | 공통 최소+Process별 | Build 전 | 완료 신뢰성 부족 | 사용자·정상준 | APPROVAL_REQUIRED_BEFORE_BUILD | P2 | MD-04 |
 | AG-10 | Operational Task 정의·Atomic Task 집약 | 전체 복제 / Operational+Milestone / 선택 집약 | Pilot은 Operational Task+핵심 Milestone, Agent는 필요 시 Atomic 재분해 | Build 전 | Task 수·추적가치·운영부하 미정 | 사용자·정상준 | APPROVAL_REQUIRED_BEFORE_BUILD | P3 | MD-02,05 |
 | AG-11 | 반복 보완 Task | 동일 Record / 신규 Record / 하위 시도 | 하위 시도 Relation | Build 전 | Rework 이력 손실 | 사용자·정상준 | APPROVAL_REQUIRED_BEFORE_BUILD | P3 | MD-02,05 |
@@ -43,15 +43,16 @@
 | AG-34 | 외부 발송 전 승인 | 항상 / 조건부 / 불필요 | 항상 Human 승인 | Expansion 전 | 오발송·법적 위험 | 사용자·정상준 | APPROVAL_REQUIRED_BEFORE_AUTOMATION | CP-07-P1,CP-08-P1 | MD-09,10 |
 | AG-35 | 운영팀·지원팀 경계 | 요청/실행 / Process별 / 공동 | 요청·판단 vs 실행·기록 | Expansion 전 | 소유권 충돌 | 사용자·정상준 | APPROVAL_REQUIRED_BEFORE_AUTOMATION | CP-08-P1 | MD-10 |
 | AG-S1 | Fast Skeleton Build 승인 | 승인 / 보완 후 승인 / 미승인 | `APPROVED_WITH_EXECUTION_CONSTRAINTS`; 기존 FUND 무변경·신규 DB 2개·TEST 데이터만 구축 | 2026-07-23 실행 | 실제 UI·Relation 조기 검증 수행; 제한 항목은 P2·P4로 유예 | 사용자·정상준 | DECIDED | S1 | MD-01,02,06 |
+| AG-P2 | Status·Evidence·Human Control Model 승인 | 승인 / Revision / 보류 | 요청 7상태, Task 6상태, 단일 WAIT+Actor, Text Blocker, Evidence 9종, Human Gate 8개 승인 | P3 전 | P3 Mapping Contract와 Notion 적용 기준 미확정 | 사용자·정상준 | APPROVAL_REQUIRED_BEFORE_BUILD | P2 | MD-04,05 |
 
 ## 상태 집계
 
 | 상태 | 수 |
 |---|---:|
 | APPROVAL_REQUIRED_NOW | 0 |
-| APPROVAL_REQUIRED_BEFORE_BUILD | 14 |
+| APPROVAL_REQUIRED_BEFORE_BUILD | 15 |
 | APPROVAL_REQUIRED_BEFORE_PILOT | 3 |
 | APPROVAL_REQUIRED_BEFORE_AUTOMATION | 11 |
 | DEFER_UNTIL_PILOT | 3 |
 | DECIDED | 6 |
-| 합계 | 37 |
+| 합계 | 38 |

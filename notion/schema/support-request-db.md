@@ -38,3 +38,7 @@ Property는 13개다. 조건부 업무 항목, 누락 유형, 승인·자동 생
 ## S1 실제 임시 요청 상태
 
 Notion 도구가 생성한 Status 옵션은 `시작 전`, `진행 중`, `완료`다. 요청 상태의 세부 옵션인 `신규 접수`, `정보 확인 중`, `보완 요청`, `착수 가능`은 CP-05-P2에서 상태 전이와 함께 확정한다. 현재 값은 모두 `PROVISIONAL_FOR_SKELETON`이며 자동 전이는 없다.
+
+## P2 변경 제안
+
+요청 상태는 `RQ-NEW`, `RQ-REVIEW`, `RQ-REWORK`, `RQ-READY`, `RQ-ACTIVE`, `RQ-DONE`, `RQ-CANCEL` 7개로 설계했다. 외부 대기는 연결 Task에서 표현한다. 실제 Notion 옵션은 AG-P2 승인 후 별도 Build TAP에서만 변경한다.

@@ -154,7 +154,7 @@ Process Wave 2:
 
 ## 9. Notion Operations Control Plane
 
-> 현재는 운영구조와 DB Architecture를 설계한 단계입니다. 실제 Notion Skeleton, Form, 자동화와 Agent Write는 아직 구축하지 않았습니다.
+> 실제 Notion Skeleton은 제한적으로 구축했으며 Form UI 안정화 과제가 남아 있습니다. 자동화와 Agent Write는 아직 구축하지 않았습니다.
 
 ### 9.1 적용 위치
 
@@ -256,6 +256,7 @@ Pilot A 제외 범위:
 | CP-05-S1 | `PARTIAL_WITH_SAFE_CONSTRAINTS` — 요청 DB·Task DB·TEST Relation 구축, 기존 FUND DB 무변경 |
 | CP-05-N1 | Repository Rename·Remote·현행 참조 정렬 완료 |
 | CP-05-S1-R1 | `PARTIAL_WITH_UI_ACTIONS` — 1차 Form 이름 정렬, 질문·Filter·Rollup UI 검증 과제 명시 |
+| CP-05-P2 | `COMPLETED_WITH_OPEN_UI_GAPS` — Status·Evidence·Actor·Human Control Contract 작성, AG-P2 검토 대기 |
 
 S1에서 [지원팀 업무요청](https://app.notion.com/p/c60e9bc03a214735be082ed54905970d)과 [지원팀 Task](https://app.notion.com/p/b7f50ee986714213befb4268fdd36920)를 생성했다. 사용자 생성 1차 Form은 `조합 결성 예정 등록`으로 이름을 정렬했지만 질문 축소·필수값·제출 검증이 필요하다. 2차 Form은 질문 1개의 골조 상태이며, 상세 결과는 [S1-R1 Stabilization Report](reports/cp-05-s1-r1-skeleton-stabilization.md)에 기록한다. Automation과 Agent Write는 아직 구현하지 않았다.
 
@@ -269,3 +270,8 @@ S1에서 [지원팀 업무요청](https://app.notion.com/p/c60e9bc03a214735be082
 - [Decision Log](decisions/decision-log.md)
 - [CP-05-P0 Claude Finding Disposition](reports/cp-05-p0-claude-finding-disposition.md)
 - [CP-05-P1 DB Architecture](reports/cp-05-p1-db-architecture.md)
+- [P2 Status·Evidence Model](reports/cp-05-p2-status-evidence-model.md)
+- [Request Status Model](notion/model/request-status-model.md)
+- [Task Status Model](notion/model/task-status-model.md)
+- [Evidence Model](notion/model/evidence-model.md)
+- [Human Approval Model](notion/model/human-approval-model.md)

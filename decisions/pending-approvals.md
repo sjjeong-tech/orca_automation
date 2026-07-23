@@ -37,6 +37,7 @@
 | AG-33 | GP 직접 소통 | APPROVAL_REQUIRED_BEFORE_AUTOMATION | Expansion 전 | CP-08-P1 |
 | AG-34 | 외부 발송 전 Human 승인 | APPROVAL_REQUIRED_BEFORE_AUTOMATION | Expansion 전 | CP-07-P1,CP-08-P1 |
 | AG-35 | 운영팀·지원팀 책임 경계 | APPROVAL_REQUIRED_BEFORE_AUTOMATION | Expansion 전 | CP-08-P1 |
+| AG-P2 | Status·Evidence·Human Control Model | APPROVAL_REQUIRED_BEFORE_BUILD | P3 전 | P2 |
 
 ## CP-05-P1-R1 — AG-S1 판단 Input
 

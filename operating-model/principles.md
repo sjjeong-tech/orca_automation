@@ -16,6 +16,22 @@
 14. 실패·Rollback·재시도 기준이 없는 Write 자동화는 허용하지 않는다.
 15. 후속 TAP은 자동 실행하지 않는다.
 
+## Multi-Agent 역할 경계
+
+- Notion AI는 Form 초안·질문 구성·Notion UI 탐색과 가능한 UI 편집을 담당한다.
+- Codex는 Git 기반 Builder로 Process·Rule·Schema·Status·Evidence·RAG Contract를 구축한다.
+- GPT는 Master Roadmap, 우선순위, 병렬 결과 통합, Approval Gate와 TAP 발행을 통제한다.
+- 사용자·정상준은 Process Owner, Notion UI 최종 확인자와 Pilot 승인자다.
+- Form UI 미완료는 Git 기반 상태·증빙 설계를 차단하지 않으며 별도 UI Workstream으로 관리한다.
+- Notion AI의 결과는 `DISCOVERY_ONLY`, `FORM_DRAFT`, `UI_CHANGE_ATTEMPT`, `VALIDATION`, `MAIN_ROADMAP_INPUT`으로 분류하고 GPT가 Roadmap 반영 여부를 판단한다.
+
+## 상태·Actor·Blocker
+
+- Status는 업무의 진행 단계를, Current Actor는 다음 행동·응답 주체를, Blocker는 전이를 막는 구체적 원인을 의미한다.
+- 대기 원인은 Actor와 Blocker로 구분하며 필요 이상으로 Status를 늘리지 않는다.
+- `UNKNOWN` Rule이나 미승인 상태 전이를 Agent가 실행하지 않는다.
+- Task 완료에는 관찰 가능한 완료조건과 Evidence가 필요하고 요청 완료에는 Human 최종 확인이 필요하다.
+
 ## Process Atomic Task와 Notion Operational Task
 
 - Process Atomic Task는 AI가 업무를 이해·실행하기 위한 최소 행동 단위다.
