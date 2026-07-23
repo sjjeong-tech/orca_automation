@@ -28,10 +28,10 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 | 7 | TAP S0-P | Stage 0 Commit Push | Source 확보 / Repo 실행환경 배포 | TAP S0 | 지정 Commit 존재 및 clean | COMPLETED | 예 | 예 | 없음 | 완료 유지 |
 | 8 | TAP S1 | Pilot Source Extract N-05-03 | 세무서 업무 / 고유번호증 신청 | TAP S0-P | PASS | COMPLETED | 아니요 | 아니요 | 없음 | 완료 유지 |
 | 9 | TAP S2 | Pilot Source QA | Source 검증 / 고유번호증 신청 | TAP S1 | PASS; FAIL 시 Queue BLOCKED | COMPLETED | 예 | 아니요 | 없음 | CP-01 검토 대기 |
-| 10 | TAP S2-P | Pilot Source Commit Push | Source 검증 / Pilot 배포 | TAP S2 | QA PASS 및 지정 Commit 존재 | READY | 예 | 예 | 없음 | Checkpoint 재개 후 Push |
-| 11 | TAP S3-A | Source Extract Wave A | Source Extract / 핵심 공통 및 은행 흐름 | TAP S2-P | PASS | WAITING | 아니요 | 아니요 | 선행 TAP 대기 | N-05-00·04·07·08, N-06, N-08 추출 |
-| 12 | TAP S4-A | Source QA Wave A | Source 검증 / Wave A | TAP S3-A | PASS; FAIL 시 Queue BLOCKED | WAITING | 예 | 아니요 | 선행 TAP 대기 | Wave A QA 수행 |
-| 13 | TAP S4-A-P | Wave A Commit Push | Source 검증 / Wave A 배포 | TAP S4-A | QA PASS 및 지정 Commit 존재 | WAITING | 예 | 예 | 선행 TAP 대기 | Wave A Commit 검증 후 Push |
+| 10 | TAP S2-P | Pilot Source Commit Push | Source 검증 / Pilot 배포 | TAP S2 | QA PASS 및 지정 Commit 존재 | COMPLETED | 예 | 예 | 없음 | 완료 유지 |
+| 11 | TAP S3-A | Source Extract Wave A | Source Extract / 핵심 공통 및 은행 흐름 | TAP S2-P | PASS | COMPLETED | 아니요 | 아니요 | 없음 | 완료 유지 |
+| 12 | TAP S4-A | Source QA Wave A | Source 검증 / Wave A | TAP S3-A | PASS; FAIL 시 Queue BLOCKED | COMPLETED | 예 | 아니요 | 없음 | 완료 유지 |
+| 13 | TAP S4-A-P | Wave A Commit Push | Source 검증 / Wave A 배포 | TAP S4-A | QA PASS 및 지정 Commit 존재 | READY | 예 | 예 | 없음 | Wave A Commit 검증 후 Push |
 | 14 | TAP S3-B | Source Extract Wave B | Source Extract / 나머지 업무 | TAP S4-A-P | PASS | WAITING | 아니요 | 아니요 | 선행 TAP 대기 | N-05-01·02·05·06·09·10 추출 |
 | 15 | TAP S4-B | Source QA Wave B | Source 검증 / Wave B | TAP S3-B | PASS; FAIL 시 Queue BLOCKED | WAITING | 예 | 아니요 | 선행 TAP 대기 | Wave B QA 수행 |
 | 16 | TAP S4-B-P | Wave B Commit Push | Source 검증 / Wave B 배포 | TAP S4-B | QA PASS 및 지정 Commit 존재 | WAITING | 예 | 예 | 선행 TAP 대기 | Wave B Commit 검증 후 Push |
