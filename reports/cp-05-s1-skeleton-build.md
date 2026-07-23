@@ -37,17 +37,18 @@
 
 ### 1차 Form
 
-- 상태: `DEFERRED_TECHNICAL_CONSTRAINT`
+- 현재 상태: `USER_CREATED_IN_NOTION_UI / STRUCTURE_REVIEW_PENDING`
 - 실제 `결성(진행)` View 확인 완료
 - Person·Relation Property 존재 확인
 - 기존 DB에 이미 Form View가 존재
-- 안전한 TEST FUND Record 없이 제출 결과의 View Filter 충족을 검증할 수 없어 신규 Form 미생성
+- CP-05-S1 실행 당시 Codex는 안전한 TEST FUND Record 없이 제출 결과의 View Filter 충족을 검증할 수 없어 신규 Form을 생성하지 않았다.
+- 이후 사용자가 Notion UI에서 1차 Form을 생성했다. 구조 검토·운영 검증은 CP-05-S1-R1 범위다.
 
 ### 2차 Form
 
 - `지원팀 행정업무 요청` Form View 생성
 - API로 지정한 전체 질문 중 `요청명`만 Form 질문으로 유지됨
-- 완성형 Form이 아니며 UI 설정 또는 CP-05-P4 검토 필요
+- View 골조 생성 완료, 질문 구성 보완 필요
 
 ## View·Linked View
 
@@ -73,7 +74,7 @@ GPT Skeleton Review에서 다음을 판정한다.
 
 1. 상세 Status 옵션을 P2에서 UI로 설정할지
 2. 2차 Form 질문 구성을 UI에서 보완할지 P4까지 유예할지
-3. 승인된 TEST FUND Record로 1차 Form·Rollup·현재 Page Filter를 재검증할지
+3. 사용자 UI 생성 1차 Form의 구조와 제출 결과, Rollup·현재 Page Filter를 CP-05-S1-R1에서 검증할지
 4. SAFE_FALLBACK 단방향 FUND Relation을 Pilot까지 유지할지
 
-CP-05-P2는 GPT 검토 전 실행하지 않는다.
+CP-05-P2는 S1 안정화와 GPT 검토 전 실행하지 않는다.

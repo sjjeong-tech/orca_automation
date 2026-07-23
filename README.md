@@ -1,5 +1,17 @@
 # 세무서·은행 행정업무 표준화·자동화
 
+Repository: `vc-support_team-process-rag`
+
+지원팀 행정업무를 Process 단위로 구조화하고, RAG 기반 검색과 Notion 업무운영 및 향후 Agent 실행을 연결하는 Repository입니다.
+
+핵심 범위:
+
+- 세무서·홈택스·은행·문구점 행정업무
+- Process Modeling 및 Rule·Variation·Exception 관리
+- 운영팀–지원팀 Intake와 Notion Request·Task Control Plane
+- RAG Knowledge Retrieval
+- 승인 기반 Agent Automation
+
 ## 1. 프로젝트 목적
 
 미라파트너스 지원팀의 세무서·은행 행정업무를 AI Agent가 이해·지원·수행할 수 있는 Process Model로 구조화하는 프로젝트입니다.
@@ -197,7 +209,7 @@ flowchart LR
 | 조합 내부 Page | 결성 매뉴얼, 지원팀 요청, 관련 Task 확인 |
 | 지원팀 업무요청 DB | 2차 Form 응답과 요청 원문 저장 |
 | 지원팀 Task DB | 상태, 다음 Action, Blocker, 증빙 관리 |
-| Orca Repository | Process Rule, Mapping, Automation Logic의 기준 저장소 |
+| `vc-support_team-process-rag` | Process Rule, Mapping, RAG Knowledge, Automation Logic의 기준 저장소 |
 | Notion | 실제 운영상태의 System of Record |
 
 Pilot A에서는 신규 상위 업무 DB를 만들지 않고 기존 `TO DO LIST (FUND)`의 `조합(결성)` Record를 상위 기준으로 재사용한다. 신규 DB는 지원팀 업무요청 DB와 지원팀 Task DB 두 개다.
@@ -242,8 +254,9 @@ Pilot A 제외 범위:
 | CP-05-P0~R3 | Operating Model·Master Roadmap·책임 경계 정리 완료 |
 | CP-05-P1-R1 | 기존 Notion 구조 기반 Architecture 정렬 완료 |
 | CP-05-S1 | `PARTIAL_WITH_SAFE_CONSTRAINTS` — 요청 DB·Task DB·TEST Relation 구축, 기존 FUND DB 무변경 |
+| CP-05-N1 | Repository Rename·Remote·현행 참조 정렬 완료 |
 
-S1에서 [지원팀 업무요청](https://app.notion.com/p/c60e9bc03a214735be082ed54905970d)과 [지원팀 Task](https://app.notion.com/p/b7f50ee986714213befb4268fdd36920)를 생성했다. 1차 Form과 실제 FUND 기반 Rollup·현재 Page Filter는 안전 제약으로 유예했으며, 상세 결과는 [Skeleton Build Report](reports/cp-05-s1-skeleton-build.md)에 기록한다. Automation과 Agent Write는 아직 구현하지 않았다.
+S1에서 [지원팀 업무요청](https://app.notion.com/p/c60e9bc03a214735be082ed54905970d)과 [지원팀 Task](https://app.notion.com/p/b7f50ee986714213befb4268fdd36920)를 생성했다. 1차 Form은 사용자가 Notion UI에서 생성했으며 구조 검토·운영 검증을 기다린다. 2차 Form은 View 골조만 생성되어 질문 구성 보완이 필요하다. 실제 FUND 기반 Rollup·현재 Page Filter도 검증 대기이며, 상세 결과는 [Skeleton Build Report](reports/cp-05-s1-skeleton-build.md)에 기록한다. Automation과 Agent Write는 아직 구현하지 않았다.
 
 ### 9.9 관련 설계문서
 

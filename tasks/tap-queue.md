@@ -2,9 +2,9 @@
 
 Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될 때만 이 파일을 갱신하며, 선행 Gate를 통과하지 않은 TAP은 실행하지 않는다.
 
-**Queue 전체 상태:** `PAUSED_FOR_GPT_SKELETON_REVIEW`
+**Queue 전체 상태:** `PAUSED_FOR_GPT_REVIEW`
 
-**현재 Checkpoint:** `CP-05-S1 — PARTIAL_WITH_SAFE_CONSTRAINTS / GPT Skeleton Review 대기`
+**현재 Checkpoint:** `CP-05-N1 — Repository Rename·Reference Alignment 완료`
 
 **최근 Revision:** `TAP P1-R2 — COMPLETED (PASS WITH NON-BLOCKING GAPS)`
 
@@ -12,9 +12,9 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 
 **최근 계획:** `TAP V0 — COMPLETED`
 
-**최근 실행:** `TAP CP-05-S1 — PARTIAL_WITH_SAFE_CONSTRAINTS`
+**최근 실행:** `TAP CP-05-N1 — COMPLETED`
 
-**다음 READY 후보:** `GPT_SKELETON_REVIEW`
+**다음 READY 후보:** `CP-05-S1-R1`
 
 ## 자동 실행 Checkpoint
 
@@ -92,10 +92,12 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 | C5R | CP-05-P1-R1 | Existing Notion Architecture Realignment | CP-05-D1 | COMPLETED | MD-01,02,03 | AG-S1 자료 교체 완료 |
 | C5A | AG-S1 | Realigned Fast Skeleton Build 승인 검토 | CP-05-P1-R1 완료 | APPROVED_AND_EXECUTED | MD-01,02,03,06 | 실행 제약 준수 |
 | C6 | CP-05-S1 | Fast Notion Skeleton Build | P1·AG-S1 승인 | PARTIAL_WITH_SAFE_CONSTRAINTS | MD-01,02,06 | 기존 FUND 무변경; Form·Rollup 일부 유예 |
-| C6A | GPT_SKELETON_REVIEW | S1 구축 결과·안전 제약 검토 | CP-05-S1 | READY | MD-01,02,03,06 | P2 진입 판단 |
+| C6N | CP-05-N1 | Repository Rename·Reference Alignment | CP-05-S1 | COMPLETED | Repository Governance | 새 Remote·현행 참조 정렬 |
+| C6R | CP-05-S1-R1 | 사용자 UI Form·Skeleton 안정화 검토 | CP-05-N1 | READY | MD-01,02,03,06 | 실제 Notion 변경은 별도 승인 범위 준수 |
+| C6A | GPT_UI_REVIEW | S1-R1 결과 검토 | CP-05-S1-R1 | BLOCKED_UNTIL_S1_R1 | MD-01,02,03,06 | P2 진입 판단 |
 | C7 | CP-05-R1 | 이전 Codex TI TAP | DEC-CP05-08 | REMOVE_AS_CODEX_TAP | 없음 | 실행 금지 |
 | C7A | GPT-USER-COMMUNICATION-MILESTONE | Skeleton Intermediate Reporting | S1 완료 후 사용자 판단 | OPTIONAL_AFTER_S1 | CM-01 | P2 비차단 |
-| C8 | CP-05-P2 | Status & Evidence Model | GPT Skeleton Review | BLOCKED_UNTIL_GPT_SKELETON_REVIEW | MD-04 | 대표님 응답 NOT_A_BLOCKING_GATE |
+| C8 | CP-05-P2 | Status & Evidence Model | S1 Stabilization·GPT UI Review | BLOCKED_UNTIL_S1_STABILIZATION | MD-04 | 대표님 응답 NOT_A_BLOCKING_GATE |
 | C9 | CP-05-P3 | Process-to-Notion Mapping | P2 승인 | BLOCKED_BY_PREVIOUS_APPROVAL | MD-02,05 | P2 승인 대기 |
 | C10 | CP-05-P4 | Intake·Collaboration Model | P3 승인 | BLOCKED_BY_PREVIOUS_APPROVAL | MD-03,06 | P3 승인 대기 |
 | C11 | CP-05-P5 | Pilot-ready MVP Build Spec | P4 승인 | BLOCKED_BY_PREVIOUS_APPROVAL | MD-01~07 | Build 승인 명세 대기 |

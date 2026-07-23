@@ -2,7 +2,7 @@
 
 1. Process Model과 Live State를 분리한다.
 2. Notion은 실제 업무 상태의 단일 기준이다.
-3. Orca는 실행 규칙과 자동화 논리의 단일 기준이다.
+3. `vc-support_team-process-rag` Repository는 Process·Rule·Variation·RAG Knowledge와 자동화 논리의 단일 기준이다.
 4. 수동 → 반자동 → 승인 기반 자동 순서를 지킨다.
 5. Human Approval을 외부 쓰기와 중요 상태 변경보다 앞에 둔다.
 6. 단일 `CASE_ONLY`를 공통 Rule로 일반화하지 않는다.
