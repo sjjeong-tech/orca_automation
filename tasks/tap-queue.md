@@ -1,3 +1,7 @@
+> **LEGACY QUEUE — 보조·Historical 조회용**
+>
+> 신규 실행 가능 상태의 Canonical Source는 [`orchestration/plan/master-workmap.yaml`](../orchestration/plan/master-workmap.yaml)이다. 작업은 [`START_HERE.md`](../START_HERE.md)에서 시작하며, 상태 변경을 이 문서에 먼저 기록하지 않는다.
+
 # Conditional TAP Queue
 
 > **Queue Direction:** `FORM_PRIMARY → CONVERSATIONAL_INTAKE_PRIMARY`
