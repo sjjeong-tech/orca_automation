@@ -2,7 +2,11 @@
 
 Repository: `vc-support_team-process-rag`
 
-> Form 실행 원칙: Codex가 DB CRUD·Form Capability Probe를 먼저 수행하고, 지원되지 않는 Form UI 편집과 실제 제출만 사용자가 처리합니다. Notion AI는 기본 실행 주체가 아닙니다.
+> Primary Intake는 Slack·Claude Code Skill·GPT·Codex를 통한 자연어 대화입니다.
+> Canonical Operation Record는 Notion `지원팀 업무요청`·`지원팀 Task` DB이며, Form은 Optional Fallback입니다.
+> 1차·2차 Form이 반드시 선행되어야 한다는 전제는 폐기됐습니다. Notion AI는 기본 실행 주체가 아닙니다.
+
+대화형 Intake는 요청을 구조화하고 누락정보를 질문한 뒤 사용자 Preview 승인을 받아 Notion Request·Task에 기록합니다. 현재는 [전환 결정](decisions/conversational-intake-transition.md), [Roadmap](plans/conversational-intake-roadmap.md), [Intake Contract 초안](contracts/conversational-intake-contract.yaml)까지만 작성됐으며 실제 Notion Write·Slack 연동·Claude Code Skill은 아직 구현하지 않았습니다.
 
 지원팀 행정업무를 Process 단위로 구조화하고, RAG 기반 검색과 Notion 업무운영 및 향후 Agent 실행을 연결하는 Repository입니다.
 

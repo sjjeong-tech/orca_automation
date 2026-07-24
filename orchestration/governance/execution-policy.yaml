@@ -16,6 +16,10 @@
   "commit_policy": {"max_per_work_order": 3, "message_required": true, "force_push": false},
   "push_policy": {"required_when_work_order_says": true, "force_push": false},
   "continuation_default": "STOP",
+  "primary_intake": "CONVERSATIONAL",
+  "canonical_operation_record": ["지원팀 업무요청", "지원팀 Task"],
+  "conversational_execution": ["PARSE", "ASK_MISSING_INFORMATION", "PRESENT_PREVIEW", "HUMAN_APPROVAL", "NOTION_WRITE", "VERIFY_WRITE"],
+  "form_role": "OPTIONAL_FALLBACK",
   "form_execution_escalation": ["CODEX", "USER"],
   "notion_ai_exception": {
     "status": "OPTIONAL_TEMPORARY_TOOL",

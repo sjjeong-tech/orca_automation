@@ -1,5 +1,7 @@
 # CP-05-FT2 Codex Form Capability Probe
 
+> **Supersession Note (2026-07-24):** 본 Capability 판정은 대화형 Intake 전환의 근거로 보존한다. Form은 Optional Fallback이며 원 판정은 변경하지 않는다. 결정은 `decisions/conversational-intake-transition.md`를 참조한다.
+
 ## 판정
 
 - Form Read: `PASS_WITH_UNEXPOSED_DETAILS`

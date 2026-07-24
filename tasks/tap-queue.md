@@ -1,12 +1,18 @@
 # Conditional TAP Queue
 
+> **Queue Direction:** `FORM_PRIMARY → CONVERSATIONAL_INTAKE_PRIMARY`
+>
+> FT1·FT2 결과는 Historical Evidence로 보존한다. Form 완성 후속은 Primary 경로에서 `SUPERSEDED`이며 Form은 Optional Fallback이다.
+> 다음 후보는 `CI-01 (대화형 요청 입력규격 확정)`과 부분 병렬 가능한 `CI-02 (Notion 업무요청·Task 운영구조 정리)`다.
+> 이후 순서는 `CI-03 → CI-04 → CI-05 → CI-06 → CI-07`이며 자동 실행하지 않는다.
+
 > Canonical planning state is maintained in `orchestration/plan/master-workmap.yaml` by GPT. Agent execution state is recorded only in `orchestration/runs` and `orchestration/handoffs`.
 >
 > 이 파일은 사람용 요약 View와 Historical Queue다. 현재 상태는 [Generated Current State](../orchestration/generated/current-state.md), 실행 가능 후보는 [Generated Ready Work](../orchestration/generated/ready-work.md)를 참고한다.
 
 Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될 때만 이 파일을 갱신하며, 선행 Gate를 통과하지 않은 TAP은 실행하지 않는다.
 
-**Queue 전체 상태:** `PAUSED_FOR_AG_P3_REVIEW`
+**Queue 전체 상태:** `PAUSED_FOR_CONVERSATIONAL_INTAKE_TRANSITION_REVIEW`
 
 **현재 Checkpoint:** `CP-00-O3 — COMPLETED`
 
@@ -18,7 +24,7 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 
 **최근 실행:** `TAP CP-00-O3 — COMPLETED`
 
-**다음 READY 후보:** `AG-P3 — GPT_AND_USER`
+**다음 READY 후보:** `CI-01 — GPT_AND_USER_WITH_CODEX_BUILDER`, `CI-02 — CODEX`; `AG-P3` 병렬 Formal Review
 
 ## 자동 실행 Checkpoint
 
@@ -99,13 +105,13 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 | C6N | CP-05-N1 | Repository Rename·Reference Alignment | CP-05-S1 | COMPLETED | Repository Governance | 새 Remote·현행 참조 정렬 |
 | C6R | CP-05-S1-R1 | 사용자 UI Form·Skeleton 안정화 검토 | CP-05-N1 | PARTIAL_WITH_UI_ACTIONS | MD-01,02,03,06 | Form 질문·Filter·Rollup UI 검증 필요 |
 | C6A | GPT_UI_REVIEW | S1-R1 결과 검토 | CP-05-S1-R1 | COMPLETED_P2_AUTHORIZED | MD-01,02,03,06 | UI Gap은 비차단 Workstream |
-| C6U | N-04 UI_WORKSTREAM | First Form UI 안정화 | AG-P2 승인 | READY_FOR_USER_UI | MD-03,06 | Notion AI·사용자 UI 담당 |
+| C6U | N-04 UI_WORKSTREAM | First Form UI 안정화 | AG-P2 승인 | OPTIONAL_BACKLOG | MD-03,06 | Form Fallback; 대화형 Intake 비차단 |
 | C7 | CP-05-R1 | 이전 Codex TI TAP | DEC-CP05-08 | REMOVE_AS_CODEX_TAP | 없음 | 실행 금지 |
 | C7A | GPT-USER-COMMUNICATION-MILESTONE | Skeleton Intermediate Reporting | S1 완료 후 사용자 판단 | OPTIONAL_AFTER_S1 | CM-01 | P2 비차단 |
 | C8 | CP-05-P2 | Status & Evidence·Human Control Model | S1 Stabilization·GPT UI Review | COMPLETED_WITH_OPEN_UI_GAPS | MD-04 | 실제 Notion 변경 0 |
 | C8A | AG-P2 | P2 Contract GPT·사용자 승인 | CP-05-P2 | APPROVED | MD-04,05 | Q1~Q10 APPROVE |
 | C9 | CP-05-P3 | Process-to-Notion Mapping | AG-P2 승인·J-01 | BLOCKED_UNTIL_J01 | MD-02,05 | N-05 등 J-01 입력 대기 |
-| C10 | CP-05-P4 | Intake·Collaboration Model | P3 승인 | BLOCKED_BY_PREVIOUS_APPROVAL | MD-03,06 | P3 승인 대기 |
+| C10 | CP-05-P4 | Conversational Intake·Collaboration Model | AG-P3·CI-07 | BLOCKED_BY_PREVIOUS_APPROVAL | MD-03,06 | 대화형 Fast Track·Formal 승인 대기 |
 | C11 | CP-05-P5 | Pilot-ready MVP Build Spec | P4 승인 | BLOCKED_BY_PREVIOUS_APPROVAL | MD-01~07 | Build 승인 명세 대기 |
 | C12 | CP-05-B1 | Pilot-ready Notion MVP Revision | P5 Build 승인 | BLOCKED_UNTIL_BUILD_APPROVAL | MD-01~07 | Build 승인 대기 |
 | C13 | CP-05-B2 | Manual Pilot A | B1 QA·실제 조합 승인 | PILOT_A_SCOPE_DECIDED_BUT_TARGET_PENDING | MD-07 | AG-20B~22 대기 |
@@ -123,20 +129,20 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 | CP-00-O2 | Run `COMPLETED`; AG-P2 승인 기록 | N-04 Handoff |
 | CP-05-P2 | Execution `COMPLETED`; Plan `APPROVED` | 결과 보존 |
 | AG-P2 | `APPROVED`; Q1~Q10 APPROVE | J-01 입력 |
-| N-04 | `COMPLETED_WITH_FORM_UI_DEFERRED` | UI 최종 구성 Backlog |
+| N-04 | `COMPLETED_WITH_FORM_UI_DEFERRED` | Optional Form UI Backlog; 대화형 Intake 비차단 |
 | N-05 | `VERIFIED` | J-01 근거 |
 | N-06 | `PARTIAL`; `REQUIRED_BEFORE_BUILD`; FUND Rollup 검증 완료, Task 관련 조합 Rollup 대기 | J-02 선행조건 미충족 |
 | CP-05-FT1-LR | `COMPLETED_WITH_UI_GAPS`; FT-03 Relation과 FT-04 E2E PASS | `PAUSED_FOR_FAST_TRACK_REVIEW` |
-| FT-01 (1차 조합 예정 등록 Form 정리) | `MINIMUM_USABLE_WITH_USER_UI_BACKLOG` | 사용자 UI |
-| FT-02 (2차 지원팀 업무요청 Form 완성) | `PARTIAL_WITH_UI_ACTION` | Notion AI → 사용자 UI |
+| FT-01 (1차 조합 예정 등록 Form 정리) | `SUPERSEDED`; 실행 결과 보존 | Optional Fallback |
+| FT-02 (2차 지원팀 업무요청 Form 완성) | `SUPERSEDED`; 실행 결과 보존 | Optional Fallback |
 | FT-03 (조합 Record와 업무요청 연결) | `VERIFIED` | 완료 |
-| FT-04 (업무요청·Task E2E 테스트) | `VERIFIED_EXCEPT_ROLLUP_UI` | Rollup UI 확인 필요 |
-| FT-05 (Pilot 사용 가능 여부 판정) | `READY_WITH_USER_UI_FIX` | GPT·정상준 검토 |
+| FT-04 (업무요청·Task E2E 테스트) | `VERIFIED_WITH_FORM_EXCLUDED` | DB E2E 결과를 CI-02·04에서 재사용 |
+| FT-05 (Pilot 사용 가능 여부 판정) | `SUPERSEDED`; 당시 `READY_WITH_USER_UI_FIX` 보존 | CI-05로 대체 |
 | J-01 | `PASSED` | P3 Input Gate 완료 |
 | CP-05-P3 | Execution `COMPLETED_WITH_GAPS`; Plan `APPROVAL_REQUIRED` | AG-P3 검토 |
 | CP-00-O3 | `COMPLETED` | N-06·Conflict·Gap·AG-P3 Packet 정합화 |
 | AG-P3 | `READY_FOR_GPT_USER_REVIEW` | 통합 질문 7개 승인 필요 |
-| CP-05-P4 | `BLOCKED_BY_AG_P3` | 자동 실행 금지 |
+| CP-05-P4 | `BLOCKED_BY_AG_P3_AND_CI_07` | 대화형 Intake·협업 운영모델; 자동 실행 금지 |
 | J-02 | `BLOCKED`; Build Readiness | AG-P3·후속 P4/P5 설계 승인·Build WO 대기; N-06 충족 |
 
 ### CP-05-P0 Claude Finding 상태

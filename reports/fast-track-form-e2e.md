@@ -1,5 +1,7 @@
 # CP-05-FT1-LR Form Fast Build and E2E Test
 
+> **Supersession Note (2026-07-24):** 본 보고서의 DB CRUD·Relation·상태 전이 결과는 대화형 Intake 경로에서 재사용한다. Form UI 완성은 Primary Intake 전제에서 제외됐으며 당시 판정은 변경하지 않는다. 결정은 `decisions/conversational-intake-transition.md`를 참조한다.
+
 ## Executive Summary
 
 Fast Track 결과는 `READY_WITH_USER_UI_FIX`다. API 기반 Request→Task E2E는 완료했지만 2차 Form 질문 구성과 Task Rollup UI 확인이 남았다.

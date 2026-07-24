@@ -1,5 +1,7 @@
 # Notion Operations Control Plane Master Roadmap
 
+> **Current Direction (2026-07-24):** Primary Intake는 Form에서 대화형 Interface로 전환됐다. Form은 Optional Fallback이며, 현재 실행 계획은 `plans/conversational-intake-roadmap.md`와 `orchestration/plan/master-workmap.yaml`을 따른다. 기존 Roadmap 내용은 Historical Design Context로 보존한다.
+
 ## Control
 
 - 현재 허용 Stage: `CP-05-P0-R`
@@ -19,7 +21,7 @@
 | CP-05-S1 | Fast Notion Skeleton Build | 실제 UI·Relation 검증 없음 | 최소 2개 DB Skeleton·Relation·View·테스트 Record | P1 Architecture, 생성 위치·권한 | 업무 DB·Task DB Skeleton, Build Log, Skeleton QA | P1 완료, AG-02~04 결정, AG-S1 승인 | 2개 DB·Relation·테스트 연결·수동 상태변경·UI 확인, Scope 외 0 | MD-01,02,06 | AG-S1 | 검토 준비 | 필수 | 최소 Property 최종값 | Automation·Slack·Agent Write·전체 Mapping·P05/06/09/10/11 금지 | 승인된 Notion Skeleton과 Build 기록 | CP-05-P2 |
 | CP-05-P2 | Status & Evidence Model | Skeleton에 최소 상태만 존재 | 업무/Task 상태·Blocker·전이·증빙 | P1 Architecture, S1 UI 관찰, Process 완료조건 | 상태·증빙·전이 명세 | S1 Review 완료 | AG-07~09·15·18 결정 | MD-04 | AG-07~09,15,18 | 선택 | 필수 | 대기 세분화·최소 증빙 | 상태 Automation 금지 | `notion/schema/**`, `notion/mappings/**`, `decisions/**` | CP-05-P3 |
 | CP-05-P3 | Process-to-Notion Mapping | Process Atomic Task와 운영 추적 단위 연결 없음 | Atomic→Operational Task 집약·Milestone·Agent 재분해 Mapping | Pilot A Process 03·04·07·08, Variation, P1~P2, S1 | Mapping Coverage와 Task Template 명세 | P2 승인 | Atomic ID, Operational ID, 집약 근거, 추적가치, 재분해, 증빙, Milestone 검증 | MD-02,05 | AG-10~12 | 필수 | 필수 | 집약·Rework·P11 | Process 전체 복제·Task 생성 구현 금지 | `notion/mappings/**`, 보고서, decisions | CP-05-P4 |
-| CP-05-P4 | Intake·Collaboration | Slack·구두·실물 분산 | Form·Mention·알림 Event | P1~P3, 역할 모델 | Form·Dashboard·알림 명세 | P3 승인 | AG-13~19 결정 | MD-03,06 | AG-13~19 | 선택 | 필수 | 작성자·채널·자동 댓글 | 댓글·알림 구현 금지 | `notion/schema/**`, `notion/mappings/**`, decisions | CP-05-P5 |
+| CP-05-P4 | Conversational Intake·Collaboration | Slack·구두·실물 분산과 Form UI 의존 | 공통 Intake Contract·누락질문·Actor Handoff·Request/Task 생성·Slack/Skill Interface | P1~P3, CI-01~07 결과, 역할 모델 | 대화형 Intake·협업 운영모델 명세 | AG-P3·CI-07 승인 | AG-13~19 및 대화형 Pilot 조건 결정 | MD-03,06 | AG-13~19 | 선택 | 필수 | 입력규격·채널·자동 댓글 | 실제 Slack·Agent Write·알림 구현 금지 | `contracts/**`, `notion/mappings/**`, decisions | CP-05-P5 |
 | CP-05-P5 | Pilot-ready MVP Build Specification | Skeleton과 설계 조각 존재 | Skeleton Revision 가능한 단일 명세 | P1~P4, S1 관찰 | Build Spec·QA·Rollback 계획 | P4 승인 | 미결 Build Gate 0, 사용자 Build 승인 | MD-01~07 | AG-04~22,AG-S1 | 필수 | 필수 | 실제 Pilot 조합·Threshold | Build 착수 금지 | `notion/**` 명세, reports, decisions | CP-05-B1 |
 | CP-05-B1 | Pilot-ready Notion MVP Revision | 최소 Skeleton만 존재 | P2~P5 상태·Mapping·Form 적용 | P5 승인 Spec, S1 Build Log | Pilot-ready MVP와 Build QA | Build 승인 | Schema·권한·Pilot A Mapping QA PASS | MD-01~07 | AG-04~19,AG-S1 | 선택 | 필수 | 실제 Pilot 조합 | 승인 밖 DB·Automation 금지 | `notion/schema/**`, Build 기록 | CP-05-B2 |
 | CP-05-B2 | Manual Pilot A | Pilot-ready 구조, 운영 Record 없음 | P03→P04→P07→필요 시 P08 수동 운영 | Build QA, AG-20A, AG-20B~22 | Pilot 기록·Issue·사용성 Metrics | B1 QA, Pilot 승인 | 구조 완전성·상태 최신성·사용 부담·협업 가시성·지속가능성 평가 | MD-07 | AG-20A,20B,21,22 | 필수 | 필수 | 실제 조합·기간·Threshold | P05/06/09/10/11·Automation·Agent Write 금지 | `notion/pilot/**`, reports | CP-05-B3 |
@@ -39,7 +41,7 @@
 | CP-05-S1 | 실제 UI·Relation 없음 | 최소 2개 DB Skeleton | Skeleton·Build Log·QA | AG-S1 | 최소 Property 확정 |
 | CP-05-P2 | 상태·증빙 기준 없음 | 업무·Task 상태, Blocker, 완료조건, 증빙, 전이 | Status & Evidence Model | AG-07~09,15,18 | 외부/관리역 대기, 최소 증빙 |
 | CP-05-P3 | Process 문서만 존재 | Process→Task Template·Trigger·IO·Actor·Evidence·Next·Exception | Mapping Spec | AG-10~12 | 전체 Task, Milestone, 반복 보완 |
-| CP-05-P4 | 분산 Intake·알림 없음 | Form·Mention·Slack Event·알림 상태 | Intake & Collaboration Spec | AG-13~19 | 작성 주체, 채널 우선, 자동 댓글 |
+| CP-05-P4 | 분산 Intake·알림 없음 | 대화형 Intake·누락질문·Human Approval·Slack/Skill Interface·알림 상태 | Conversational Intake & Collaboration Spec | AG-13~19·CI-07 | Contract 승인, 채널 우선, 자동 댓글 |
 | CP-05-P5 | 설계만 존재 | Build 가능한 완전한 명세 | MVP Build Spec | AG-04~22 | 생성 방식, API·Automation, Pilot |
 | CP-05-B1~B3 | Skeleton만 존재 | Pilot-ready Revision→Manual Pilot A→Schema Revision | 검증된 MVP | AG-20A,20B~24 | Pilot 조합·기간·Threshold |
 | CP-06 | 사람 직접 수행 | 제안·알림·Task 자동화 | Assisted Automation | AG-24,25 | Read·생성 범위 |

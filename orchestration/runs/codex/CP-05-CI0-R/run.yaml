@@ -1,0 +1,22 @@
+{
+  "run_id": "RUN-CP-05-CI0-R-001",
+  "work_item_id": "CP-05-CI0-R",
+  "agent": "CODEX",
+  "base_commit": "ef6f2a6a1163f7e6448f84b48566d56c970e85b1",
+  "run_status": "COMPLETED",
+  "started_at": "2026-07-24",
+  "completed_at": "2026-07-24",
+  "scope": "Repository impact audit and conversational intake workmap realignment",
+  "outputs": [
+    "reports/conversational-intake-transition-impact.md",
+    "decisions/conversational-intake-transition.md",
+    "plans/conversational-intake-roadmap.md",
+    "contracts/conversational-intake-contract.yaml",
+    "orchestration/plan/master-workmap.yaml"
+  ],
+  "actual_notion_changed": false,
+  "actual_slack_changed": false,
+  "claude_skill_built": false,
+  "next_owner": "GPT_AND_USER_THEN_CODEX",
+  "auto_execute": false
+}

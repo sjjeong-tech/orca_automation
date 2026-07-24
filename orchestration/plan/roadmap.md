@@ -1,29 +1,35 @@
 # Current Orchestration Roadmap
 
 ```text
-CP-04
-→ CP-05-P0/P1/S1/N1/S1-R1
-→ CP-05-P2 execution complete
-→ CP-00-O1 orchestration bootstrap
-→ AG-P2 approved ───────────────┐
-                                ├→ J-01 passed → CP-05-P3 → AG-P3 → CP-05-P4
-N-04/N-05 verified ─────────────┘
-                  └→ N-06 PARTIAL/Task Rollup pending → J-02 Build Readiness
+CP-05-P3 ──→ AG-P3 (프로세스-Notion Mapping 승인; Formal Review)
+    │
+    ├──→ CI-01 (대화형 요청 입력규격 확정) ──→ CI-03 (자연어 해석·누락질문)
+    │                │                                  │
+    └──→ CI-02 (Notion 운영구조 정리) ──────────────────┴──→ CI-04 (Request·Task 기록)
+                                                                ↓
+                                                          CI-05 (Skill E2E)
+                                                           ├─→ CI-06 (Slack Pilot)
+                                                           └─→ CI-07 (운영 개선)
 ```
 
-- CP-05-P2 계획 상태: `APPROVED`
-- AG-P2: `APPROVED`, Q1~Q10 승인
-- N-04: DB 직접 생성 검증 완료, Form UI는 Backlog
-- N-05: `VERIFIED`
-- J-01: `PASSED`
-- P3: 실행 완료, `AG-P3` 승인 대기
-- N-06: `PARTIAL / REQUIRED_BEFORE_BUILD`; FUND Relation·Rollup 검증 완료, Task `관련 조합` Rollup 실제값 검증 대기
-- P4: `AG-P3` 전 실행 금지
-- J-02: AG-P3·후속 P4/P5 설계 승인·N-06 Task Rollup 검증·Build Work Order 때문에 차단
-- Claude Review: GPT Work Order가 발행될 때만 실행
+## Canonical 방향
 
-## Form 실행 R&R
+- Primary Intake: Slack·Claude Code Skill·GPT·Codex를 통한 자연어 대화
+- Canonical Record: Notion `지원팀 업무요청`과 `지원팀 Task`
+- Form: Optional Fallback
+- Notion AI: 사용자 명시 요청 시에만 가능한 한시적 선택 도구
+- N-06: Form이 아닌 Task 관련 조합 Rollup DB Validation
 
-`CODEX → USER` 순서로 수행한다. Codex는 DB CRUD와 Form Capability Probe를 먼저 수행하고, 질문 편집이나 실제 제출이 지원되지 않을 때 사용자 UI로 이관한다. Notion AI는 기본 Owner·Dependency가 아니며 사용자 명시 요청 또는 승인된 2026-07-29 이전 예외에서만 사용한다.
+## Form Fast Track 처분
 
-이 파일과 같은 `plan/**`은 GPT 소유다. Agent는 변경 필요 시 Proposal을 제출한다.
+- FT-01·FT-02·FT-05: `SUPERSEDED`, 결과 보존, 비차단
+- FT-03: Relation 검증 결과 재사용
+- FT-04: Form을 제외한 Request→Task DB E2E 결과 재사용
+
+## AG-P3와 P4
+
+AG-P3는 P3 Formal Approval로 유지하지만 CI-01·CI-02 탐색과 Prototype 계획을 차단하지 않는다. CP-05-P4는 `Conversational Intake and Collaboration Model (대화형 요청 접수·협업 운영모델)`로 재정의되며 자동 실행하지 않는다.
+
+## 실행 통제
+
+CI-01 또는 CI-02를 실제 실행하려면 GPT Work Order가 필요하다. 실제 Notion Write, Slack 연동, Claude Code Skill 구현은 각각 별도 승인·Work Order 전까지 금지된다.
