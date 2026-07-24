@@ -16,13 +16,13 @@ P01·P03·P04·P07·P08의 Atomic Task 61개를 요청 Lifecycle, Operational Ta
 - N-06 Build Test Contract
 - AG-P3 승인 패킷
 
-## P3 이후 검증 완료
+## P3 이후 확인된 별도 검증
 
-- N-06 Relation 저장 PASS
+- `TO DO LIST (FUND)` Relation 저장 PASS
 - 올바른 `전체관리조합` Record 연결 PASS
 - GP명·조합구분·담당자·담당자(변경후) Rollup 표시 PASS
-- `N-06=VERIFIED`
-- `REQUIRED_BEFORE_BUILD` 조건 충족
+
+위 검증은 FUND 원본 Record의 Rollup 검증이다. P3 N-06 계약인 `지원팀 Task.상위 요청 → 지원팀 업무요청.관련 조합 → 지원팀 Task.관련 조합` 실제값 검증은 아직 남아 있다.
 
 ## 변경하지 않은 것
 
@@ -30,4 +30,4 @@ P01·P03·P04·P07·P08의 Atomic Task 61개를 요청 Lifecycle, Operational Ta
 
 ## 다음 Gate
 
-GPT와 사용자가 AG-P3 Q1~Q10을 검토한다. 승인 전 CP-05-P4는 차단된다. 실제 Build는 P4 승인, J-02와 별도 Notion Build Work Order 전까지 차단된다. N-06은 더 이상 Build Blocker가 아니다.
+GPT와 사용자가 AG-P3 Q1~Q10을 검토한다. 승인 전 CP-05-P4는 차단된다. 실제 Build는 N-06 Task Rollup 검증, P4 승인, J-02와 별도 Notion Build Work Order 전까지 차단된다.
