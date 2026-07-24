@@ -195,7 +195,7 @@ export function prepareTransaction(text, options = {}) {
       fund: fundMatches.length === 1
         ? { status: "EXISTING", name: fundMatches[0].name ?? intake.related_fund, page_id: fundMatches[0].page_id, url: fundMatches[0].url }
         : fundMatches.length === 0
-          ? { status: "CREATE_ON_COMMIT", page_id: null, url: null }
+          ? { status: "NO_MATCH", action: "BLOCK_AND_ASK", page_id: null, url: null }
           : { status: "AMBIGUOUS", candidates: fundMatches },
       requester: requesterMatches.length === 1
         ? { status: "RESOLVED", person_id: requesterMatches[0].person_id }
@@ -217,6 +217,7 @@ export function prepareTransaction(text, options = {}) {
     prepare_complete:
       missing.length === 0 &&
       !Object.values(ambiguous).some(Boolean) &&
+      fundMatches.length === 1 &&
       requesterMatches.length === 1 &&
       managerMatches.length === 1 &&
       Boolean(processMapping)
@@ -224,10 +225,10 @@ export function prepareTransaction(text, options = {}) {
 }
 
 export function buildTransactionPreview(prepared, contract = loadContract(), options = {}) {
-  const fundWillBeCreated = prepared.resolution.fund.status === "CREATE_ON_COMMIT";
+  const fundResolved = prepared.resolution.fund.status === "EXISTING";
   const blocked =
     !prepared.prepare_complete ||
-    prepared.resolution.fund.status === "AMBIGUOUS" ||
+    !fundResolved ||
     prepared.duplicate_requests.length > 0;
   const processMapping = resolveProcessMapping(prepared.intake.request_type);
   const tasks = buildTasks(prepared.intake, contract, {
@@ -236,9 +237,10 @@ export function buildTransactionPreview(prepared, contract = loadContract(), opt
   });
   const commitPlan = {
     fund: {
-      action: fundWillBeCreated ? "CREATE" : "USE_EXISTING",
+      resolution: prepared.resolution.fund.status,
+      action: fundResolved ? "USE_EXISTING" : "BLOCK_AND_ASK",
       page_id: prepared.resolution.fund.page_id,
-      planned_writes: fundWillBeCreated ? 1 : 0
+      planned_writes: 0
     },
     request: {
       action: blocked ? "BLOCKED" : "CREATE",
@@ -299,19 +301,14 @@ export async function commitTransaction(preview, { approved = false, adapter, ex
   log.task_page_ids ??= {};
   let writes = 0;
 
-  try {
-    if (!log.fund_page_id) {
-      if (preview.commit_plan.fund.action === "CREATE") {
-        const fund = await adapter.createFund(preview);
-        log.fund_page_id = fund.page_id;
-        log.fund_url = fund.url;
-        writes += 1;
-      } else {
-        log.fund_page_id = preview.commit_plan.fund.page_id;
-      }
-    }
-  } catch (error) {
-    return { stage: "FAILED", failed_at: "FUND_CREATE", actual_write_count: writes, error: error.message, execution_log: log };
+  if (!log.fund_page_id) log.fund_page_id = preview.commit_plan.fund.page_id;
+  if (!log.fund_page_id) {
+    return {
+      stage: "COMMIT_BLOCKED",
+      reason: "EXACTLY_ONE_EXISTING_FUND_REQUIRED",
+      actual_write_count: 0,
+      execution_log: log
+    };
   }
 
   try {

@@ -85,16 +85,18 @@
     },
     "preview": {
       "existing_fund": "SHOW_EXISTING_PAGE_ID",
-      "missing_fund": "SHOW_CREATE_ON_COMMIT",
+      "missing_fund": "BLOCK_AND_ASK",
       "show_planned_writes": ["FUND", "REQUEST", "TASK"],
       "notion_write_count": 0
     },
     "commit": {
       "requires_explicit_approval": true,
-      "order": ["CREATE_OR_REUSE_FUND", "REREAD_FUND_ID", "CREATE_REQUEST", "VERIFY_REQUEST_FUND_RELATION", "CREATE_TASKS", "VERIFY_TASK_RELATION_AND_ROLLUP"]
+      "order": ["REUSE_EXACTLY_ONE_EXISTING_FUND", "REREAD_FUND_ID", "CREATE_REQUEST", "VERIFY_REQUEST_FUND_RELATION", "CREATE_TASKS", "VERIFY_TASK_RELATION_AND_ROLLUP"],
+      "fund_creation_inside_transaction": false
     },
     "failure_control": {
-      "fund_failure": "STOP_ALL",
+      "fund_no_match": "BLOCK_AND_ASK_BEFORE_COMMIT",
+      "fund_multiple_matches": "BLOCK_AND_REQUIRE_USER_SELECTION",
       "request_failure": "DO_NOT_CREATE_TASKS",
       "partial_task_failure": "LOG_CREATED_AND_MISSING_TASKS",
       "retry": "REUSE_TRANSACTION_LOG_AND_CREATE_MISSING_ONLY",

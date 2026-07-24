@@ -70,7 +70,13 @@ Request 본문 템플릿은 업무 실행 기본 템플릿의 9개 섹션을 렌
 - 기존 TEST Record 변경: 0
 - Schema·View·Filter 변경: 0
 
+## N-06 Verification Basis
+
+- 상태: `VERIFIED`
+- Notion UI에서 사용자와 GPT가 Task 6건의 `관련 조합` Rollup 표시를 확인했다.
+- API 재조회에서는 Rollup 실제값이 `<omitted />`로 반환됐다.
+- 따라서 API 자동검증은 제한되며, 현재 Canonical 완료 근거는 사용자 Notion UI 육안검증이다.
+
 ## Known Boundary
 
 업무별 조건부 입력값은 Contract에 구조만 추가했다. E2E-03 원문에서 확정되지 않은 신기술사업투자조합 Trigger·증빙, 규약 버전 허용 기준 등은 자동 규칙으로 만들지 않았다.
-

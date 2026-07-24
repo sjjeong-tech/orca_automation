@@ -97,8 +97,29 @@ const missingFundPrepared = prepareTransaction(transactionInput, {
 });
 const missingFundPreview = buildTransactionPreview(missingFundPrepared);
 assert.equal(missingFundPreview.actual_write_count, 0);
-assert.equal(missingFundPreview.commit_plan.fund.action, "CREATE");
-assert.equal(missingFundPreview.planned_write_count, 8);
+assert.equal(missingFundPrepared.resolution.fund.status, "NO_MATCH");
+assert.equal(missingFundPreview.commit_plan.fund.resolution, "NO_MATCH");
+assert.equal(missingFundPreview.commit_plan.fund.action, "BLOCK_AND_ASK");
+assert.equal(missingFundPreview.commit_plan.fund.planned_writes, 0);
+assert.equal(missingFundPreview.planned_write_count, 0);
+assert.equal(missingFundPreview.commit_allowed, false);
+
+const ambiguousFundPrepared = prepareTransaction(transactionInput, {
+  transaction_id: "TX-AMBIGUOUS-FUND",
+  fund_matches: [
+    { page_id: "fund-a", name: "가상조합1호" },
+    { page_id: "fund-b", name: "가상조합1호" }
+  ],
+  requester_matches: person,
+  manager_matches: person
+});
+const ambiguousFundPreview = buildTransactionPreview(ambiguousFundPrepared);
+assert.equal(ambiguousFundPrepared.resolution.fund.status, "AMBIGUOUS");
+assert.equal(ambiguousFundPrepared.resolution.fund.candidates.length, 2);
+assert.equal(ambiguousFundPreview.commit_plan.fund.action, "BLOCK_AND_ASK");
+assert.equal(ambiguousFundPreview.commit_plan.fund.planned_writes, 0);
+assert.equal(ambiguousFundPreview.commit_allowed, false);
+assert.equal(ambiguousFundPreview.actual_write_count, 0);
 
 const existingFundPrepared = prepareTransaction(transactionInput, {
   transaction_id: "TX-EXISTING-FUND",
@@ -115,15 +136,10 @@ assert.equal(existingFundPreview.commit_plan.request.next_action, "신청 필요
 assert.equal(existingFundPreview.commit_plan.request.blocker, "서류 미전달");
 assert.ok(existingFundPreview.commit_plan.tasks.records.every((task) => task.process_id === "P03"));
 
-function mockAdapter({ failFund = false, failRequest = false, failTaskId = null } = {}) {
+function mockAdapter({ failRequest = false, failTaskId = null } = {}) {
   const calls = { fund: 0, request: 0, tasks: [] };
   return {
     calls,
-    async createFund() {
-      calls.fund += 1;
-      if (failFund) throw new Error("FUND_FAIL");
-      return { page_id: "fund-created", url: "https://example.invalid/fund-created" };
-    },
     async createRequest() {
       calls.request += 1;
       if (failRequest) throw new Error("REQUEST_FAIL");
@@ -146,11 +162,16 @@ assert.equal(normalCommit.actual_write_count, 7);
 assert.equal(normalAdapter.calls.fund, 0);
 
 const requestFailAdapter = mockAdapter({ failRequest: true });
-const requestFail = await commitTransaction(missingFundPreview, { approved: true, adapter: requestFailAdapter });
+const requestFail = await commitTransaction(existingFundPreview, { approved: true, adapter: requestFailAdapter });
 assert.equal(requestFail.stage, "FAILED");
 assert.equal(requestFail.failed_at, "REQUEST_CREATE_OR_RELATION_VERIFY");
-assert.equal(requestFail.actual_write_count, 1);
+assert.equal(requestFail.actual_write_count, 0);
 assert.equal(requestFailAdapter.calls.tasks.length, 0);
+
+const missingFundCommit = await commitTransaction(missingFundPreview, { approved: true, adapter: mockAdapter() });
+assert.equal(missingFundCommit.stage, "COMMIT_BLOCKED");
+assert.equal(missingFundCommit.reason, "PREVIEW_NOT_COMMITTABLE");
+assert.equal(missingFundCommit.actual_write_count, 0);
 
 const taskFailAdapter = mockAdapter({ failTaskId: "P03-T03" });
 const taskPartial = await commitTransaction(existingFundPreview, { approved: true, adapter: taskFailAdapter });

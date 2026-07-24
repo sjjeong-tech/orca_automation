@@ -88,7 +88,10 @@
       "downstream": ["J-02"], "blocking_reason": "", "source_of_truth": "CI-05 user pilot transaction verification", "updated_by": "CODEX_CP-05-CI2-CANONICAL-ALIGNMENT", "updated_at": "2026-07-24",
       "execution_status": "VERIFIED", "classification": "REQUIRED_BEFORE_BUILD", "requirement_satisfied": true, "blocking_for_P3": false, "blocking_for_J02": false, "downstream_gate": "J-02",
       "label_ko": "Task 관련 조합 Rollup 검증", "short_description_ko": "Form과 무관한 Request→Task 관련 조합 Rollup 실제값 검증", "current_status_ko": "검증 완료", "next_action_ko": "실행 인스턴스 검증 결과를 CI-08 이후에도 유지",
-      "verified_subtests": ["TO_DO_LIST_FUND_RELATION_STORAGE_PASS", "TO_DO_LIST_FUND_GP_ROLLUP_PASS", "TO_DO_LIST_FUND_TYPE_ROLLUP_PASS", "TO_DO_LIST_FUND_MANAGER_ROLLUP_PASS"],
+      "verified_subtests": ["TO_DO_LIST_FUND_RELATION_STORAGE_PASS", "TO_DO_LIST_FUND_GP_ROLLUP_PASS", "TO_DO_LIST_FUND_TYPE_ROLLUP_PASS", "TO_DO_LIST_FUND_MANAGER_ROLLUP_PASS", "TASK_SIX_RELATED_FUND_ROLLUP_UI_PASS"],
+      "verification_evidence": ["Notion UI에서 Task 6건의 관련 조합 Rollup 표시 확인", "API 재조회에서는 Rollup 값이 <omitted />로 반환됨", "API 자동검증 한계로 UI 육안검증을 Canonical 완료 근거로 사용"],
+      "verification_method": "USER_NOTION_UI_VISUAL_CONFIRMATION",
+      "api_verification_status": "LIMITED_ROLLUP_VALUE_OMITTED",
       "remaining_test": ""
     },
     {
@@ -257,7 +260,7 @@
       ],
       "satisfied_inputs": ["N-05=VERIFIED"],
       "optional_inputs": [], "owner": "GPT_AND_USER",
-      "blocking_reason": "P3 approval, P4 approval, N-06 Task Rollup validation and Notion Build Work Order pending"
+      "blocking_reason": "P3 approval, P4 approval and Notion Build Work Order pending"
     }
   ],
   "approval_gates": [
