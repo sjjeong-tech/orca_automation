@@ -1,13 +1,18 @@
 # CP-05-P3 Gap Analysis
 
-## Resolved after P3 run
+## Verified subtests after P3 run
 
-1. **N-06 Relation·Rollup 실제값**: 올바른 `전체관리조합` Record 연결 후 GP명·조합구분·담당자·담당자(변경후) Rollup 표시를 사용자 화면에서 검증했다. `N-06=VERIFIED`, Build 선행조건 충족으로 처리한다.
+- `TO DO LIST (FUND)`의 `조합명 또는 제목` Relation 저장 PASS
+- 올바른 `전체관리조합` Record 연결 PASS
+- GP명·조합구분·담당자·담당자(변경후) Rollup 표시 PASS
+
+위 결과는 원본 FUND Record의 Rollup 검증이며, 아래 N-06 Task Rollup 계약과는 구분한다.
 
 ## Build-blocking
 
-1. **P2 상태의 실제 Notion 옵션 적용**: 현재 Skeleton 3상태와 승인 계약 7/6상태 차이.
-2. **J-02**: P3·P4 승인과 Notion Build Work Order 필요. N-05·N-06·Relation/Rollup 조건은 충족됐다.
+1. **N-06 Task 관련 조합 Rollup 실제값**: `지원팀 Task.상위 요청` → `지원팀 업무요청.관련 조합` → `지원팀 Task.관련 조합` 경로의 실제값 미검증.
+2. **P2 상태의 실제 Notion 옵션 적용**: 현재 Skeleton 3상태와 승인 계약 7/6상태 차이.
+3. **J-02**: P3·P4 승인, N-06 Task Rollup 검증, Notion Build Work Order 필요.
 
 ## 경로별 조건부 차단
 
@@ -27,4 +32,4 @@
 - 기존 Form UI 검증 오류의 플랫폼 일반화 여부
 - 독립 CASE 부족과 인터뷰 V2 미착수
 
-Open Conflict는 [P3 conflict log](../conflicts/p3-open-conflicts.md)의 6개다. P3에서 추정으로 닫은 항목은 없으며, P3 이후 실측으로 P3-C03만 해소했다.
+Open Conflict는 [P3 conflict log](../conflicts/p3-open-conflicts.md)의 7개다. P3에서 추정으로 닫은 항목은 없다.
