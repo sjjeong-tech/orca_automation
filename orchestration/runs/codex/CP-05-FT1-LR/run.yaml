@@ -1,0 +1,19 @@
+{
+  "run_id": "RUN-CP-05-FT1-LR-001",
+  "work_item_id": "CP-05-FT1-LR",
+  "agent": "CODEX",
+  "base_commit": "e7ba2a147e3be25f2c3b112312340a8263c04c3e",
+  "run_status": "COMPLETED_WITH_GAPS",
+  "started_at": "2026-07-24",
+  "completed_at": "2026-07-24",
+  "outputs": [
+    "reports/fast-track-form-e2e.md",
+    "reports/notion-crud-capability.md",
+    "reports/manual-pilot-readiness.md"
+  ],
+  "validation_result": "E2E_PASS_WITH_FORM_AND_ROLLUP_UI_ACTIONS",
+  "notion_test_request": "https://app.notion.com/p/3a772a41d9d781209bc2fc30557d4824",
+  "test_task_count": 6,
+  "next_owner": "GPT_AND_USER",
+  "auto_execute": false
+}

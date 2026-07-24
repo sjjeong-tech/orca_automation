@@ -126,6 +126,12 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 | N-04 | `COMPLETED_WITH_FORM_UI_DEFERRED` | UI 최종 구성 Backlog |
 | N-05 | `VERIFIED` | J-01 근거 |
 | N-06 | `PARTIAL`; `REQUIRED_BEFORE_BUILD`; FUND Rollup 검증 완료, Task 관련 조합 Rollup 대기 | J-02 선행조건 미충족 |
+| CP-05-FT1-LR | `COMPLETED_WITH_UI_GAPS`; FT-03 Relation과 FT-04 E2E PASS | `PAUSED_FOR_FAST_TRACK_REVIEW` |
+| FT-01 (1차 조합 예정 등록 Form 정리) | `MINIMUM_USABLE_WITH_USER_UI_BACKLOG` | 사용자 UI |
+| FT-02 (2차 지원팀 업무요청 Form 완성) | `PARTIAL_WITH_UI_ACTION` | Notion AI → 사용자 UI |
+| FT-03 (조합 Record와 업무요청 연결) | `VERIFIED` | 완료 |
+| FT-04 (업무요청·Task E2E 테스트) | `VERIFIED_EXCEPT_ROLLUP_UI` | Rollup UI 확인 필요 |
+| FT-05 (Pilot 사용 가능 여부 판정) | `READY_WITH_USER_UI_FIX` | GPT·정상준 검토 |
 | J-01 | `PASSED` | P3 Input Gate 완료 |
 | CP-05-P3 | Execution `COMPLETED_WITH_GAPS`; Plan `APPROVAL_REQUIRED` | AG-P3 검토 |
 | CP-00-O3 | `COMPLETED` | N-06·Conflict·Gap·AG-P3 Packet 정합화 |

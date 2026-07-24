@@ -108,10 +108,45 @@
       "downstream": ["CP-05-P4"], "blocking_reason": "WAITING_FOR_GPT_USER_REVIEW", "source_of_truth": "orchestration/approvals/ag-p3-review.yaml", "updated_by": "GPT_N06_SCOPE_CORRECTION", "updated_at": "2026-07-24"
     },
     {
+      "id": "FT-01", "title": "1차 조합 예정 등록 Form 정리", "owner": "CODEX_TO_NOTION_AI_TO_USER", "type": "FAST_TRACK_UI", "phase": "CP-05-FT1", "status": "APPROVED", "priority": 1,
+      "depends_on": ["N-05"], "input_gate": "SAFE_TEST_SCOPE", "required_inputs": ["Existing first form"], "allowed_paths": ["Notion TEST assets", "handoffs/**", "reports/**"], "forbidden_paths": ["operational records", "existing filters", "templates"],
+      "outputs": ["handoffs/user-ui/fast-track-FT-01.md"], "validation": ["MINIMUM_USABLE_WITH_USER_UI_BACKLOG"], "approval_required": false, "continuation_policy": "CONTINUE_FAST_TRACK",
+      "downstream": ["FT-02"], "blocking_reason": "", "source_of_truth": "reports/fast-track-form-e2e.md", "updated_by": "CODEX_CP-05-FT1-LR", "updated_at": "2026-07-24",
+      "execution_status": "MINIMUM_USABLE_WITH_USER_UI_BACKLOG"
+    },
+    {
+      "id": "FT-02", "title": "2차 지원팀 업무요청 Form 완성", "owner": "CODEX_TO_NOTION_AI_TO_USER", "type": "FAST_TRACK_UI", "phase": "CP-05-FT1", "status": "BLOCKED", "priority": 2,
+      "depends_on": ["FT-01"], "input_gate": "FORM_UI_CAPABILITY", "required_inputs": ["Existing second form"], "allowed_paths": ["Notion second form", "handoffs/**", "reports/**"], "forbidden_paths": ["operational records", "existing filters", "templates"],
+      "outputs": ["handoffs/notion-ai/fast-track-FT-02.md"], "validation": ["FORM_QUESTIONS_CONFIGURED"], "approval_required": false, "continuation_policy": "ESCALATE_TO_NOTION_AI_USER",
+      "downstream": ["FT-03"], "blocking_reason": "FORM_QUESTION_EDIT_UI_REQUIRED", "source_of_truth": "reports/fast-track-form-e2e.md", "updated_by": "CODEX_CP-05-FT1-LR", "updated_at": "2026-07-24",
+      "execution_status": "PARTIAL_WITH_UI_ACTION"
+    },
+    {
+      "id": "FT-03", "title": "조합 Record와 업무요청 연결", "owner": "CODEX", "type": "FAST_TRACK_VALIDATE", "phase": "CP-05-FT1", "status": "APPROVED", "priority": 3,
+      "depends_on": ["FT-01"], "input_gate": "SAFE_TEST_FUND", "required_inputs": ["TEST FUND", "지원팀 업무요청 DB"], "allowed_paths": ["Notion TEST records", "reports/**"], "forbidden_paths": ["operational records"],
+      "outputs": ["TEST FUND to Request relation"], "validation": ["RELATION_WRITE_READ_PASS"], "approval_required": false, "continuation_policy": "CONTINUE_FAST_TRACK",
+      "downstream": ["FT-04"], "blocking_reason": "", "source_of_truth": "reports/fast-track-form-e2e.md", "updated_by": "CODEX_CP-05-FT1-LR", "updated_at": "2026-07-24",
+      "execution_status": "VERIFIED"
+    },
+    {
+      "id": "FT-04", "title": "업무요청·Task E2E 테스트", "owner": "CODEX_TO_USER", "type": "FAST_TRACK_VALIDATE", "phase": "CP-05-FT1", "status": "BLOCKED", "priority": 4,
+      "depends_on": ["FT-03"], "input_gate": "TEST_RELATION_PASS", "required_inputs": ["TEST Request", "TEST Tasks"], "allowed_paths": ["Notion TEST records", "handoffs/**", "reports/**"], "forbidden_paths": ["operational records"],
+      "outputs": ["Request and Task E2E test"], "validation": ["E2E_PASS", "ROLLUP_UI_CONFIRMATION_PENDING"], "approval_required": false, "continuation_policy": "STOP_FOR_UI_CONFIRMATION",
+      "downstream": ["FT-05", "N-06"], "blocking_reason": "TASK_ROLLUP_UI_CONFIRMATION_REQUIRED", "source_of_truth": "reports/fast-track-form-e2e.md", "updated_by": "CODEX_CP-05-FT1-LR", "updated_at": "2026-07-24",
+      "execution_status": "VERIFIED_EXCEPT_ROLLUP_UI"
+    },
+    {
+      "id": "FT-05", "title": "Pilot 사용 가능 여부 판정", "owner": "GPT_AND_USER", "type": "FAST_TRACK_REVIEW", "phase": "CP-05-FT1", "status": "APPROVAL_REQUIRED", "priority": 5,
+      "depends_on": ["FT-03", "FT-04"], "input_gate": "FAST_TRACK_RESULTS", "required_inputs": ["reports/manual-pilot-readiness.md"], "allowed_paths": ["reports/**", "orchestration/plan/**"], "forbidden_paths": ["Notion operational records"],
+      "outputs": ["Pilot readiness decision"], "validation": ["GPT_USER_PROTOTYPE_REVIEW"], "approval_required": true, "continuation_policy": "STOP_FOR_APPROVAL",
+      "downstream": ["CP-05-P4"], "blocking_reason": "WAITING_FOR_FAST_TRACK_REVIEW", "source_of_truth": "reports/manual-pilot-readiness.md", "updated_by": "CODEX_CP-05-FT1-LR", "updated_at": "2026-07-24",
+      "execution_status": "READY_WITH_USER_UI_FIX"
+    },
+    {
       "id": "CP-05-P4", "title": "Intake Form and Collaboration Model", "owner": "CODEX", "type": "BUILD", "phase": "CP-05-P4", "status": "BLOCKED", "priority": 5,
       "depends_on": ["AG-P3"], "input_gate": "AG_P3_APPROVED", "required_inputs": ["AG-P3 approval", "GPT Work Order"], "allowed_paths": ["future work order required"], "forbidden_paths": ["orchestration/plan/**", "Notion"],
       "outputs": ["P4 outputs"], "validation": ["P4_OUTPUT_CONTRACT_PENDING"], "approval_required": true, "continuation_policy": "STOP_NO_WORK_ORDER",
-      "downstream": ["J-02"], "blocking_reason": "BLOCKED_BY_AG_P3", "source_of_truth": "GPT_WORK_ORDER_PENDING", "updated_by": "CODEX_CP-05-P3-LR", "updated_at": "2026-07-24"
+      "downstream": ["J-02"], "blocking_reason": "DEFERRED_UNTIL_FAST_TRACK_RESULT_AND_AG_P3", "source_of_truth": "GPT_WORK_ORDER_PENDING", "updated_by": "CODEX_CP-05-FT1-LR", "updated_at": "2026-07-24"
     }
   ],
   "dependencies": [
@@ -123,6 +158,8 @@
     {"from": "N-04", "to": "N-05"}, {"from": "N-05", "to": "N-06"},
     {"from": "CP-05-P2", "to": "CLAUDE-P2-REVIEW"}, {"from": "AG-P2", "to": "CP-05-P3"},
     {"from": "J-01", "to": "CP-05-P3"}, {"from": "CP-05-P3", "to": "AG-P3"}, {"from": "AG-P3", "to": "CP-05-P4"},
+    {"from": "N-05", "to": "FT-01"}, {"from": "FT-01", "to": "FT-02"}, {"from": "FT-01", "to": "FT-03"},
+    {"from": "FT-03", "to": "FT-04"}, {"from": "FT-03", "to": "FT-05"}, {"from": "FT-04", "to": "FT-05"},
     {"from": "N-06", "to": "J-02"}, {"from": "CP-05-P3", "to": "J-02"}, {"from": "CP-05-P4", "to": "J-02"}
   ],
   "join_gates": [
@@ -151,5 +188,7 @@
   ],
   "execution_policy_reference": "orchestration/governance/execution-policy.yaml",
   "status": "APPROVAL_REQUIRED",
-  "next_review": "AG-P3_REVIEW"
+  "fast_track_status": "ACTIVE_FAST_TRACK",
+  "ag_p3_mode": "PARALLEL_NON_BLOCKING_REVIEW",
+  "next_review": "FAST_TRACK_PROTOTYPE_REVIEW_AND_AG_P3_REVIEW"
 }

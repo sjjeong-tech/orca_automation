@@ -26,6 +26,18 @@
 | AG-P3 | GPT_AND_USER | READY | WAITING_FOR_GPT_USER_REVIEW |
 | CP-05-P4 | CODEX | BLOCKED | BLOCKED_BY_AG_P3 |
 
+## Fast Track
+
+| 단계 | 상태 |
+|---|---|
+| FT-01 (1차 조합 예정 등록 Form 정리) | MINIMUM_USABLE_WITH_USER_UI_BACKLOG |
+| FT-02 (2차 지원팀 업무요청 Form 완성) | PARTIAL_WITH_UI_ACTION |
+| FT-03 (조합 Record와 업무요청 연결) | VERIFIED |
+| FT-04 (업무요청·Task E2E 테스트) | VERIFIED_EXCEPT_ROLLUP_UI |
+| FT-05 (Pilot 사용 가능 여부 판정) | READY_WITH_USER_UI_FIX |
+
+AG-P3 (프로세스-노션 Mapping 승인)는 병렬 비차단 검토이며, CP-05-P4는 Fast Track 결과와 AG-P3 검토 전까지 실행하지 않는다.
+
 ## N-06 verified subtests
 
 Verified: `TO DO LIST (FUND)` Relation and GP/Fund-type/Manager Rollups.
