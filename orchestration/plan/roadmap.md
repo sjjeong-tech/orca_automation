@@ -21,7 +21,7 @@ WS2와 WS3는 완전 병렬이 아니다. WS1 통합 후 WS2 핵심 구조가 �
 
 Claude·Codex·Slack을 판단·실행·입력 역할로 영구 고정하지 않는다. 각 인터페이스는 연결된 모델·도구·권한 범위에서 동일한 Process Contract를 사용한다.
 
-다음 작업은 `WS1-01 (E2E-03 실행표준 통합)`이며 Owner는 Claude다.
+WS1-01은 `PASS_OPERATIONAL_STANDARD_DRAFT`로 완료됐다. 다음 작업은 `WS2-01 (E2E-03 Natural Language Contract Core)`이며 Owner는 Claude다. WS3-01은 WS2 핵심 질문·입력 구조 초안 이후 시차 병렬로 착수한다.
 
 ```text
 CP-05-P3 ──→ AG-P3 (프로세스-Notion Mapping 승인; Formal Review)

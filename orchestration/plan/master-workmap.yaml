@@ -224,29 +224,31 @@
       "label_ko": "다음 Process 확장", "short_description_ko": "실제 사례 Pilot 이후 다음 업무유형 확장", "current_status_ko": "CI-09 대기", "next_action_ko": "CI-09 승인 결과 검토"
     },
     {
-      "id": "WS1-01", "title": "WS1-01 (E2E-03 실행표준 통합)", "owner": "CLAUDE", "type": "ALIGNMENT", "phase": "CP-06", "status": "READY", "priority": 1,
+      "id": "WS1-01", "title": "WS1-01 (E2E-03 실행표준 통합)", "owner": "CLAUDE", "type": "ALIGNMENT", "phase": "CP-06", "status": "APPROVED", "priority": 1,
       "depends_on": ["CI-08"], "input_gate": "CI4_CI5_CI6_EVIDENCE_AVAILABLE", "required_inputs": ["reports/reviews/claude/ci4-alpha-validation-v2.md", "reports/alpha-loop/ci5-e2e03/06-final-assessment.md", "User-provided CI6 CASE-01 through CASE-08 result"],
       "allowed_paths": ["reports/**", "orchestration/runs/claude/**", "orchestration/handoffs/**"], "forbidden_paths": ["processes/**", "variations/**", "sources/**", "contracts/**", "Notion", "Schema"],
       "outputs": ["E2E-03 operational execution standard draft integration review"], "validation": ["CI4_CI5_CI6_EVIDENCE_RECONCILED", "NO_NEW_PROCESS_RULE"], "approval_required": false, "continuation_policy": "STOP_FOR_GPT_USER_REVIEW",
-      "downstream": ["WS2-01", "WS3-01"], "blocking_reason": "", "source_of_truth": "orchestration/plan/master-workmap.yaml#e2e03_operational_standard", "updated_by": "CODEX_CP-06-E2E03-WORKMAP-DIRECTION-UPDATE", "updated_at": "2026-07-25",
-      "label_ko": "E2E-03 실행표준 통합", "current_status_ko": "운영표준 초안 근거 통합 준비", "next_action_ko": "CI4~CI6 근거를 실행표준 초안으로 통합 검토"
+      "downstream": ["WS2-01", "WS3-01"], "blocking_reason": "", "source_of_truth": "reports/reviews/claude/e2e03-operational-standard-draft.md", "updated_by": "CODEX_CP-06-WORKMAP-ADVANCE-TO-WS2", "updated_at": "2026-07-25",
+      "label_ko": "E2E-03 실행표준 통합", "current_status_ko": "완료", "next_action_ko": "WS2-01 Natural Language Contract 입력으로 사용",
+      "execution_status": "COMPLETED", "result": "PASS_OPERATIONAL_STANDARD_DRAFT", "evidence": ["reports/reviews/claude/e2e03-operational-standard-draft.md"],
+      "completed_items": ["CI4~CI6 검증 통합", "Request·Task 실행표준", "예외 Routing 후보", "FUND 식별 규칙", "Multi-interface Contract", "WS2·WS3 입력 정의"]
     },
     {
-      "id": "WS2-01", "title": "WS2-01 (Channel-neutral Natural Language Contract)", "owner": "GPT_AND_USER_WITH_BUILDER", "type": "CONTRACT", "phase": "CP-06", "status": "BLOCKED", "priority": 2,
+      "id": "WS2-01", "title": "WS2-01 (E2E-03 Natural Language Contract Core)", "owner": "CLAUDE", "type": "CONTRACT", "phase": "CP-06", "status": "READY", "priority": 2,
       "depends_on": ["WS1-01"], "input_gate": "WS1_EXECUTION_STANDARD_REVIEWED", "required_inputs": ["E2E-03 operational execution standard draft integration review"],
       "allowed_paths": ["contracts/**", "reports/**"], "forbidden_paths": ["Notion", "Slack write", "Agent implementation", "processes/**", "variations/**", "sources/**"],
       "outputs": ["Channel-neutral interaction contract core"], "validation": ["PARSE_ASK_PREVIEW_APPROVE_COMMIT_STATUS_ERROR_CONTRACT_DEFINED"], "approval_required": true, "continuation_policy": "STOP_FOR_APPROVAL",
-      "downstream": ["WS3-01", "WS4-01"], "blocking_reason": "BLOCKED_BY_WS1_01", "source_of_truth": "GPT_WORK_ORDER_PENDING", "updated_by": "CODEX_CP-06-E2E03-WORKMAP-DIRECTION-UPDATE", "updated_at": "2026-07-25",
-      "label_ko": "채널 중립 자연어 상호작용 계약", "current_status_ko": "WS1 실행표준 대기", "next_action_ko": "자연어·누락질문·Preview·승인·Commit·상태·오류 계약 정의",
+      "downstream": ["WS3-01", "WS4-01"], "blocking_reason": "", "source_of_truth": "reports/reviews/claude/e2e03-operational-standard-draft.md#8-multi-interface-contract", "updated_by": "CODEX_CP-06-WORKMAP-ADVANCE-TO-WS2", "updated_at": "2026-07-25",
+      "label_ko": "E2E-03 자연어 계약 핵심", "current_status_ko": "착수 가능", "next_action_ko": "사용자 발화→추출값→누락값→질문→Preview→승인→상태응답의 채널 중립 계약 초안 작성",
       "multi_interface_principle": "Claude, Codex and Slack are not permanently restricted to judgment, execution or input roles; each interface uses the same Process Contract within its connected model, tools and permissions."
     },
     {
-      "id": "WS3-01", "title": "WS3-01 (기존 폴더 Property 적합성 검토)", "owner": "CLAUDE", "type": "DISCOVERY", "phase": "CP-06", "status": "BLOCKED", "priority": 3,
+      "id": "WS3-01", "title": "WS3-01 (기존 폴더 Property 적합성 검토)", "owner": "CLAUDE", "type": "DISCOVERY", "phase": "CP-06", "status": "PLANNED", "priority": 3,
       "depends_on": ["WS1-01"], "input_gate": "WS2_CORE_STRUCTURE_STARTED_AFTER_WS1", "required_inputs": ["E2E-03 operational execution standard draft integration review", "WS2 core field outline"],
       "allowed_paths": ["reports/**", "orchestration/runs/claude/**", "orchestration/handoffs/**"], "forbidden_paths": ["Notion write", "Schema change", "Drive file mutation", "processes/**", "variations/**", "sources/**"],
       "outputs": ["Existing original-folder property fit review and evidence mapping candidates"], "validation": ["FUND_ROOT_AND_SOURCE_FOLDER_DISTINGUISHED", "TASK_EVIDENCE_MAPPING_CANDIDATES_RECORDED"], "approval_required": false, "continuation_policy": "STAGGERED_PARALLEL_AFTER_WS2_CORE_START",
-      "downstream": ["WS4-01"], "blocking_reason": "STAGGERED_AFTER_WS2_01_CORE_START", "source_of_truth": "GPT_WORK_ORDER_PENDING", "updated_by": "CODEX_CP-06-E2E03-WORKMAP-DIRECTION-UPDATE", "updated_at": "2026-07-25",
-      "label_ko": "조합 폴더·증빙 연결 검토", "current_status_ko": "WS1 완료와 WS2 핵심 구조 시작 대기", "next_action_ko": "기존 원본 폴더 Property, 조합 Root, 업무 Source Folder와 Task 증빙 Mapping 검토",
+      "downstream": ["WS4-01"], "blocking_reason": "PLANNED_AFTER_WS2_01_CORE_QUESTION_AND_INPUT_DRAFT", "source_of_truth": "GPT_WORK_ORDER_PENDING", "updated_by": "CODEX_CP-06-WORKMAP-ADVANCE-TO-WS2", "updated_at": "2026-07-25",
+      "label_ko": "조합 폴더·증빙 연결 검토", "current_status_ko": "계획됨", "next_action_ko": "WS2-01 핵심 질문·입력 구조 초안 후 시차 병렬 착수",
       "schema_policy": "No new property until fit review is approved."
     },
     {
@@ -343,5 +345,5 @@
   "form_workstream": {"status": "DEFERRED_OPTIONAL", "primary_intake": false, "blocking_for_conversational_intake": false, "retained_as_fallback": true},
   "notion_ai": {"role": "OPTIONAL_TEMPORARY_TOOL", "required_dependency": false, "default_next_owner": false, "expiry_context": "2026-07-29", "use_condition": "USER_EXPLICIT_REQUEST_ONLY"},
   "ag_p3_mode": "PARALLEL_NON_BLOCKING_REVIEW",
-  "next_review": "WS1_01_E2E03_EXECUTION_STANDARD_INTEGRATION"
+  "next_review": "WS2_01_E2E03_NATURAL_LANGUAGE_CONTRACT_CORE"
 }

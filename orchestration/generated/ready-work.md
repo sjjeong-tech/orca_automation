@@ -2,7 +2,7 @@
 
 > Generated summary only. Canonical source: `orchestration/plan/master-workmap.yaml`.
 
-- 신규 READY: `WS1-01 (E2E-03 실행표준 통합)` — Owner `CLAUDE`
+- 신규 READY: `WS2-01 (E2E-03 Natural Language Contract Core)` — Owner `CLAUDE`
 
 | ID | 한글 설명 | Owner | 실행 조건 |
 |---|---|---|---|
