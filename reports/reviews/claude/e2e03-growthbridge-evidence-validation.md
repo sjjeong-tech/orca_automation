@@ -5,7 +5,8 @@
 - Base main HEAD(변경 없음): `32d017ceee551f370a7f25dcf52e6a77c7d45b38`
 - Branch: `agent/claude/e2e03-natural-language-contract` (선행 `8ae12d7` WS3 Discovery)
 - ACTIVE_MODEL: OPUS
-- 이 문서 작성 시점 Notion·Drive Write: **0건** (읽기 전용 검증). 파일 본문 미열람(개인정보·고유번호·계좌정보 미기록)
+- 검증(2~11절) 단계 Notion·Drive Write: **0건**. 파일 본문 미열람(개인정보·고유번호·계좌정보 미기록)
+- Phase H(13절)에서 사용자 승인(`WS3 Root 물리 구현 승인`) 후 FUND 마스터에 Property 1개 생성 + 그로스브릿지 Record 1건 저장 = Notion Write 수행(아래 13절 참고). Drive Write는 계속 0건
 - 실제 사례: `그로스브릿지-바이오투자조합` (FUND 마스터 정확 1건, 조합구분 민법, GP 박성철)
 
 ## 1. 사용자 확정사항
@@ -118,6 +119,23 @@ Root 판정 근거: 조합명 정확 일치, GP 박성철은 FUND 마스터 GP �
 3. 공유드라이브 표시명 API 반환값이 "Drive"라 "민법조합" 직접 확정 불가(구조·GP·유형상 정합)
 4. 고유번호 Property 권위성은 운영 정책 결정 대상
 5. Fund Root Property 신설은 사용자 `WS3 Root 물리 구현 승인` 후에만 구현
+
+## 13. Phase H 구현 결과 (사용자 승인 후)
+
+사용자 승인 표현: `WS3 Root 물리 구현 승인`
+
+| 단계 | 실행 | Expected | Actual | 결과 |
+|---|---|---|---|---|
+| Property 생성 | FUND 마스터(`전체관리조합`)에 `조합 Root 폴더`(URL) 1개 ADD COLUMN | Property 1개 추가, 기존값 무영향 | 스키마에 `조합 Root 폴더`(type url) 확인 | PASS |
+| Record 저장 | 그로스브릿지 FUND Record(`39872a41…`) 1건에 Root URL 저장 | 해당 Record만 값 존재 | 값=Root URL 저장 확인 | PASS |
+| 무영향 검증 | 신규 Property 비-null 레코드 수 재조회 | 정확히 1건 | 1건(그로스브릿지)만 | PASS |
+| 금지사항 검증 | 고유번호·조합구분 등 미변경 재조회 | 고유번호=null, 조합구분=민법 유지 | 동일(미변경) | PASS |
+
+- 저장값: `https://drive.google.com/drive/folders/1oMiFrP2oOhSsDbujWt5prnxA5SKeX1Rw`
+- Notion Write 합계: Schema 1(Property 생성) + Record 1(값 저장) = 2
+- Drive Write: 0 / 다른 FUND Record 변경: 0 / 고유번호 입력: 0 / Request·Task 변경: 0 / 공통 보안카드 Property 생성: 0
+- 원복 방법: FUND 마스터에서 `조합 Root 폴더` Property 삭제(DROP COLUMN) 시 값도 함께 제거
+- Acceptance(Root/메모/보안카드/최신본/T04/고유번호 판정 6개 문항): 사용자 확인 완료로 진행(본 구현은 그 확인 후 수행)
 
 ## 12. 조회 범위
 
