@@ -47,19 +47,21 @@ function capture(text, pattern) {
 
 export function parseIntake(text, { baseDate = "2026-07-24" } = {}) {
   const normalized = text.replace(/\s+/g, " ").trim();
-  const requestType = /고유번호증(?:\s*신청)?/.test(normalized) ? "고유번호증 신청" : null;
+  const parseable = normalized.replace(/^\[TEST\]\[CI1-PILOT\]\s*/, "");
+  const requestType = /고유번호증(?:\s*신청)?/.test(parseable) ? "고유번호증 신청" : null;
   const relatedFund =
-    capture(normalized, /(.+?투자조합)(?:\s+고유번호증|\s+요청|\s+신청)/) ??
-    capture(normalized, /(.+?조합)(?:\s+고유번호증|\s+요청|\s+신청)/);
+    capture(parseable, /(.+?투자조합)(?:의)?(?:\s*고유번호증|\s+요청|\s+신청)/) ??
+    capture(parseable, /(.+?조합)(?:의)?(?:\s*고유번호증|\s+요청|\s+신청)/);
   const requester = capture(normalized, /요청자는\s*([가-힣A-Za-z0-9 ]+?)(?:이고|이며|입니다|,|\.)/);
   const fundManager = capture(normalized, /담당\s*관리역은\s*([가-힣A-Za-z0-9 ]+?)(?:입니다|이고|이며|,|\.)/);
-  const documentStatus = /서류(?:는|가)?\s*전달\s*완료/.test(normalized)
+  const documentStatus = /서류(?:는|가)?\s*(?:전달\s*완료|모두\s*전달)/.test(normalized)
     ? "전달 완료"
-    : /서류(?:는|가)?\s*일부\s*전달/.test(normalized)
+    : /서류(?:는|가)?\s*(?:일부\s*전달|일부만\s*전달)/.test(normalized)
       ? "일부 전달"
-      : /서류(?:는|가)?\s*미전달/.test(normalized)
+      : /서류(?:는|가)?\s*(?:아직\s*)?미전달/.test(normalized)
         ? "미전달"
         : null;
+  const urgentNegated = /긴급(?:\s*요청)?(?:은|는)?\s*(?:아니|아님|아닙|않)/.test(normalized);
 
   return {
     related_fund: relatedFund,
@@ -68,7 +70,7 @@ export function parseIntake(text, { baseDate = "2026-07-24" } = {}) {
     fund_manager: fundManager,
     document_status: documentStatus,
     target_date: parseTargetDate(normalized, baseDate),
-    urgent: /긴급|급함|급하게/.test(normalized),
+    urgent: urgentNegated ? false : /긴급|급함|급하게/.test(normalized),
     original_folder: capture(normalized, /(https?:\/\/\S+)/),
     notes: null,
     source_text: text
@@ -96,6 +98,7 @@ export function detectDuplicates(intake, existing = []) {
 export function buildTasks(intake, contract = loadContract()) {
   return contract.task_generation_policy.tasks.map((task) => ({
     ...task,
+    process_id: intake.request_type === "고유번호증 신청" ? "P03" : task.process_id,
     title: `[TEST][CI1][${String(task.order).padStart(2, "0")}] ${task.name}`,
     operational_task_id: `CI1-P03-${String(task.order).padStart(2, "0")}`,
     status: "시작 전",

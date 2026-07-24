@@ -37,4 +37,35 @@ const duplicate = detectDuplicates(complete, [{
 assert.equal(duplicate.length, 1);
 assert.equal(buildWritePlan(complete, { approved: true, duplicates: duplicate }).write_count, 0);
 
-console.log("conversational-intake tests: PASS (4 scenarios)");
+const pilotInput = [
+  "[TEST][CI1-PILOT] 디토 케이스테이 투자조합의 고유번호증 신청을 요청합니다.",
+  "요청자는 정상준이고 담당 관리역은 박세림입니다.",
+  "서류는 아직 미전달이며 2026년 7월 29일까지 필요합니다.",
+  "긴급 요청은 아니며 특이사항은 없습니다."
+].join(" ");
+const pilot = parseIntake(pilotInput);
+assert.equal(pilot.related_fund, "디토 케이스테이 투자조합");
+assert.equal(pilot.document_status, "미전달");
+assert.equal(pilot.urgent, false);
+assert.deepEqual(missingQuestions(pilot), []);
+
+const pilotPreview = buildWritePlan(pilot, {
+  duplicates: [{
+    related_fund: "디토 케이스테이 투자조합",
+    request_type: "고유번호증 신청",
+    status: "시작 전",
+    url: "https://example.invalid/existing-test"
+  }]
+});
+assert.equal(pilotPreview.write_count, 0);
+assert.equal(pilotPreview.preview.duplicate_requests.length, 1);
+assert.equal(pilotPreview.preview.tasks[0].process_id, "P03");
+
+for (const [phrase, expected] of [
+  ["서류는 일부만 전달했습니다.", "일부 전달"],
+  ["서류는 모두 전달했습니다.", "전달 완료"]
+]) {
+  assert.equal(parseIntake(`테스트 투자조합 고유번호증 신청. ${phrase}`).document_status, expected);
+}
+
+console.log("conversational-intake tests: PASS (5 scenarios + status variants)");
