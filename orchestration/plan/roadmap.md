@@ -1,5 +1,28 @@
 # Current Orchestration Roadmap
 
+## E2E-03 실행표준 방향 (2026-07-25)
+
+- 현재 단계: `OPERATIONAL_STANDARD_DRAFT`
+- 검증 근거: CI4 Technical Alpha PASS, CI5 `PASS_E2E03_ALPHA_STANDARD_DRAFT`, CI6 CASE-01~08 사용자 DB 통합테스트
+- 검증 결과: Atomic Step 16/16, Request 1건 + Task 6건, TEST Request 4건/Task 24건, Expected–Actual 불일치·운영 Record 변경·중복 생성 0건, Relation 무결성 PASS
+- 상세 상태와 남은 후보는 `master-workmap.yaml`의 `e2e03_operational_standard`가 기준이다.
+
+진행 순서:
+
+1. WS1-01 — CI4~CI6 결과를 E2E-03 Process–DB 실행표준 초안으로 통합
+2. WS2-01 — Channel-neutral Natural Language Contract 핵심 구조 정의
+3. WS3-01 — 기존 폴더 Property 적합성 검토 시작
+4. WS2 Task별 Contract와 WS3 파일·증빙 Mapping 연결
+5. Slack 인터페이스 초안
+6. WS4-01 — Multi-interface Agent Architecture
+7. 실제 사례 Pilot
+
+WS2와 WS3는 완전 병렬이 아니다. WS1 통합 후 WS2 핵심 구조가 시작되면 WS3 검토를 시차 병렬로 진행한다.
+
+Claude·Codex·Slack을 판단·실행·입력 역할로 영구 고정하지 않는다. 각 인터페이스는 연결된 모델·도구·권한 범위에서 동일한 Process Contract를 사용한다.
+
+다음 작업은 `WS1-01 (E2E-03 실행표준 통합)`이며 Owner는 Claude다.
+
 ```text
 CP-05-P3 ──→ AG-P3 (프로세스-Notion Mapping 승인; Formal Review)
     │

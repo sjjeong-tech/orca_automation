@@ -1,6 +1,6 @@
 {
   "project": "vc-support_team-process-rag",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "plan_owner": "GPT",
   "last_plan_commit": "SELF_COMMIT_RESOLVE_WITH_GIT_LOG",
   "current_phase": "CP-05_NOTION_CONTROL_PLANE",
@@ -9,7 +9,11 @@
     {"id": "WS-NOTION", "title": "Notion Operations Control Plane", "status": "APPROVAL_REQUIRED"},
     {"id": "WS-UI", "title": "Notion Form Optional Fallback", "status": "PLANNED", "workstream_mode": "DEFERRED_OPTIONAL", "primary_intake": false, "blocking_for_conversational_intake": false, "retained_as_fallback": true},
     {"id": "WS-CONVERSATIONAL-INTAKE", "title": "대화형 요청 접수·Notion 기록", "status": "READY", "workstream_mode": "ACTIVE_FAST_TRACK"},
-    {"id": "WS-REVIEW", "title": "Independent Review", "status": "PLANNED"}
+    {"id": "WS-REVIEW", "title": "Independent Review", "status": "PLANNED"},
+    {"id": "WS1", "title": "Process-DB Execution Standard", "status": "READY", "current_stage": "OPERATIONAL_STANDARD_DRAFT"},
+    {"id": "WS2", "title": "Interaction Contract", "status": "BLOCKED", "design_principle": "CHANNEL_NEUTRAL"},
+    {"id": "WS3", "title": "Fund Folder and Evidence", "status": "BLOCKED", "schema_change": "CANDIDATE_ONLY"},
+    {"id": "WS4", "title": "Multi-interface Executing Agent", "status": "BLOCKED", "requires": ["WS1", "WS2", "WS3"]}
   ],
   "work_items": [
     {
@@ -220,6 +224,40 @@
       "label_ko": "다음 Process 확장", "short_description_ko": "실제 사례 Pilot 이후 다음 업무유형 확장", "current_status_ko": "CI-09 대기", "next_action_ko": "CI-09 승인 결과 검토"
     },
     {
+      "id": "WS1-01", "title": "WS1-01 (E2E-03 실행표준 통합)", "owner": "CLAUDE", "type": "ALIGNMENT", "phase": "CP-06", "status": "READY", "priority": 1,
+      "depends_on": ["CI-08"], "input_gate": "CI4_CI5_CI6_EVIDENCE_AVAILABLE", "required_inputs": ["reports/reviews/claude/ci4-alpha-validation-v2.md", "reports/alpha-loop/ci5-e2e03/06-final-assessment.md", "User-provided CI6 CASE-01 through CASE-08 result"],
+      "allowed_paths": ["reports/**", "orchestration/runs/claude/**", "orchestration/handoffs/**"], "forbidden_paths": ["processes/**", "variations/**", "sources/**", "contracts/**", "Notion", "Schema"],
+      "outputs": ["E2E-03 operational execution standard draft integration review"], "validation": ["CI4_CI5_CI6_EVIDENCE_RECONCILED", "NO_NEW_PROCESS_RULE"], "approval_required": false, "continuation_policy": "STOP_FOR_GPT_USER_REVIEW",
+      "downstream": ["WS2-01", "WS3-01"], "blocking_reason": "", "source_of_truth": "orchestration/plan/master-workmap.yaml#e2e03_operational_standard", "updated_by": "CODEX_CP-06-E2E03-WORKMAP-DIRECTION-UPDATE", "updated_at": "2026-07-25",
+      "label_ko": "E2E-03 실행표준 통합", "current_status_ko": "운영표준 초안 근거 통합 준비", "next_action_ko": "CI4~CI6 근거를 실행표준 초안으로 통합 검토"
+    },
+    {
+      "id": "WS2-01", "title": "WS2-01 (Channel-neutral Natural Language Contract)", "owner": "GPT_AND_USER_WITH_BUILDER", "type": "CONTRACT", "phase": "CP-06", "status": "BLOCKED", "priority": 2,
+      "depends_on": ["WS1-01"], "input_gate": "WS1_EXECUTION_STANDARD_REVIEWED", "required_inputs": ["E2E-03 operational execution standard draft integration review"],
+      "allowed_paths": ["contracts/**", "reports/**"], "forbidden_paths": ["Notion", "Slack write", "Agent implementation", "processes/**", "variations/**", "sources/**"],
+      "outputs": ["Channel-neutral interaction contract core"], "validation": ["PARSE_ASK_PREVIEW_APPROVE_COMMIT_STATUS_ERROR_CONTRACT_DEFINED"], "approval_required": true, "continuation_policy": "STOP_FOR_APPROVAL",
+      "downstream": ["WS3-01", "WS4-01"], "blocking_reason": "BLOCKED_BY_WS1_01", "source_of_truth": "GPT_WORK_ORDER_PENDING", "updated_by": "CODEX_CP-06-E2E03-WORKMAP-DIRECTION-UPDATE", "updated_at": "2026-07-25",
+      "label_ko": "채널 중립 자연어 상호작용 계약", "current_status_ko": "WS1 실행표준 대기", "next_action_ko": "자연어·누락질문·Preview·승인·Commit·상태·오류 계약 정의",
+      "multi_interface_principle": "Claude, Codex and Slack are not permanently restricted to judgment, execution or input roles; each interface uses the same Process Contract within its connected model, tools and permissions."
+    },
+    {
+      "id": "WS3-01", "title": "WS3-01 (기존 폴더 Property 적합성 검토)", "owner": "CLAUDE", "type": "DISCOVERY", "phase": "CP-06", "status": "BLOCKED", "priority": 3,
+      "depends_on": ["WS1-01"], "input_gate": "WS2_CORE_STRUCTURE_STARTED_AFTER_WS1", "required_inputs": ["E2E-03 operational execution standard draft integration review", "WS2 core field outline"],
+      "allowed_paths": ["reports/**", "orchestration/runs/claude/**", "orchestration/handoffs/**"], "forbidden_paths": ["Notion write", "Schema change", "Drive file mutation", "processes/**", "variations/**", "sources/**"],
+      "outputs": ["Existing original-folder property fit review and evidence mapping candidates"], "validation": ["FUND_ROOT_AND_SOURCE_FOLDER_DISTINGUISHED", "TASK_EVIDENCE_MAPPING_CANDIDATES_RECORDED"], "approval_required": false, "continuation_policy": "STAGGERED_PARALLEL_AFTER_WS2_CORE_START",
+      "downstream": ["WS4-01"], "blocking_reason": "STAGGERED_AFTER_WS2_01_CORE_START", "source_of_truth": "GPT_WORK_ORDER_PENDING", "updated_by": "CODEX_CP-06-E2E03-WORKMAP-DIRECTION-UPDATE", "updated_at": "2026-07-25",
+      "label_ko": "조합 폴더·증빙 연결 검토", "current_status_ko": "WS1 완료와 WS2 핵심 구조 시작 대기", "next_action_ko": "기존 원본 폴더 Property, 조합 Root, 업무 Source Folder와 Task 증빙 Mapping 검토",
+      "schema_policy": "No new property until fit review is approved."
+    },
+    {
+      "id": "WS4-01", "title": "WS4-01 (Multi-interface Executing Agent Architecture)", "owner": "GPT_AND_USER_WITH_BUILDERS", "type": "ARCHITECTURE", "phase": "CP-06", "status": "BLOCKED", "priority": 4,
+      "depends_on": ["WS1-01", "WS2-01", "WS3-01"], "input_gate": "WS1_STANDARD_WS2_CONTRACT_WS3_EVIDENCE_READY", "required_inputs": ["Execution standard", "Interaction contract", "Evidence mapping"],
+      "allowed_paths": ["future approved architecture work order"], "forbidden_paths": ["Slack Bot implementation", "Agent Skill implementation", "Notion write", "Schema change"],
+      "outputs": ["Claude Skill, Codex Skill, Slack Adapter and Process Controller architecture"], "validation": ["COMMON_PROCESS_CONTRACT_USED_ACROSS_INTERFACES"], "approval_required": true, "continuation_policy": "STOP_NO_WORK_ORDER",
+      "downstream": ["CI-09"], "blocking_reason": "BLOCKED_BY_WS1_WS2_WS3", "source_of_truth": "GPT_WORK_ORDER_PENDING", "updated_by": "CODEX_CP-06-E2E03-WORKMAP-DIRECTION-UPDATE", "updated_at": "2026-07-25",
+      "label_ko": "다중 인터페이스 실행 Agent 아키텍처", "current_status_ko": "WS1~WS3 대기", "next_action_ko": "Slack 초안 후 공통 Process Controller와 실제 사례 Pilot 설계"
+    },
+    {
       "id": "CP-05-P4", "title": "CP-05-P4 (Conversational Intake and Collaboration Model)", "owner": "CODEX", "type": "BUILD", "phase": "CP-05-P4", "status": "BLOCKED", "priority": 5,
       "depends_on": ["AG-P3", "CI-07"], "input_gate": "AG_P3_APPROVED_AND_CONVERSATIONAL_FAST_TRACK_REVIEWED", "required_inputs": ["AG-P3 approval", "CI-07 operational review", "GPT Work Order"], "allowed_paths": ["future work order required"], "forbidden_paths": ["orchestration/plan/**", "Notion"],
       "outputs": ["Conversational Intake and Collaboration Model"], "validation": ["P4_CONVERSATIONAL_OUTPUT_CONTRACT_PENDING"], "approval_required": true, "continuation_policy": "STOP_NO_WORK_ORDER",
@@ -241,6 +279,8 @@
     {"from": "CI-01", "to": "CI-03"}, {"from": "CI-01", "to": "CI-04"}, {"from": "CI-02", "to": "CI-04"}, {"from": "CI-03", "to": "CI-04"},
     {"from": "CI-04", "to": "CI-05"}, {"from": "CI-05", "to": "CI-06"}, {"from": "CI-05", "to": "CI-07"}, {"from": "CI-05", "to": "CI-08"},
     {"from": "CI-08", "to": "CI-09"}, {"from": "CI-09", "to": "CI-10"}, {"from": "CI-07", "to": "CP-05-P4"},
+    {"from": "CI-08", "to": "WS1-01"}, {"from": "WS1-01", "to": "WS2-01"}, {"from": "WS1-01", "to": "WS3-01"},
+    {"from": "WS1-01", "to": "WS4-01"}, {"from": "WS2-01", "to": "WS4-01"}, {"from": "WS3-01", "to": "WS4-01"}, {"from": "WS4-01", "to": "CI-09"},
     {"from": "N-06", "to": "J-02"}, {"from": "CP-05-P3", "to": "J-02"}, {"from": "CP-05-P4", "to": "J-02"}
   ],
   "join_gates": [
@@ -267,11 +307,41 @@
     {"id": "AG-P2", "owner": "GPT_AND_USER", "status": "APPROVED", "approval_required": true, "packet": "orchestration/approvals/ag-p2-review.yaml"},
     {"id": "AG-P3", "owner": "GPT_AND_USER", "status": "READY", "approval_required": true, "packet": "orchestration/approvals/ag-p3-review.yaml"}
   ],
+  "e2e03_operational_standard": {
+    "status": "OPERATIONAL_STANDARD_DRAFT",
+    "atomic_step_coverage": "16/16",
+    "execution_structure": {"request_count": 1, "task_count": 6, "task_set": "P03-T01..P03-T06"},
+    "evidence": [
+      {"stage": "CI4", "result": "TECHNICAL_ALPHA_PASS", "source": "reports/reviews/claude/ci4-alpha-validation-v2.md"},
+      {"stage": "CI5", "result": "PASS_E2E03_ALPHA_STANDARD_DRAFT", "source": "reports/alpha-loop/ci5-e2e03/06-final-assessment.md"},
+      {"stage": "CI6", "result": "HUMAN_IN_THE_LOOP_DB_INTEGRATION_PASS", "source": "GPT_USER_PROVIDED_RESULT", "cases": "CASE-01..CASE-08", "test_requests": 4, "test_tasks": 24, "expected_actual_mismatches": 0, "operational_record_changes": 0, "duplicate_creations": 0, "relation_integrity": "PASS"}
+    ],
+    "verified_scope": [
+      "normal E2E flow",
+      "write blocked when intake information is unresolved",
+      "document delivery status separated from Blocker",
+      "seal error rework within the same Task",
+      "tax-office receipt separated from Request completion",
+      "existing Task reused for tax-office additional requests",
+      "duplicate Request blocked",
+      "write blocked for zero or multiple FUND matches",
+      "Preview-Approval-Commit-Verify"
+    ],
+    "remaining_candidates": [
+      "FUND exception isolated to CASE-01",
+      "CASE-03/04 transaction mixing has no structural damage",
+      "Transaction ID Property is SCHEMA_CANDIDATE",
+      "similar FUND-name candidate search needs improvement",
+      "tax-office additional-request routing: evidence/supporting documents to T02; application/seal to T03; receipt format/submission method to T04; ambiguous cases require human judgment",
+      "retaining [TEST] in DB titles is closed as a user decision"
+    ],
+    "next_work": "WS1-01"
+  },
   "execution_policy_reference": "orchestration/governance/execution-policy.yaml",
   "status": "READY",
   "fast_track_status": "CONVERSATIONAL_INTAKE_ACTIVE",
   "form_workstream": {"status": "DEFERRED_OPTIONAL", "primary_intake": false, "blocking_for_conversational_intake": false, "retained_as_fallback": true},
   "notion_ai": {"role": "OPTIONAL_TEMPORARY_TOOL", "required_dependency": false, "default_next_owner": false, "expiry_context": "2026-07-29", "use_condition": "USER_EXPLICIT_REQUEST_ONLY"},
   "ag_p3_mode": "PARALLEL_NON_BLOCKING_REVIEW",
-  "next_review": "CI-01_AND_CI-02_ACTIVATION_REVIEW_WITH_AG_P3_PARALLEL"
+  "next_review": "WS1_01_E2E03_EXECUTION_STANDARD_INTEGRATION"
 }

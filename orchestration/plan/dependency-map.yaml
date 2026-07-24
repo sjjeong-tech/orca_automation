@@ -1,11 +1,12 @@
 {
   "owner": "GPT",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "nodes": [
     "CP-04", "CP-05-P0-SERIES", "CP-05-P1-SERIES", "CP-05-S1", "CP-05-N1", "CP-05-S1-R1",
     "CP-05-P2", "CP-00-O1", "AG-P2", "N-04", "N-05", "N-06", "CLAUDE-P2-REVIEW", "J-01", "J-02",
     "CP-05-P3", "AG-P3", "FT-01", "FT-02", "FT-03", "FT-04", "FT-05",
-    "CI-01", "CI-02", "CI-03", "CI-04", "CI-05", "CI-06", "CI-07", "CI-08", "CI-09", "CI-10", "CP-05-P4"
+    "CI-01", "CI-02", "CI-03", "CI-04", "CI-05", "CI-06", "CI-07", "CI-08", "CI-09", "CI-10",
+    "WS1-01", "WS2-01", "WS3-01", "WS4-01", "CP-05-P4"
   ],
   "edges": [
     ["CP-04", "CP-05-P0-SERIES"], ["CP-05-P0-SERIES", "CP-05-P1-SERIES"], ["CP-05-P1-SERIES", "CP-05-S1"],
@@ -19,6 +20,8 @@
     ["CI-01", "CI-03"], ["CI-01", "CI-04"], ["CI-02", "CI-04"], ["CI-03", "CI-04"],
     ["CI-04", "CI-05"], ["CI-05", "CI-06"], ["CI-05", "CI-07"], ["CI-05", "CI-08"],
     ["CI-08", "CI-09"], ["CI-09", "CI-10"], ["CI-07", "CP-05-P4"],
+    ["CI-08", "WS1-01"], ["WS1-01", "WS2-01"], ["WS1-01", "WS3-01"],
+    ["WS1-01", "WS4-01"], ["WS2-01", "WS4-01"], ["WS3-01", "WS4-01"], ["WS4-01", "CI-09"],
     ["N-06", "J-02"], ["CP-05-P3", "J-02"], ["CP-05-P4", "J-02"]
   ],
   "non_blocking_relationships": [
@@ -26,7 +29,8 @@
     {"from": "AG-P3", "to": "CI-02", "reason": "P3 formal review does not block read-only DB contract validation"},
     {"from": "FT-01", "to": "CI-01", "reason": "Form result is historical input only"},
     {"from": "FT-02", "to": "CI-01", "reason": "Form completion is not required"},
-    {"from": "FT-05", "to": "CI-05", "reason": "Conversational pilot replaces Form pilot decision"}
+    {"from": "FT-05", "to": "CI-05", "reason": "Conversational pilot replaces Form pilot decision"},
+    {"from": "WS2-01", "to": "WS3-01", "reason": "WS3 begins after the WS2 core structure starts; this is staggered parallel work, not a full parallel dependency"}
   ],
   "join_gates": {
     "J-01": ["AG-P2", "N-05", "FORM_INITIAL_STATUS_DECISION", "VIEW_DISPLAY_VERIFIED", "PERSON_VERIFIED", "RELATION_OPTIONAL_VERIFIED"],

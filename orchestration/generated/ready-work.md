@@ -2,6 +2,8 @@
 
 > Generated summary only. Canonical source: `orchestration/plan/master-workmap.yaml`.
 
+- 신규 READY: `WS1-01 (E2E-03 실행표준 통합)` — Owner `CLAUDE`
+
 | ID | 한글 설명 | Owner | 실행 조건 |
 |---|---|---|---|
 | CI-09 | 실제 사례 Pilot | CODEX_AND_USER | CI-08 독립 검증과 사용자 승인 필요 |
