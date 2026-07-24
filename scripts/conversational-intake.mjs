@@ -6,9 +6,19 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CONTRACT_PATH = path.join(ROOT, "contracts", "conversational-intake-contract.yaml");
+const PROCESS_MAPPING_PATH = path.join(ROOT, "contracts", "process-execution-mapping.yaml");
+const REQUEST_TEMPLATE_PATH = path.join(ROOT, "templates", "request-execution-template.md");
 
 export function loadContract() {
   return JSON.parse(fs.readFileSync(CONTRACT_PATH, "utf8"));
+}
+
+export function loadProcessExecutionMapping() {
+  return JSON.parse(fs.readFileSync(PROCESS_MAPPING_PATH, "utf8"));
+}
+
+export function resolveProcessMapping(requestType, mapping = loadProcessExecutionMapping()) {
+  return mapping.request_type_mappings[requestType] ?? null;
 }
 
 function nextWeekday(base, weekday) {
@@ -95,22 +105,78 @@ export function detectDuplicates(intake, existing = []) {
   );
 }
 
-export function buildTasks(intake, contract = loadContract()) {
+export function buildTasks(intake, contract = loadContract(), options = {}) {
   const prefix = intake.source_text?.trimStart().startsWith("[TEST][CI1-PILOT]") ? "[TEST][CI1-PILOT]" : "[TEST][CI1]";
-  return contract.task_generation_policy.tasks.map((task) => ({
+  const processMapping = options.process_mapping ?? resolveProcessMapping(intake.request_type);
+  if (!processMapping) return [];
+  const transactionId = options.transaction_id ?? "UNCOMMITTED";
+  return processMapping.tasks.map((task) => ({
     ...task,
-    process_id: intake.request_type === "고유번호증 신청" ? "P03" : task.process_id,
+    process_id: processMapping.operational_task_set_id,
     title: `${prefix}[${String(task.order).padStart(2, "0")}] ${task.name}`,
-    operational_task_id: `CI1-P03-${String(task.order).padStart(2, "0")}`,
+    task_instance_id: `${transactionId}-${task.operational_task_id}`,
     status: "시작 전",
     assignee: intake.fund_manager,
     next_action: task.name
   }));
 }
 
+function templateValue(value) {
+  if (value == null || value === "") return "확인 필요";
+  return String(value);
+}
+
+export function renderRequestExecutionTemplate(intake, {
+  transaction_id = "UNCOMMITTED",
+  process_mapping = resolveProcessMapping(intake.request_type),
+  tasks = null,
+  request = {}
+} = {}) {
+  if (!process_mapping) throw new Error("PROCESS_MAPPING_REQUIRED");
+  const renderedTasks = tasks ?? buildTasks(intake, undefined, { transaction_id, process_mapping });
+  const values = {
+    request_title: `[TEST][CI1] ${intake.related_fund} — ${intake.request_type}`,
+    e2e_process_id: process_mapping.e2e_process_id,
+    process_model_id: process_mapping.process_model_id,
+    operational_task_set_id: process_mapping.operational_task_set_id,
+    related_fund: intake.related_fund,
+    request_type: intake.request_type,
+    requester: intake.requester,
+    fund_manager: intake.fund_manager,
+    target_date: intake.target_date,
+    trigger_status: intake.trigger_status,
+    document_status: intake.document_status,
+    start_condition_status: request.start_condition_status,
+    fund_type: intake.fund_type,
+    gp_type: intake.gp_type,
+    joint_gp: intake.joint_gp,
+    fund_name: intake.fund_name ?? intake.related_fund,
+    fund_address: intake.fund_address,
+    regulation_version_status: intake.regulation_version_status,
+    supporting_document_status: intake.supporting_document_status,
+    detail_statement_status: intake.detail_statement_status,
+    sealed_document_status: intake.sealed_document_status,
+    original_folder: intake.original_folder,
+    task_checklist: renderedTasks.map((task) =>
+      `- [ ] ${task.operational_task_id} ${task.name} (Atomic: ${task.atomic_step_refs.join(", ")})`
+    ).join("\n"),
+    blocker: request.blocker,
+    exception_notes: intake.exception_notes,
+    next_action: request.next_action,
+    evidence_status: request.evidence_status,
+    current_actor: request.current_actor,
+    human_approval_status: request.human_approval_status,
+    automation_level: request.automation_level ?? "H1",
+    schema_change_candidate: request.schema_change_candidate ?? "없음"
+  };
+  return fs.readFileSync(REQUEST_TEMPLATE_PATH, "utf8")
+    .replace(/\{\{([a-z0-9_]+)\}\}/g, (_, key) => templateValue(values[key]));
+}
+
 export function prepareTransaction(text, options = {}) {
   const contract = options.contract ?? loadContract();
   const intake = typeof text === "string" ? parseIntake(text, options) : text;
+  const processMapping = resolveProcessMapping(intake.request_type, options.process_mapping_catalog);
   const fundMatches = options.fund_matches ?? [];
   const requesterMatches = options.requester_matches ?? [];
   const managerMatches = options.manager_matches ?? [];
@@ -139,6 +205,12 @@ export function prepareTransaction(text, options = {}) {
         : { status: managerMatches.length === 0 ? "NOT_FOUND" : "AMBIGUOUS" }
     },
     duplicate_requests: duplicates,
+    process_reference: processMapping ? {
+      e2e_process_id: processMapping.e2e_process_id,
+      process_model_id: processMapping.process_model_id,
+      operational_task_set_id: processMapping.operational_task_set_id
+    } : null,
+    process_mapping_supported: Boolean(processMapping),
     missing_required: missing,
     ambiguous,
     actual_write_count: 0,
@@ -146,17 +218,22 @@ export function prepareTransaction(text, options = {}) {
       missing.length === 0 &&
       !Object.values(ambiguous).some(Boolean) &&
       requesterMatches.length === 1 &&
-      managerMatches.length === 1
+      managerMatches.length === 1 &&
+      Boolean(processMapping)
   };
 }
 
-export function buildTransactionPreview(prepared, contract = loadContract()) {
+export function buildTransactionPreview(prepared, contract = loadContract(), options = {}) {
   const fundWillBeCreated = prepared.resolution.fund.status === "CREATE_ON_COMMIT";
   const blocked =
     !prepared.prepare_complete ||
     prepared.resolution.fund.status === "AMBIGUOUS" ||
     prepared.duplicate_requests.length > 0;
-  const tasks = buildTasks(prepared.intake, contract);
+  const processMapping = resolveProcessMapping(prepared.intake.request_type);
+  const tasks = buildTasks(prepared.intake, contract, {
+    transaction_id: prepared.transaction_id,
+    process_mapping: processMapping
+  });
   const commitPlan = {
     fund: {
       action: fundWillBeCreated ? "CREATE" : "USE_EXISTING",
@@ -181,6 +258,9 @@ export function buildTransactionPreview(prepared, contract = loadContract()) {
   return {
     stage: "PREVIEW",
     transaction_id: prepared.transaction_id,
+    e2e_process_id: processMapping?.e2e_process_id ?? null,
+    process_model_id: processMapping?.process_model_id ?? null,
+    operational_task_set_id: processMapping?.operational_task_set_id ?? null,
     actual_write_count: 0,
     intake: prepared.intake,
     resolution: prepared.resolution,
@@ -192,6 +272,19 @@ export function buildTransactionPreview(prepared, contract = loadContract()) {
       commitPlan.request.planned_writes +
       commitPlan.tasks.planned_writes,
     approval_required: true,
+    request_body_template: {
+      path: contract.request_body_template.path,
+      applied: Boolean(options.apply_request_template),
+      rendering_available: Boolean(processMapping),
+      content: options.apply_request_template && processMapping
+        ? renderRequestExecutionTemplate(prepared.intake, {
+            transaction_id: prepared.transaction_id,
+            process_mapping: processMapping,
+            tasks,
+            request: commitPlan.request
+          })
+        : null
+    },
     commit_allowed: !blocked
   };
 }
@@ -236,14 +329,14 @@ export async function commitTransaction(preview, { approved = false, adapter, ex
 
   const missingTasks = [];
   for (const task of preview.commit_plan.tasks.records) {
-    const key = task.operational_task_id;
+    const key = task.task_instance_id;
     if (log.task_page_ids[key]) continue;
     try {
       const created = await adapter.createTask(task, log.request_page_id, preview.transaction_id);
       log.task_page_ids[key] = created.page_id;
       writes += 1;
     } catch (error) {
-      missingTasks.push({ operational_task_id: key, error: error.message });
+      missingTasks.push({ task_instance_id: key, operational_task_id: task.operational_task_id, error: error.message });
     }
   }
   if (missingTasks.length) {
@@ -271,7 +364,8 @@ export function buildPreview(intake, { duplicates = [], contract = loadContract(
       ...(intake.original_folder ? [] : ["원본 폴더 미입력"]),
       ...(duplicates.length ? ["미완료 중복 요청 후보가 있어 별도 승인이 필요함"] : [])
     ],
-    write_allowed: missing.length === 0 && duplicates.length === 0
+    process_mapping_supported: Boolean(resolveProcessMapping(intake.request_type)),
+    write_allowed: missing.length === 0 && duplicates.length === 0 && Boolean(resolveProcessMapping(intake.request_type))
   };
 }
 

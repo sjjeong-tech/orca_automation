@@ -16,6 +16,8 @@ Notion Form은 Optional Fallback이며 선행조건이 아니다.
 - 사람이 읽는 현재 상태: [`orchestration/generated/current-state.md`](orchestration/generated/current-state.md)
 - 실행 가능 작업: [`orchestration/generated/ready-work.md`](orchestration/generated/ready-work.md)
 - Intake 계약: [`contracts/conversational-intake-contract.yaml`](contracts/conversational-intake-contract.yaml)
+- Process 실행 Mapping: [`contracts/process-execution-mapping.yaml`](contracts/process-execution-mapping.yaml)
+- Request 실행 본문 템플릿: [`templates/request-execution-template.md`](templates/request-execution-template.md)
 
 이 문서에는 상태값을 복제하지 않는다. 최신 상태는 위 Canonical 파일에서 확인한다.
 
@@ -53,6 +55,9 @@ Notion Form은 Optional Fallback이며 선행조건이 아니다.
 - CI-A: CI-01·CI-02 — 입력규격과 DB Mapping
 - CI-B: CI-03·CI-04 — 자연어 해석과 Notion 기록
 - CI-C: CI-05·CI-06·CI-07 — E2E 검증과 운영 확장
+- CI-08: E2E-03·세무서_1·P03 Process Model 실행 정합화
+- CI-09: 승인된 실제 사례 Pilot
+- CI-10: 실제 사례 검증 이후 다음 Process 확장
 
 상세 ID 뜻은 [`docs/work-item-glossary.md`](docs/work-item-glossary.md)를 참고한다.
 

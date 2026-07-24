@@ -10,3 +10,6 @@
 - CI-05 — 대화형 E2E Pilot
 - CI-06 — Slack 요청 접수 연계 Pilot
 - CI-07 — 운영 적용 및 개선
+- CI-08 — Process Model 실행 정합화
+- CI-09 — 실제 사례 Pilot
+- CI-10 — 다음 Process 확장

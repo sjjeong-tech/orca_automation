@@ -5,7 +5,7 @@
     "CP-04", "CP-05-P0-SERIES", "CP-05-P1-SERIES", "CP-05-S1", "CP-05-N1", "CP-05-S1-R1",
     "CP-05-P2", "CP-00-O1", "AG-P2", "N-04", "N-05", "N-06", "CLAUDE-P2-REVIEW", "J-01", "J-02",
     "CP-05-P3", "AG-P3", "FT-01", "FT-02", "FT-03", "FT-04", "FT-05",
-    "CI-01", "CI-02", "CI-03", "CI-04", "CI-05", "CI-06", "CI-07", "CP-05-P4"
+    "CI-01", "CI-02", "CI-03", "CI-04", "CI-05", "CI-06", "CI-07", "CI-08", "CI-09", "CI-10", "CP-05-P4"
   ],
   "edges": [
     ["CP-04", "CP-05-P0-SERIES"], ["CP-05-P0-SERIES", "CP-05-P1-SERIES"], ["CP-05-P1-SERIES", "CP-05-S1"],
@@ -17,7 +17,8 @@
     ["N-05", "FT-03"], ["FT-03", "FT-04"],
     ["CP-05-P3", "CI-01"], ["CP-05-P3", "CI-02"], ["FT-03", "CI-02"], ["FT-04", "CI-02"],
     ["CI-01", "CI-03"], ["CI-01", "CI-04"], ["CI-02", "CI-04"], ["CI-03", "CI-04"],
-    ["CI-04", "CI-05"], ["CI-05", "CI-06"], ["CI-05", "CI-07"], ["CI-07", "CP-05-P4"],
+    ["CI-04", "CI-05"], ["CI-05", "CI-06"], ["CI-05", "CI-07"], ["CI-05", "CI-08"],
+    ["CI-08", "CI-09"], ["CI-09", "CI-10"], ["CI-07", "CP-05-P4"],
     ["N-06", "J-02"], ["CP-05-P3", "J-02"], ["CP-05-P4", "J-02"]
   ],
   "non_blocking_relationships": [
@@ -34,8 +35,8 @@
   "prerequisite_status": {
     "J-02": {
       "N-05": {"required": true, "satisfied": true},
-      "N-06": {"required": true, "satisfied": false},
-      "RELATION_ROLLUP_CONFIRMED": {"required": true, "satisfied": false},
+      "N-06": {"required": true, "satisfied": true},
+      "RELATION_ROLLUP_CONFIRMED": {"required": true, "satisfied": true},
       "AG-P3": {"required": true, "satisfied": false},
       "FUTURE_P4_P5_DESIGN_APPROVALS": {"required": true, "satisfied": false},
       "NOTION_BUILD_WORK_ORDER": {"required": true, "satisfied": false}

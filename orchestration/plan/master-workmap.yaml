@@ -82,14 +82,14 @@
       "label_ko": "Notion DB 직접 입력·노출 검증", "current_status_ko": "검증 완료", "next_action_ko": "대화형 Intake DB 기록 근거로 재사용"
     },
     {
-      "id": "N-06", "title": "Task Related-Fund Rollup Validation", "owner": "USER", "type": "VALIDATE", "phase": "CP-05-UI", "status": "BLOCKED", "priority": 4,
+      "id": "N-06", "title": "Task Related-Fund Rollup Validation", "owner": "USER", "type": "VALIDATE", "phase": "CP-05-UI", "status": "APPROVED", "priority": 4,
       "depends_on": ["N-05"], "input_gate": "N05_VERIFIED", "required_inputs": ["Safe TEST FUND", "Safe TEST support request", "Safe TEST task"], "allowed_paths": ["Notion UI only", "orchestration/proposals/**"], "forbidden_paths": ["orchestration/plan/**", "processes/**"],
       "outputs": ["지원팀 Task.관련 조합 Rollup validation"], "validation": ["TASK_RELATED_FUND_ROLLUP_VERIFIED"], "approval_required": true, "continuation_policy": "STOP_FOR_APPROVAL",
-      "downstream": ["J-02"], "blocking_reason": "TASK_RELATED_FUND_ROLLUP_NOT_VERIFIED", "source_of_truth": "reports/cp-05-p3-validation.md#N-06-Build-Test-Contract", "updated_by": "GPT_N06_SCOPE_CORRECTION", "updated_at": "2026-07-24",
-      "execution_status": "PARTIAL", "classification": "REQUIRED_BEFORE_BUILD", "blocking_for_P3": false, "blocking_for_J02": true, "downstream_gate": "J-02",
-      "label_ko": "Task 관련 조합 Rollup 검증", "short_description_ko": "Form과 무관한 Request→Task 관련 조합 Rollup 실제값 검증", "current_status_ko": "일부 검증, Task Rollup 실제값 대기", "next_action_ko": "J-02 전 안전한 TEST로 검증",
+      "downstream": ["J-02"], "blocking_reason": "", "source_of_truth": "CI-05 user pilot transaction verification", "updated_by": "CODEX_CP-05-CI2-CANONICAL-ALIGNMENT", "updated_at": "2026-07-24",
+      "execution_status": "VERIFIED", "classification": "REQUIRED_BEFORE_BUILD", "requirement_satisfied": true, "blocking_for_P3": false, "blocking_for_J02": false, "downstream_gate": "J-02",
+      "label_ko": "Task 관련 조합 Rollup 검증", "short_description_ko": "Form과 무관한 Request→Task 관련 조합 Rollup 실제값 검증", "current_status_ko": "검증 완료", "next_action_ko": "실행 인스턴스 검증 결과를 CI-08 이후에도 유지",
       "verified_subtests": ["TO_DO_LIST_FUND_RELATION_STORAGE_PASS", "TO_DO_LIST_FUND_GP_ROLLUP_PASS", "TO_DO_LIST_FUND_TYPE_ROLLUP_PASS", "TO_DO_LIST_FUND_MANAGER_ROLLUP_PASS"],
-      "remaining_test": "지원팀 Task.상위 요청 → 지원팀 업무요청.관련 조합 → 지원팀 Task.관련 조합 Rollup 실제값"
+      "remaining_test": ""
     },
     {
       "id": "CLAUDE-P2-REVIEW", "title": "P2 Independent Review", "owner": "CLAUDE", "type": "REVIEW", "phase": "CP-05-P2", "status": "PLANNED", "priority": 3,
@@ -165,7 +165,7 @@
       "depends_on": ["CI-01"], "input_gate": "CI_01_CONTRACT_APPROVED", "required_inputs": ["Approved conversational intake contract"], "allowed_paths": ["future CI-03 work order required"], "forbidden_paths": ["Notion", "Slack", "processes/**", "variations/**", "sources/**"],
       "outputs": ["Intake parser and missing-information question logic"], "validation": ["PARSER_FIXTURES_PASS", "MISSING_INFORMATION_RULES_PASS"], "approval_required": false, "continuation_policy": "STOP_NO_WORK_ORDER",
       "downstream": ["CI-04"], "blocking_reason": "", "source_of_truth": "scripts/conversational-intake.mjs", "updated_by": "CODEX_CP-05-CI1-LR", "updated_at": "2026-07-24",
-      "label_ko": "자연어 요청 해석 및 누락정보 확인", "short_description_ko": "고유번호증 신청 규칙 기반 Parser와 누락 질문", "current_status_ko": "Prototype 검증 완료", "next_action_ko": "실제 사용자 표현 Pilot", "execution_status": "PROTOTYPE_VERIFIED"
+      "label_ko": "자연어 요청 해석 및 누락정보 확인", "short_description_ko": "고유번호증 신청 규칙 기반 Parser와 누락 질문", "current_status_ko": "완료", "next_action_ko": "Canonical Process Mapping을 적용한 실제 사례 Pilot", "execution_status": "COMPLETED"
     },
     {
       "id": "CI-04", "title": "CI-04 (Notion 업무요청·표준 Task 자동 기록)", "owner": "CODEX", "type": "BUILD", "phase": "CP-05-CI", "status": "APPROVED", "priority": 4,
@@ -175,11 +175,11 @@
       "label_ko": "Notion 업무요청·표준 Task 자동 기록", "short_description_ko": "승인된 Intake로 TEST Request 1건과 Task 6건 생성", "current_status_ko": "Prototype 검증 완료", "next_action_ko": "사용자 Pilot 검토", "execution_status": "PROTOTYPE_VERIFIED"
     },
     {
-      "id": "CI-05", "title": "CI-05 (대화형 E2E Pilot)", "owner": "CODEX_AND_USER", "type": "PILOT", "phase": "CP-05-CI", "status": "APPROVAL_REQUIRED", "priority": 5,
+      "id": "CI-05", "title": "CI-05 (대화형 E2E Pilot)", "owner": "CODEX_AND_USER", "type": "PILOT", "phase": "CP-05-CI", "status": "APPROVED", "priority": 5,
       "depends_on": ["CI-04"], "input_gate": "CI_04_TEST_WRITE_PASS", "required_inputs": ["Prototype CLI", "Safe TEST data", "User confirmation"], "allowed_paths": ["scripts/**", "contracts/**", "reports/**", "orchestration/runs/codex/**"], "forbidden_paths": ["Operational records without approval", "Slack"],
       "outputs": ["Conversational Intake E2E pilot result"], "validation": ["NATURAL_LANGUAGE_TO_COMPLETED_REQUEST_E2E_PASS"], "approval_required": true, "continuation_policy": "STOP_FOR_APPROVAL",
-      "downstream": ["CI-06", "CI-07"], "blocking_reason": "GPT_USER_PROTOTYPE_REVIEW_AND_N06_UI_CONFIRMATION", "source_of_truth": "reports/conversational-intake-ci1-e2e.md", "updated_by": "CODEX_CP-05-CI1-LR", "updated_at": "2026-07-24",
-      "label_ko": "대화형 E2E Pilot", "short_description_ko": "자연어 Preview부터 TEST Request·Task 재조회까지 검증", "current_status_ko": "TEST 검증, Rollup UI 확인 필요", "next_action_ko": "GPT·사용자 Prototype 사용성 검토", "execution_status": "TEST_VERIFIED_WITH_ROLLUP_UI_GAP"
+      "downstream": ["CI-06", "CI-07", "CI-08"], "blocking_reason": "", "source_of_truth": "CI1 user pilot transaction CI1-PILOT-20260724-001", "updated_by": "CODEX_CP-05-CI2-CANONICAL-ALIGNMENT", "updated_at": "2026-07-24",
+      "label_ko": "대화형 E2E Pilot", "short_description_ko": "자연어 Preview부터 TEST Request·Task 재조회까지 검증", "current_status_ko": "사용자 Pilot 검증 완료", "next_action_ko": "CI-08 Process Model 정합성 독립 검토", "execution_status": "USER_PILOT_VERIFIED", "reporting_group_status": "CI-C_USER_PILOT_VERIFIED"
     },
     {
       "id": "CI-06", "title": "CI-06 (Slack 요청 접수 연계 Pilot)", "owner": "CODEX_AND_USER", "type": "PILOT", "phase": "CP-05-CI", "status": "BLOCKED", "priority": 6,
@@ -194,6 +194,27 @@
       "outputs": ["Operational adoption decision and improvement backlog"], "validation": ["ONE_TO_THREE_PILOT_CASES_REVIEWED"], "approval_required": true, "continuation_policy": "STOP_FOR_APPROVAL",
       "downstream": ["CP-05-P4"], "blocking_reason": "Conversational pilot pending", "source_of_truth": "GPT_WORK_ORDER_PENDING", "updated_by": "CODEX_CP-05-CI0-R", "updated_at": "2026-07-24",
       "label_ko": "대화형 Intake 운영 적용 및 개선", "short_description_ko": "실제 1~3건 Pilot 후 규격·Task·알림 개선", "current_status_ko": "Pilot 대기", "next_action_ko": "사용자 사용성 평가와 운영 승인"
+    },
+    {
+      "id": "CI-08", "title": "CI-08 (Process Model Alignment)", "owner": "CODEX", "type": "ALIGNMENT", "phase": "CP-05-CI", "status": "APPROVED", "priority": 8,
+      "depends_on": ["CI-05"], "input_gate": "CI_05_USER_PILOT_VERIFIED", "required_inputs": ["Canonical Notion E2E-03", "contracts/conversational-intake-contract.yaml", "CI-05 user pilot result"], "allowed_paths": ["contracts/**", "docs/**", "templates/**", "reports/**", "scripts/**", "orchestration/**", "START_HERE.md"], "forbidden_paths": ["Notion write", "processes/**", "variations/**", "sources/**"],
+      "outputs": ["contracts/process-execution-mapping.yaml", "docs/process-execution-layering.md", "reports/ci2-process-alignment-verification.md"], "validation": ["E2E03_P03_MAPPING_PASS", "ATOMIC_STEP_01_16_COVERAGE_PASS", "CI1_REGRESSION_PASS"], "approval_required": false, "continuation_policy": "STOP_FOR_INDEPENDENT_REVIEW",
+      "downstream": ["CI-09"], "blocking_reason": "", "source_of_truth": "contracts/process-execution-mapping.yaml", "updated_by": "CODEX_CP-05-CI2-CANONICAL-ALIGNMENT", "updated_at": "2026-07-24",
+      "label_ko": "Process Model 실행 정합화", "short_description_ko": "E2E-03·세무서_1·P03 Operational Task와 실행 인스턴스 계약 연결", "current_status_ko": "완료", "next_action_ko": "Claude 독립 정합성 검증", "execution_status": "COMPLETED"
+    },
+    {
+      "id": "CI-09", "title": "CI-09 (Actual Case Pilot)", "owner": "CODEX_AND_USER", "type": "PILOT", "phase": "CP-05-CI", "status": "READY", "priority": 9,
+      "depends_on": ["CI-08"], "input_gate": "CI_08_INDEPENDENT_ALIGNMENT_VALIDATION", "required_inputs": ["CI-08 validation result", "User-approved actual case scope"], "allowed_paths": ["future CI-09 work order required"], "forbidden_paths": ["Unapproved operational record write", "Schema change"],
+      "outputs": ["Actual case pilot result"], "validation": ["ACTUAL_CASE_USER_APPROVAL", "PROCESS_EXECUTION_IDS_VERIFIED"], "approval_required": true, "continuation_policy": "STOP_FOR_APPROVAL",
+      "downstream": ["CI-10"], "blocking_reason": "INDEPENDENT_ALIGNMENT_VALIDATION_REQUIRED_BEFORE_EXECUTION", "source_of_truth": "GPT_WORK_ORDER_PENDING", "updated_by": "CODEX_CP-05-CI2-CANONICAL-ALIGNMENT", "updated_at": "2026-07-24",
+      "label_ko": "실제 사례 Pilot", "short_description_ko": "승인된 실제 사례 1건에 Canonical Process 실행 계약 적용", "current_status_ko": "CI-08 완료 후 검토 가능", "next_action_ko": "Claude 검증과 사용자 승인 후 Work Order 발행"
+    },
+    {
+      "id": "CI-10", "title": "CI-10 (Next Process Expansion)", "owner": "GPT_AND_USER_WITH_CODEX_BUILDER", "type": "EXPANSION", "phase": "CP-05-CI", "status": "BLOCKED", "priority": 10,
+      "depends_on": ["CI-09"], "input_gate": "CI_09_ACTUAL_CASE_PILOT_APPROVED", "required_inputs": ["CI-09 pilot findings", "Next request type decision"], "allowed_paths": ["future CI-10 work order required"], "forbidden_paths": ["Unapproved process expansion"],
+      "outputs": ["Next process expansion decision and mapping"], "validation": ["NEXT_PROCESS_SCOPE_APPROVED"], "approval_required": true, "continuation_policy": "STOP_NO_WORK_ORDER",
+      "downstream": [], "blocking_reason": "BLOCKED_BY_CI09", "source_of_truth": "GPT_WORK_ORDER_PENDING", "updated_by": "CODEX_CP-05-CI2-CANONICAL-ALIGNMENT", "updated_at": "2026-07-24",
+      "label_ko": "다음 Process 확장", "short_description_ko": "실제 사례 Pilot 이후 다음 업무유형 확장", "current_status_ko": "CI-09 대기", "next_action_ko": "CI-09 승인 결과 검토"
     },
     {
       "id": "CP-05-P4", "title": "CP-05-P4 (Conversational Intake and Collaboration Model)", "owner": "CODEX", "type": "BUILD", "phase": "CP-05-P4", "status": "BLOCKED", "priority": 5,
@@ -215,7 +236,8 @@
     {"from": "N-05", "to": "FT-03"}, {"from": "FT-03", "to": "FT-04"},
     {"from": "CP-05-P3", "to": "CI-01"}, {"from": "CP-05-P3", "to": "CI-02"}, {"from": "FT-03", "to": "CI-02"}, {"from": "FT-04", "to": "CI-02"},
     {"from": "CI-01", "to": "CI-03"}, {"from": "CI-01", "to": "CI-04"}, {"from": "CI-02", "to": "CI-04"}, {"from": "CI-03", "to": "CI-04"},
-    {"from": "CI-04", "to": "CI-05"}, {"from": "CI-05", "to": "CI-06"}, {"from": "CI-05", "to": "CI-07"}, {"from": "CI-07", "to": "CP-05-P4"},
+    {"from": "CI-04", "to": "CI-05"}, {"from": "CI-05", "to": "CI-06"}, {"from": "CI-05", "to": "CI-07"}, {"from": "CI-05", "to": "CI-08"},
+    {"from": "CI-08", "to": "CI-09"}, {"from": "CI-09", "to": "CI-10"}, {"from": "CI-07", "to": "CP-05-P4"},
     {"from": "N-06", "to": "J-02"}, {"from": "CP-05-P3", "to": "J-02"}, {"from": "CP-05-P4", "to": "J-02"}
   ],
   "join_gates": [

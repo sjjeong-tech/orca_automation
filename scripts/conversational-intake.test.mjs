@@ -4,9 +4,12 @@ import {
   buildWritePlan,
   commitTransaction,
   detectDuplicates,
+  loadProcessExecutionMapping,
   missingQuestions,
   parseIntake,
-  prepareTransaction
+  prepareTransaction,
+  renderRequestExecutionTemplate,
+  resolveProcessMapping
 } from "./conversational-intake.mjs";
 
 const missingInput = "디토 케이스테이 투자조합 고유번호증 신청 부탁드립니다.";
@@ -149,7 +152,7 @@ assert.equal(requestFail.failed_at, "REQUEST_CREATE_OR_RELATION_VERIFY");
 assert.equal(requestFail.actual_write_count, 1);
 assert.equal(requestFailAdapter.calls.tasks.length, 0);
 
-const taskFailAdapter = mockAdapter({ failTaskId: "CI1-P03-03" });
+const taskFailAdapter = mockAdapter({ failTaskId: "P03-T03" });
 const taskPartial = await commitTransaction(existingFundPreview, { approved: true, adapter: taskFailAdapter });
 assert.equal(taskPartial.stage, "PARTIAL");
 assert.equal(taskPartial.missing_tasks.length, 1);
@@ -163,7 +166,7 @@ const retried = await commitTransaction(existingFundPreview, {
 });
 assert.equal(retried.stage, "COMPLETED");
 assert.equal(retried.actual_write_count, 1);
-assert.deepEqual(retryAdapter.calls.tasks, ["CI1-P03-03"]);
+assert.deepEqual(retryAdapter.calls.tasks, ["P03-T03"]);
 assert.equal(retryAdapter.calls.request, 0);
 
 const notApproved = await commitTransaction(existingFundPreview, { approved: false, adapter: mockAdapter() });
@@ -171,3 +174,78 @@ assert.equal(notApproved.stage, "COMMIT_BLOCKED");
 assert.equal(notApproved.actual_write_count, 0);
 
 console.log("transaction tests: PASS (6 required scenarios)");
+
+const processCatalog = loadProcessExecutionMapping();
+const p03Mapping = resolveProcessMapping("고유번호증 신청", processCatalog);
+assert.equal(p03Mapping.e2e_process_id, "E2E-03");
+assert.equal(p03Mapping.process_model_id, "세무서_1");
+assert.equal(p03Mapping.operational_task_set_id, "P03");
+assert.deepEqual(p03Mapping.tasks.map((task) => task.operational_task_id), [
+  "P03-T01", "P03-T02", "P03-T03", "P03-T04", "P03-T05", "P03-T06"
+]);
+assert.equal(new Set(p03Mapping.tasks.map((task) => task.operational_task_id)).size, 6);
+
+const stepToTasks = new Map();
+for (const task of p03Mapping.tasks) {
+  for (const step of task.atomic_step_refs) {
+    stepToTasks.set(step, [...(stepToTasks.get(step) ?? []), task.operational_task_id]);
+  }
+}
+assert.deepEqual([...stepToTasks.keys()].sort(), p03Mapping.atomic_step_coverage.expected);
+assert.deepEqual(
+  [...stepToTasks.entries()].filter(([, taskIds]) => taskIds.length > 1),
+  [["02", ["P03-T02", "P03-T03"]]]
+);
+assert.deepEqual(p03Mapping.atomic_step_coverage.allowed_overlaps[0].tasks, ["P03-T02", "P03-T03"]);
+
+assert.deepEqual(
+  existingFundPreview.commit_plan.tasks.records.map((task) => task.task_instance_id),
+  [
+    "TX-EXISTING-FUND-P03-T01",
+    "TX-EXISTING-FUND-P03-T02",
+    "TX-EXISTING-FUND-P03-T03",
+    "TX-EXISTING-FUND-P03-T04",
+    "TX-EXISTING-FUND-P03-T05",
+    "TX-EXISTING-FUND-P03-T06"
+  ]
+);
+assert.ok(existingFundPreview.commit_plan.tasks.records.every((task) => task.atomic_step_refs.length > 0));
+assert.equal(existingFundPreview.e2e_process_id, "E2E-03");
+assert.equal(existingFundPreview.process_model_id, "세무서_1");
+assert.equal(existingFundPreview.operational_task_set_id, "P03");
+assert.equal(existingFundPreview.actual_write_count, 0);
+assert.equal(existingFundPreview.approval_required, true);
+
+const renderedTemplate = renderRequestExecutionTemplate(existingFundPrepared.intake, {
+  transaction_id: existingFundPrepared.transaction_id,
+  process_mapping: p03Mapping,
+  tasks: existingFundPreview.commit_plan.tasks.records,
+  request: existingFundPreview.commit_plan.request
+});
+for (const section of [
+  "## 1. 업무 개요", "## 2. 착수조건", "## 3. 필요정보", "## 4. 서류 체크리스트",
+  "## 5. 실제 처리 순서", "## 6. 예외·보완", "## 7. 결과물·저장·공유",
+  "## 8. 표준화·자동화 메모", "## 9. 스키마 변경 후보"
+]) {
+  assert.ok(renderedTemplate.includes(section));
+}
+assert.ok(renderedTemplate.includes("P03-T01"));
+assert.ok(!renderedTemplate.includes("{{"));
+
+const unsupported = {
+  ...existingFundPrepared.intake,
+  request_type: "계좌개설"
+};
+const unsupportedPrepared = prepareTransaction(unsupported, {
+  transaction_id: "TX-UNSUPPORTED",
+  fund_matches: existingFund,
+  requester_matches: person,
+  manager_matches: person
+});
+const unsupportedPreview = buildTransactionPreview(unsupportedPrepared);
+assert.equal(unsupportedPrepared.process_mapping_supported, false);
+assert.equal(unsupportedPreview.commit_allowed, false);
+assert.equal(unsupportedPreview.actual_write_count, 0);
+assert.equal(unsupportedPreview.commit_plan.tasks.records.length, 0);
+
+console.log("canonical process alignment tests: PASS (mapping, coverage, IDs, template, unsupported type gate)");

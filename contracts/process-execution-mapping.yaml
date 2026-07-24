@@ -1,0 +1,103 @@
+{
+  "version": "1.0.0",
+  "status": "CANONICAL_FOR_NEW_EXECUTION_INSTANCES",
+  "scope": "고유번호증 신청",
+  "source_priority": [
+    {
+      "name": "세무서·은행 업무 Process Model",
+      "url": "https://app.notion.com/p/8e3bafb3e64f448d8e06d63127d1155e",
+      "role": "CANONICAL_PROCESS_ROOT"
+    },
+    {
+      "name": "E2E-03 고유번호증 신청·수령",
+      "url": "https://app.notion.com/p/0a1d535868134040b878724136735211",
+      "role": "CANONICAL_E2E_PROCESS"
+    },
+    {
+      "name": "업무 실행 기본 템플릿",
+      "url": "https://app.notion.com/p/cfd9f799c809438e8cd48b90b3b68ab3",
+      "role": "EXECUTION_TEMPLATE_SOURCE"
+    },
+    {
+      "name": "Process Model Source Structure Index",
+      "url": "https://app.notion.com/p/7b1dafb5212d4de2995d5b8219399698",
+      "role": "SOURCE_STRUCTURE_INDEX"
+    }
+  ],
+  "request_type_mappings": {
+    "고유번호증 신청": {
+      "e2e_process_id": "E2E-03",
+      "process_model_id": "세무서_1",
+      "operational_task_set_id": "P03",
+      "task_instance_id_pattern": "{transaction_id}-{operational_task_id}",
+      "request_template": "templates/request-execution-template.md",
+      "tasks": [
+        {
+          "order": 1,
+          "operational_task_id": "P03-T01",
+          "name": "요청정보·착수조건 확인",
+          "atomic_step_refs": ["01", "03", "04"],
+          "actor": "지원팀",
+          "completion_condition": "필수 요청정보와 착수 가능 여부를 확인한다."
+        },
+        {
+          "order": 2,
+          "operational_task_id": "P03-T02",
+          "name": "제출서류 수령·누락 검수",
+          "atomic_step_refs": ["02", "05", "06", "07"],
+          "actor": "지원팀",
+          "completion_condition": "수령 서류와 누락 항목을 확인한다."
+        },
+        {
+          "order": 3,
+          "operational_task_id": "P03-T03",
+          "name": "신청서류 작성·날인본 확인",
+          "atomic_step_refs": ["02", "08"],
+          "actor": "지원팀",
+          "completion_condition": "신청서류 작성과 날인본 확인을 완료한다."
+        },
+        {
+          "order": 4,
+          "operational_task_id": "P03-T04",
+          "name": "세무서 제출 준비·접수",
+          "atomic_step_refs": ["09", "10", "11", "12"],
+          "actor": "지원팀",
+          "completion_condition": "제출 준비와 세무서 접수 및 접수증 저장을 확인한다."
+        },
+        {
+          "order": 5,
+          "operational_task_id": "P03-T05",
+          "name": "결과물 수령",
+          "atomic_step_refs": ["13", "14", "15"],
+          "actor": "외부기관",
+          "completion_condition": "고유번호증 결과물을 수령한다."
+        },
+        {
+          "order": 6,
+          "operational_task_id": "P03-T06",
+          "name": "스캔·저장·관리역 전달",
+          "atomic_step_refs": ["16"],
+          "actor": "지원팀",
+          "completion_condition": "결과물을 스캔·저장하고 관리역에게 전달한다."
+        }
+      ],
+      "atomic_step_coverage": {
+        "expected": ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16"],
+        "allowed_overlaps": [
+          {
+            "atomic_step": "02",
+            "tasks": ["P03-T02", "P03-T03"],
+            "reason": "날인·기재 검수는 제출서류 수령 검수의 일부이면서 신청서류 구성 착수의 입력 경계이므로 두 Operational Task가 동일 사실을 참조한다."
+          }
+        ]
+      }
+    }
+  },
+  "legacy_id_policy": {
+    "preserve_existing_ids": true,
+    "legacy_examples": ["CI1-P03-01", "CI1-P03-02"],
+    "new_instances_use_canonical_ids": true,
+    "existing_notion_records_must_not_be_rewritten": true
+  },
+  "unsupported_request_type_policy": "BLOCK_COMMIT_WITHOUT_PROCESS_MAPPING"
+}
