@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0",
+  "version": "0.3.0",
   "purpose": "고유번호증 신청 자연어 요청을 승인된 Notion 업무요청·Task로 변환하는 Pilot 계약",
   "status": "CI1_PILOT_CONTRACT",
   "supported_interfaces": [
@@ -60,6 +60,36 @@
     "write_before_gate": false,
     "draft_record_before_gate": false
   },
+  "transaction_policy": {
+    "stages": ["PREPARE", "PREVIEW", "COMMIT"],
+    "prepare": {
+      "allowed_actions": ["PARSE", "RESOLVE_FUND", "RESOLVE_PERSON", "CHECK_DUPLICATE"],
+      "notion_write_count": 0
+    },
+    "preview": {
+      "existing_fund": "SHOW_EXISTING_PAGE_ID",
+      "missing_fund": "SHOW_CREATE_ON_COMMIT",
+      "show_planned_writes": ["FUND", "REQUEST", "TASK"],
+      "notion_write_count": 0
+    },
+    "commit": {
+      "requires_explicit_approval": true,
+      "order": ["CREATE_OR_REUSE_FUND", "REREAD_FUND_ID", "CREATE_REQUEST", "VERIFY_REQUEST_FUND_RELATION", "CREATE_TASKS", "VERIFY_TASK_RELATION_AND_ROLLUP"]
+    },
+    "failure_control": {
+      "fund_failure": "STOP_ALL",
+      "request_failure": "DO_NOT_CREATE_TASKS",
+      "partial_task_failure": "LOG_CREATED_AND_MISSING_TASKS",
+      "retry": "REUSE_TRANSACTION_LOG_AND_CREATE_MISSING_ONLY",
+      "automatic_operational_delete": false,
+      "test_compensation_delete": "EXPLICIT_CONDITION_ONLY"
+    },
+    "idempotency": {
+      "key": "transaction_id",
+      "record_page_ids_in_execution_log": true,
+      "duplicate_create_on_retry": false
+    }
+  },
   "notion_property_mapping": {
     "request_database": "지원팀 업무요청",
     "request": {
@@ -88,7 +118,7 @@
     "request_type": "고유번호증 신청",
     "task_count": 6,
     "tasks": [
-      {"order": 1, "process_id": "INTAKE", "name": "요청정보·착수조건 확인", "actor": "지원팀", "completion_condition": "필수 요청정보와 착수 가능 여부가 확인됨"},
+      {"order": 1, "process_id": "P03", "name": "요청정보·착수조건 확인", "actor": "지원팀", "completion_condition": "필수 요청정보와 착수 가능 여부가 확인됨"},
       {"order": 2, "process_id": "P03", "name": "제출서류 수령·누락 검수", "actor": "지원팀", "completion_condition": "수령 서류와 누락 항목이 확인됨"},
       {"order": 3, "process_id": "P03", "name": "신청서류 작성·날인본 확인", "actor": "지원팀", "completion_condition": "신청서류 작성과 날인본 확인이 완료됨"},
       {"order": 4, "process_id": "P03", "name": "세무서 제출 준비·접수", "actor": "지원팀", "completion_condition": "제출 준비와 세무서 접수가 확인됨"},
