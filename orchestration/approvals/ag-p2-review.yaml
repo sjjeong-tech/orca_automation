@@ -2,7 +2,7 @@
   "approval_id": "AG-P2",
   "file_owner": "GPT",
   "owner": "GPT_AND_USER",
-  "status": "READY_FOR_GPT_USER_REVIEW",
+  "status": "APPROVED",
   "source_commit": "482c570d5da6222d609a0e5dfe5c76c726cee807",
   "source_report": "reports/cp-05-p2-status-evidence-model.md",
   "summary": {
@@ -37,18 +37,28 @@
     "Request completion requires HA-08 human approval"
   ],
   "approval_questions": [
-    {"id": "Q1", "question": "요청 7상태를 승인하는가?", "options": ["APPROVE", "REVISE"]},
-    {"id": "Q2", "question": "Task 6상태를 승인하는가?", "options": ["APPROVE", "REVISE"]},
-    {"id": "Q3", "question": "대기를 단일 TS-WAIT와 Actor·Blocker로 표현하는가?", "options": ["APPROVE", "SPLIT_STATUS"]},
-    {"id": "Q4", "question": "Pilot A에서 Text 기반 Blocker를 사용하는가?", "options": ["APPROVE", "ADD_PROPERTY", "SEPARATE_DB"]},
-    {"id": "Q5", "question": "Evidence 9종과 별도 Evidence DB 유예를 승인하는가?", "options": ["APPROVE", "REVISE"]},
-    {"id": "Q6", "question": "필수 Task·Evidence·전달·HA-08 완료 규칙을 승인하는가?", "options": ["APPROVE", "REVISE"]},
-    {"id": "Q7", "question": "Human Approval 8개를 P3 Contract로 사용하는가?", "options": ["APPROVE", "REVISE"]},
-    {"id": "Q8", "question": "Notion 변경 제안은 별도 Build Work Order에서만 적용하는가?", "options": ["APPROVE", "REVISE"]},
-    {"id": "Q9", "question": "UI Workstream을 비차단으로 유지하되 J-01 전 N-05 검증을 요구하는가?", "options": ["APPROVE", "ALTERNATE_GATE"]},
-    {"id": "Q10", "question": "AG-P2 승인 후 J-01 조건부로 P3 Work Order를 준비하는가?", "options": ["APPROVE", "REVISE", "DEFER"]}
+    {"id": "Q1", "question": "요청 7상태를 승인하는가?", "options": ["APPROVE", "REVISE"], "decision": "APPROVE"},
+    {"id": "Q2", "question": "Task 6상태를 승인하는가?", "options": ["APPROVE", "REVISE"], "decision": "APPROVE"},
+    {"id": "Q3", "question": "대기를 단일 TS-WAIT와 Actor·Blocker로 표현하는가?", "options": ["APPROVE", "SPLIT_STATUS"], "decision": "APPROVE"},
+    {"id": "Q4", "question": "Pilot A에서 Text 기반 Blocker를 사용하는가?", "options": ["APPROVE", "ADD_PROPERTY", "SEPARATE_DB"], "decision": "APPROVE"},
+    {"id": "Q5", "question": "Evidence 9종과 별도 Evidence DB 유예를 승인하는가?", "options": ["APPROVE", "REVISE"], "decision": "APPROVE"},
+    {"id": "Q6", "question": "필수 Task·Evidence·전달·HA-08 완료 규칙을 승인하는가?", "options": ["APPROVE", "REVISE"], "decision": "APPROVE"},
+    {"id": "Q7", "question": "Human Approval 8개를 P3 Contract로 사용하는가?", "options": ["APPROVE", "REVISE"], "decision": "APPROVE"},
+    {"id": "Q8", "question": "Notion 변경 제안은 별도 Build Work Order에서만 적용하는가?", "options": ["APPROVE", "REVISE"], "decision": "APPROVE"},
+    {"id": "Q9", "question": "UI Workstream을 비차단으로 유지하되 J-01 전 N-05 검증을 요구하는가?", "options": ["APPROVE", "ALTERNATE_GATE"], "decision": "APPROVE"},
+    {"id": "Q10", "question": "AG-P2 승인 후 J-01 조건부로 P3 Work Order를 준비하는가?", "options": ["APPROVE", "REVISE", "DEFER"], "decision": "APPROVE"}
   ],
   "on_approval": ["GPT updates canonical plan", "GPT records AG-P2 approval", "GPT evaluates J-01", "GPT may issue P3 or review Work Order"],
   "on_rejection": ["Create P2 revision work item", "Issue revision Work Order", "Keep P3 blocked"],
-  "decision": null
+  "conditions": [
+    "N-06 is REQUIRED_BEFORE_BUILD",
+    "CP-05-P3 remains BLOCKED until J-01 passes",
+    "Actual Notion changes require a separate Build Work Order"
+  ],
+  "decision": {
+    "result": "APPROVED",
+    "approved_by": ["GPT", "USER_NORMAL_JUN"],
+    "approved_at": "2026-07-24",
+    "scope": "Q1-Q10 all approved"
+  }
 }

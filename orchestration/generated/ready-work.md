@@ -4,4 +4,4 @@
 
 | Work Item | Owner | Type | Approval Required | Input Gate |
 |---|---|---|---:|---|
-| AG-P2 | GPT_AND_USER | APPROVAL | true | P2_PACKET_COMPLETE |
+| N-04 | USER_AND_NOTION_AI | UI | true | USER_UI_SESSION |

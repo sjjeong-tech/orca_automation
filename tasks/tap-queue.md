@@ -6,9 +6,9 @@
 
 Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될 때만 이 파일을 갱신하며, 선행 Gate를 통과하지 않은 TAP은 실행하지 않는다.
 
-**Queue 전체 상태:** `PAUSED_FOR_AG_P2_AND_UI_WORKSTREAM`
+**Queue 전체 상태:** `PAUSED_FOR_N04_UI_WORKSTREAM`
 
-**현재 Checkpoint:** `CP-00-O1 — COMPLETED`
+**현재 Checkpoint:** `CP-00-O2 — COMPLETED`
 
 **최근 Revision:** `TAP P1-R2 — COMPLETED (PASS WITH NON-BLOCKING GAPS)`
 
@@ -16,9 +16,9 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 
 **최근 계획:** `TAP V0 — COMPLETED`
 
-**최근 실행:** `TAP CP-00-O1 — COMPLETED`
+**최근 실행:** `TAP CP-00-O2 — COMPLETED`
 
-**다음 READY 후보:** `AG-P2 — GPT_AND_USER_REVIEW`
+**다음 READY 후보:** `N-04 — USER_AND_NOTION_AI`
 
 ## 자동 실행 Checkpoint
 
@@ -99,12 +99,12 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 | C6N | CP-05-N1 | Repository Rename·Reference Alignment | CP-05-S1 | COMPLETED | Repository Governance | 새 Remote·현행 참조 정렬 |
 | C6R | CP-05-S1-R1 | 사용자 UI Form·Skeleton 안정화 검토 | CP-05-N1 | PARTIAL_WITH_UI_ACTIONS | MD-01,02,03,06 | Form 질문·Filter·Rollup UI 검증 필요 |
 | C6A | GPT_UI_REVIEW | S1-R1 결과 검토 | CP-05-S1-R1 | COMPLETED_P2_AUTHORIZED | MD-01,02,03,06 | UI Gap은 비차단 Workstream |
-| C6U | UI_WORKSTREAM | Form UI·제출·Rollup 검증 | S1-R1 | OPEN_NON_BLOCKING | MD-03,06 | Notion AI·사용자 UI 담당 |
+| C6U | N-04 UI_WORKSTREAM | First Form UI 안정화 | AG-P2 승인 | READY_FOR_USER_UI | MD-03,06 | Notion AI·사용자 UI 담당 |
 | C7 | CP-05-R1 | 이전 Codex TI TAP | DEC-CP05-08 | REMOVE_AS_CODEX_TAP | 없음 | 실행 금지 |
 | C7A | GPT-USER-COMMUNICATION-MILESTONE | Skeleton Intermediate Reporting | S1 완료 후 사용자 판단 | OPTIONAL_AFTER_S1 | CM-01 | P2 비차단 |
 | C8 | CP-05-P2 | Status & Evidence·Human Control Model | S1 Stabilization·GPT UI Review | COMPLETED_WITH_OPEN_UI_GAPS | MD-04 | 실제 Notion 변경 0 |
-| C8A | AG-P2 | P2 Contract GPT·사용자 승인 | CP-05-P2 | READY_FOR_GPT_USER_REVIEW | MD-04,05 | 상태·증빙·완료·Human Gate 승인 |
-| C9 | CP-05-P3 | Process-to-Notion Mapping | AG-P2 승인 | BLOCKED_UNTIL_AG-P2 | MD-02,05 | P2 승인 대기 |
+| C8A | AG-P2 | P2 Contract GPT·사용자 승인 | CP-05-P2 | APPROVED | MD-04,05 | Q1~Q10 APPROVE |
+| C9 | CP-05-P3 | Process-to-Notion Mapping | AG-P2 승인·J-01 | BLOCKED_UNTIL_J01 | MD-02,05 | N-05 등 J-01 입력 대기 |
 | C10 | CP-05-P4 | Intake·Collaboration Model | P3 승인 | BLOCKED_BY_PREVIOUS_APPROVAL | MD-03,06 | P3 승인 대기 |
 | C11 | CP-05-P5 | Pilot-ready MVP Build Spec | P4 승인 | BLOCKED_BY_PREVIOUS_APPROVAL | MD-01~07 | Build 승인 명세 대기 |
 | C12 | CP-05-B1 | Pilot-ready Notion MVP Revision | P5 Build 승인 | BLOCKED_UNTIL_BUILD_APPROVAL | MD-01~07 | Build 승인 대기 |
@@ -119,13 +119,16 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 
 | Work Item | 계획·실행 요약 | 다음 조치 |
 |---|---|---|
-| CP-00-O1 | Run `COMPLETED`; Bootstrap 이후 Canonical Plan은 GPT 소유 | 결과 검토 |
-| CP-05-P2 | Execution `COMPLETED`; Plan `APPROVAL_REQUIRED` | AG-P2 |
-| AG-P2 | `READY_FOR_GPT_USER_REVIEW` | GPT·사용자 승인 |
-| N-04 | `WAITING_FOR_USER` | Notion AI·사용자 UI 작업 |
+| CP-00-O1 | Run `COMPLETED`; Bootstrap 이후 Canonical Plan은 GPT 소유 | 결과 보존 |
+| CP-00-O2 | Run `COMPLETED`; AG-P2 승인 기록 | N-04 Handoff |
+| CP-05-P2 | Execution `COMPLETED`; Plan `APPROVED` | 결과 보존 |
+| AG-P2 | `APPROVED`; Q1~Q10 APPROVE | J-01 입력 |
+| N-04 | `READY_FOR_USER_UI` | Notion AI·사용자 UI 작업 |
 | N-05 | `BLOCKED_BY_N04` | 1차 Form 제출 검증 |
-| N-06 | `BLOCKED_BY_N05` | Rollup 분류 Proposal 검토 |
-| CP-05-P3 | `BLOCKED_UNTIL_AG_P2_AND_JOIN_GATE` | 실행 금지 |
+| N-06 | `BLOCKED_BY_N05`; `REQUIRED_BEFORE_BUILD` | Relation·Rollup 검증 |
+| J-01 | `BLOCKED_BY_N05` | Pilot Input 검증 |
+| J-02 | `BLOCKED`; Build Readiness | P3·P4·N-05·N-06·Build WO 대기 |
+| CP-05-P3 | `BLOCKED_UNTIL_J01` | 실행 금지 |
 
 ### CP-05-P0 Claude Finding 상태
 
