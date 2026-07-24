@@ -1,13 +1,13 @@
 {
   "project": "vc-support_team-process-rag",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "plan_owner": "GPT",
   "last_plan_commit": "SELF_COMMIT_RESOLVE_WITH_GIT_LOG",
   "current_phase": "CP-05_NOTION_CONTROL_PLANE",
   "workstreams": [
     {"id": "WS-PROCESS", "title": "As-Is Process Model", "status": "APPROVED"},
     {"id": "WS-NOTION", "title": "Notion Operations Control Plane", "status": "APPROVAL_REQUIRED"},
-    {"id": "WS-UI", "title": "Notion UI Validation", "status": "APPROVED_WITH_FORM_UI_BACKLOG"},
+    {"id": "WS-UI", "title": "Notion UI Validation", "status": "PARTIAL"},
     {"id": "WS-REVIEW", "title": "Independent Review", "status": "PLANNED"}
   ],
   "work_items": [
@@ -80,12 +80,13 @@
       "verification_status": "VERIFIED", "validation_results": ["PROPERTY_STORAGE_PASS", "DEFAULT_STATUS_PASS", "VIEW_VISIBILITY_PASS", "PERSON_STORAGE_PASS", "RELATION_OPTIONAL_PASS"]
     },
     {
-      "id": "N-06", "title": "Relation and Rollup Validation", "owner": "USER_AND_NOTION_AI", "type": "VALIDATE", "phase": "CP-05-UI", "status": "APPROVED", "priority": 4,
-      "depends_on": ["N-05"], "input_gate": "N05_VERIFIED", "required_inputs": ["Safe TEST relation"], "allowed_paths": ["Notion UI only", "orchestration/proposals/**"], "forbidden_paths": ["orchestration/plan/**", "processes/**"],
-      "outputs": ["Rollup validation classification"], "validation": ["RELATION_AND_ROLLUP_VERIFIED"], "approval_required": true, "continuation_policy": "STOP_COMPLETE",
-      "downstream": ["J-02"], "blocking_reason": "", "source_of_truth": "TEST page 3a772a41-d9d7-81d8-9bc8-c79b7718f277 and user screenshot verification", "updated_by": "GPT_N06_RECONCILIATION", "updated_at": "2026-07-24",
-      "execution_status": "COMPLETED", "verification_status": "VERIFIED", "classification": "REQUIRED_BEFORE_BUILD", "requirement_satisfied": true, "blocking_for_P3": false, "blocking_for_J02": false, "downstream_gate": "J-02",
-      "validation_results": ["RELATION_STORAGE_PASS", "CANONICAL_FUND_RECORD_LINK_PASS", "GP_ROLLUP_PASS", "FUND_TYPE_ROLLUP_PASS", "MANAGER_ROLLUP_PASS", "CHANGED_MANAGER_ROLLUP_PASS"]
+      "id": "N-06", "title": "Task Related-Fund Rollup Validation", "owner": "USER_AND_NOTION_AI", "type": "VALIDATE", "phase": "CP-05-UI", "status": "BLOCKED", "priority": 4,
+      "depends_on": ["N-05"], "input_gate": "N05_VERIFIED", "required_inputs": ["Safe TEST FUND", "Safe TEST support request", "Safe TEST task"], "allowed_paths": ["Notion UI only", "orchestration/proposals/**"], "forbidden_paths": ["orchestration/plan/**", "processes/**"],
+      "outputs": ["지원팀 Task.관련 조합 Rollup validation"], "validation": ["TASK_RELATED_FUND_ROLLUP_VERIFIED"], "approval_required": true, "continuation_policy": "STOP_FOR_APPROVAL",
+      "downstream": ["J-02"], "blocking_reason": "TASK_RELATED_FUND_ROLLUP_NOT_VERIFIED", "source_of_truth": "reports/cp-05-p3-validation.md#N-06-Build-Test-Contract", "updated_by": "GPT_N06_SCOPE_CORRECTION", "updated_at": "2026-07-24",
+      "execution_status": "PARTIAL", "classification": "REQUIRED_BEFORE_BUILD", "blocking_for_P3": false, "blocking_for_J02": true, "downstream_gate": "J-02",
+      "verified_subtests": ["TO_DO_LIST_FUND_RELATION_STORAGE_PASS", "TO_DO_LIST_FUND_GP_ROLLUP_PASS", "TO_DO_LIST_FUND_TYPE_ROLLUP_PASS", "TO_DO_LIST_FUND_MANAGER_ROLLUP_PASS"],
+      "remaining_test": "지원팀 Task.상위 요청 → 지원팀 업무요청.관련 조합 → 지원팀 Task.관련 조합 Rollup 실제값"
     },
     {
       "id": "CLAUDE-P2-REVIEW", "title": "P2 Independent Review", "owner": "CLAUDE", "type": "REVIEW", "phase": "CP-05-P2", "status": "PLANNED", "priority": 3,
@@ -104,7 +105,7 @@
       "id": "AG-P3", "title": "P3 GPT and User Approval", "owner": "GPT_AND_USER", "type": "APPROVAL", "phase": "CP-05-P3", "status": "READY", "priority": 1,
       "depends_on": ["CP-05-P3"], "input_gate": "P3_VALIDATION_PASS", "required_inputs": ["orchestration/approvals/ag-p3-review.yaml"], "allowed_paths": ["orchestration/approvals/**", "orchestration/plan/**"], "forbidden_paths": ["processes/**", "variations/**", "sources/**"],
       "outputs": ["AG-P3 decision"], "validation": ["GPT_USER_DECISION_REQUIRED"], "approval_required": true, "continuation_policy": "STOP_FOR_APPROVAL",
-      "downstream": ["CP-05-P4"], "blocking_reason": "WAITING_FOR_GPT_USER_REVIEW", "source_of_truth": "orchestration/approvals/ag-p3-review.yaml", "updated_by": "GPT_N06_RECONCILIATION", "updated_at": "2026-07-24"
+      "downstream": ["CP-05-P4"], "blocking_reason": "WAITING_FOR_GPT_USER_REVIEW", "source_of_truth": "orchestration/approvals/ag-p3-review.yaml", "updated_by": "GPT_N06_SCOPE_CORRECTION", "updated_at": "2026-07-24"
     },
     {
       "id": "CP-05-P4", "title": "Intake Form and Collaboration Model", "owner": "CODEX", "type": "BUILD", "phase": "CP-05-P4", "status": "BLOCKED", "priority": 5,
@@ -137,11 +138,11 @@
     {
       "id": "J-02", "title": "Notion Build Readiness", "status": "BLOCKED", "required_inputs": [
         "CP-05-P3=APPROVED", "CP-05-P4=APPROVED", "N-05=VERIFIED", "N-06=VERIFIED",
-        "Relation and Rollup behavior confirmed", "Notion Build Work Order issued"
+        "지원팀 Task 관련 조합 Rollup confirmed", "Notion Build Work Order issued"
       ],
-      "satisfied_inputs": ["N-05=VERIFIED", "N-06=VERIFIED", "Relation and Rollup behavior confirmed"],
+      "satisfied_inputs": ["N-05=VERIFIED"],
       "optional_inputs": [], "owner": "GPT_AND_USER",
-      "blocking_reason": "P3 approval, P4 approval and Notion Build Work Order pending"
+      "blocking_reason": "P3 approval, P4 approval, N-06 Task Rollup validation and Notion Build Work Order pending"
     }
   ],
   "approval_gates": [
