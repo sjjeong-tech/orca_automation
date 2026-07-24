@@ -15,5 +15,12 @@
   ],
   "commit_policy": {"max_per_work_order": 3, "message_required": true, "force_push": false},
   "push_policy": {"required_when_work_order_says": true, "force_push": false},
-  "continuation_default": "STOP"
+  "continuation_default": "STOP",
+  "form_execution_escalation": ["CODEX", "USER"],
+  "notion_ai_exception": {
+    "status": "OPTIONAL_TEMPORARY_TOOL",
+    "default_dependency": false,
+    "requires_user_request_or_approval": true,
+    "expires_after": "2026-07-29"
+  }
 }

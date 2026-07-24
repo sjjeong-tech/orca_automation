@@ -18,9 +18,9 @@
 | CP-05-P2 | CODEX | APPROVED | - |
 | CP-00-O1 | CODEX | APPROVED | - |
 | AG-P2 | GPT_AND_USER | APPROVED | - |
-| N-04 | USER_AND_NOTION_AI | APPROVED | Form UI final configuration remains backlog |
-| N-05 | USER_AND_NOTION_AI | APPROVED / VERIFIED | - |
-| N-06 | USER_AND_NOTION_AI | BLOCKED / PARTIAL | 지원팀 Task 관련 조합 Rollup actual value not verified |
+| N-04 | USER | APPROVED | Form UI final configuration remains backlog |
+| N-05 | USER | APPROVED / VERIFIED | - |
+| N-06 | USER | BLOCKED / PARTIAL | 지원팀 Task 관련 조합 Rollup actual value not verified |
 | CLAUDE-P2-REVIEW | CLAUDE | PLANNED | WORK_ORDER_NOT_ISSUED |
 | CP-05-P3 | CODEX | APPROVAL_REQUIRED | AG-P3 review required |
 | AG-P3 | GPT_AND_USER | READY | WAITING_FOR_GPT_USER_REVIEW |
@@ -37,6 +37,15 @@
 | FT-05 (Pilot 사용 가능 여부 판정) | READY_WITH_USER_UI_FIX |
 
 AG-P3 (프로세스-노션 Mapping 승인)는 병렬 비차단 검토이며, CP-05-P4는 Fast Track 결과와 AG-P3 검토 전까지 실행하지 않는다.
+
+## CP-05-FT2 Form Capability
+
+- Form Read: PASS
+- Form View 이름 Write: PASS 및 원복
+- Form 질문 Write: NO_EFFECT
+- Form Submit: UNSUPPORTED
+- 다음 Owner: USER
+- Notion AI: OPTIONAL_TEMPORARY_TOOL, 기본 Dependency 아님
 
 ## N-06 verified subtests
 

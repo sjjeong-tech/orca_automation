@@ -1,4 +1,8 @@
-# FT-02 (2차 지원팀 업무요청 Form 완성) — Notion AI TI
+# FT-02 (2차 지원팀 업무요청 Form 완성) — Notion AI TI [SUPERSEDED]
+
+> CP-05-FT1-LR 당시 생성된 Historical Artifact이며 활성 Handoff 또는 필수 Dependency가 아니다.
+> CP-05-FT2부터 Form 실행 경로는 `CODEX → USER`다.
+> Notion AI는 사용자 명시 요청 또는 승인 시에만 한시적 선택 도구로 사용할 수 있다.
 
 대상 URL: https://app.notion.com/p/c60e9bc03a214735be082ed54905970d
 

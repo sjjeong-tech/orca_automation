@@ -66,21 +66,21 @@
       "downstream": ["J-01", "CP-05-P3"], "blocking_reason": "", "source_of_truth": "orchestration/approvals/ag-p2-review.yaml", "updated_by": "GPT_DECISION_CP-00-O2", "updated_at": "2026-07-24"
     },
     {
-      "id": "N-04", "title": "First Form UI Stabilization", "owner": "USER_AND_NOTION_AI", "type": "UI", "phase": "CP-05-UI", "status": "APPROVED", "priority": 2,
+      "id": "N-04", "title": "First Form UI Stabilization", "owner": "USER", "type": "UI", "phase": "CP-05-UI", "status": "APPROVED", "priority": 2,
       "depends_on": ["CP-05-S1-R1"], "input_gate": "USER_UI_SESSION", "required_inputs": ["User Notion UI access"], "allowed_paths": ["Notion UI only"], "forbidden_paths": ["orchestration/plan/**", "processes/**"],
       "outputs": ["First Form stabilized"], "validation": ["USER_UI_CONFIRMATION"], "approval_required": true, "continuation_policy": "USER_UI_REQUIRED",
       "downstream": ["N-05"], "blocking_reason": "", "source_of_truth": "GPT and user validation stated in CP-05-P3-LR", "updated_by": "GPT_DECISION_CP-05-P3-LR", "updated_at": "2026-07-24",
       "execution_result": "COMPLETED_WITH_FORM_UI_DEFERRED", "form_ui_backlog": true
     },
     {
-      "id": "N-05", "title": "First Form Submission Validation", "owner": "USER_AND_NOTION_AI", "type": "VALIDATE", "phase": "CP-05-UI", "status": "APPROVED", "priority": 3,
+      "id": "N-05", "title": "First Form Submission Validation", "owner": "USER", "type": "VALIDATE", "phase": "CP-05-UI", "status": "APPROVED", "priority": 3,
       "depends_on": ["N-04"], "input_gate": "N04_COMPLETED", "required_inputs": ["Safe TEST submission"], "allowed_paths": ["Notion UI only"], "forbidden_paths": ["orchestration/plan/**", "processes/**"],
       "outputs": ["Form submission verification"], "validation": ["VIEW_PERSON_RELATION_VERIFIED"], "approval_required": true, "continuation_policy": "STOP_MISSING_INPUT",
       "downstream": ["N-06", "J-01"], "blocking_reason": "", "source_of_truth": "TEST page 3a772a41-d9d7-81d8-9bc8-c79b7718f277 and user view verification", "updated_by": "GPT_DECISION_CP-05-P3-LR", "updated_at": "2026-07-24",
       "verification_status": "VERIFIED", "validation_results": ["PROPERTY_STORAGE_PASS", "DEFAULT_STATUS_PASS", "VIEW_VISIBILITY_PASS", "PERSON_STORAGE_PASS", "RELATION_OPTIONAL_PASS"]
     },
     {
-      "id": "N-06", "title": "Task Related-Fund Rollup Validation", "owner": "USER_AND_NOTION_AI", "type": "VALIDATE", "phase": "CP-05-UI", "status": "BLOCKED", "priority": 4,
+      "id": "N-06", "title": "Task Related-Fund Rollup Validation", "owner": "USER", "type": "VALIDATE", "phase": "CP-05-UI", "status": "BLOCKED", "priority": 4,
       "depends_on": ["N-05"], "input_gate": "N05_VERIFIED", "required_inputs": ["Safe TEST FUND", "Safe TEST support request", "Safe TEST task"], "allowed_paths": ["Notion UI only", "orchestration/proposals/**"], "forbidden_paths": ["orchestration/plan/**", "processes/**"],
       "outputs": ["지원팀 Task.관련 조합 Rollup validation"], "validation": ["TASK_RELATED_FUND_ROLLUP_VERIFIED"], "approval_required": true, "continuation_policy": "STOP_FOR_APPROVAL",
       "downstream": ["J-02"], "blocking_reason": "TASK_RELATED_FUND_ROLLUP_NOT_VERIFIED", "source_of_truth": "reports/cp-05-p3-validation.md#N-06-Build-Test-Contract", "updated_by": "GPT_N06_SCOPE_CORRECTION", "updated_at": "2026-07-24",
@@ -108,17 +108,17 @@
       "downstream": ["CP-05-P4"], "blocking_reason": "WAITING_FOR_GPT_USER_REVIEW", "source_of_truth": "orchestration/approvals/ag-p3-review.yaml", "updated_by": "GPT_N06_SCOPE_CORRECTION", "updated_at": "2026-07-24"
     },
     {
-      "id": "FT-01", "title": "1차 조합 예정 등록 Form 정리", "owner": "CODEX_TO_NOTION_AI_TO_USER", "type": "FAST_TRACK_UI", "phase": "CP-05-FT1", "status": "APPROVED", "priority": 1,
+      "id": "FT-01", "title": "1차 조합 예정 등록 Form 정리", "owner": "CODEX_TO_USER", "type": "FAST_TRACK_UI", "phase": "CP-05-FT1", "status": "APPROVED", "priority": 1,
       "depends_on": ["N-05"], "input_gate": "SAFE_TEST_SCOPE", "required_inputs": ["Existing first form"], "allowed_paths": ["Notion TEST assets", "handoffs/**", "reports/**"], "forbidden_paths": ["operational records", "existing filters", "templates"],
       "outputs": ["handoffs/user-ui/fast-track-FT-01.md"], "validation": ["MINIMUM_USABLE_WITH_USER_UI_BACKLOG"], "approval_required": false, "continuation_policy": "CONTINUE_FAST_TRACK",
       "downstream": ["FT-02"], "blocking_reason": "", "source_of_truth": "reports/fast-track-form-e2e.md", "updated_by": "CODEX_CP-05-FT1-LR", "updated_at": "2026-07-24",
       "execution_status": "MINIMUM_USABLE_WITH_USER_UI_BACKLOG"
     },
     {
-      "id": "FT-02", "title": "2차 지원팀 업무요청 Form 완성", "owner": "CODEX_TO_NOTION_AI_TO_USER", "type": "FAST_TRACK_UI", "phase": "CP-05-FT1", "status": "BLOCKED", "priority": 2,
+      "id": "FT-02", "title": "2차 지원팀 업무요청 Form 완성", "owner": "CODEX_TO_USER", "type": "FAST_TRACK_UI", "phase": "CP-05-FT1", "status": "BLOCKED", "priority": 2,
       "depends_on": ["FT-01"], "input_gate": "FORM_UI_CAPABILITY", "required_inputs": ["Existing second form"], "allowed_paths": ["Notion second form", "handoffs/**", "reports/**"], "forbidden_paths": ["operational records", "existing filters", "templates"],
-      "outputs": ["handoffs/notion-ai/fast-track-FT-02.md"], "validation": ["FORM_QUESTIONS_CONFIGURED"], "approval_required": false, "continuation_policy": "ESCALATE_TO_NOTION_AI_USER",
-      "downstream": ["FT-03"], "blocking_reason": "FORM_QUESTION_EDIT_UI_REQUIRED", "source_of_truth": "reports/fast-track-form-e2e.md", "updated_by": "CODEX_CP-05-FT1-LR", "updated_at": "2026-07-24",
+      "outputs": ["handoffs/user-ui/form-finalization.md"], "validation": ["FORM_QUESTIONS_CONFIGURED"], "approval_required": false, "continuation_policy": "ESCALATE_TO_USER",
+      "downstream": ["FT-03"], "blocking_reason": "FORM_QUESTION_EDIT_UI_REQUIRED", "source_of_truth": "reports/codex-form-capability-probe.md", "updated_by": "CODEX_CP-05-FT2", "updated_at": "2026-07-24",
       "execution_status": "PARTIAL_WITH_UI_ACTION"
     },
     {

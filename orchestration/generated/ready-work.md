@@ -9,8 +9,8 @@
 ## Fast Track follow-up
 
 - GPT·정상준 Prototype 사용성 검토
-- Notion AI: FT-02 Form 질문 구성
-- 사용자 UI: FT-01 문항 정리와 FT-04 Rollup 확인
+- 사용자 UI: 1차·2차 Form 최종 구성, TEST Form 제출, Rollup 화면 확인
+- Notion AI: 기본 Next Owner 아님; 사용자 승인 예외만 허용
 
 ## Approval review
 

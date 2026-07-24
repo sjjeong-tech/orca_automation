@@ -2,6 +2,8 @@
 
 Repository: `vc-support_team-process-rag`
 
+> Form 실행 원칙: Codex가 DB CRUD·Form Capability Probe를 먼저 수행하고, 지원되지 않는 Form UI 편집과 실제 제출만 사용자가 처리합니다. Notion AI는 기본 실행 주체가 아닙니다.
+
 지원팀 행정업무를 Process 단위로 구조화하고, RAG 기반 검색과 Notion 업무운영 및 향후 Agent 실행을 연결하는 Repository입니다.
 
 핵심 범위:
