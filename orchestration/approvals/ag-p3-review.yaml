@@ -1,0 +1,53 @@
+{
+  "approval_id": "AG-P3",
+  "file_owner": "GPT",
+  "owner": "GPT_AND_USER",
+  "status": "READY_FOR_GPT_USER_REVIEW",
+  "source_commit": "SELF_COMMIT_RESOLVE_WITH_GIT_LOG",
+  "source_report": "reports/cp-05-p3-completion.md",
+  "summary": {
+    "processes": 5,
+    "atomic_task_mappings": 61,
+    "operational_tasks": 21,
+    "request_properties": 13,
+    "task_properties": 14,
+    "request_statuses": 7,
+    "task_statuses": 6,
+    "canonical_transitions": 24,
+    "evidence_types": 9,
+    "human_approvals": 8,
+    "variation_axes": 4,
+    "form_interfaces": 2,
+    "open_conflicts": 7,
+    "actual_notion_changes": 0
+  },
+  "design_choices": [
+    "Every atomic ID is traceable; 61 atomic tasks aggregate into 21 operational tasks.",
+    "Request and Task lifecycles remain separate.",
+    "Waiting uses TS-WAIT plus Current Actor, Blocker and Next Action.",
+    "Evidence remains in Drive with non-sensitive Notion metadata; no Evidence DB for Pilot.",
+    "CASE_ONLY, PROVISIONAL and UNKNOWN boundaries are preserved.",
+    "Automation grades are conservative: H0/H1/A1/U only.",
+    "N-06 remains REQUIRED_BEFORE_BUILD and does not block P3."
+  ],
+  "approval_questions": [
+    {"id":"Q1","question":"P01·03·04·07·08의 Process → Request Mapping을 승인하는가?","options":["APPROVE","REVISE"],"decision":"PENDING"},
+    {"id":"Q2","question":"61 Atomic Task를 21 Operational Task로 집약한 Mapping을 승인하는가?","options":["APPROVE","REVISE"],"decision":"PENDING"},
+    {"id":"Q3","question":"Request 7상태·Task 6상태 연결을 승인하는가?","options":["APPROVE","REVISE"],"decision":"PENDING"},
+    {"id":"Q4","question":"Evidence 9종의 Notion/Drive 저장 Mapping을 승인하는가?","options":["APPROVE","REVISE"],"decision":"PENDING"},
+    {"id":"Q5","question":"Human Approval 8개 Control Point Mapping을 승인하는가?","options":["APPROVE","REVISE"],"decision":"PENDING"},
+    {"id":"Q6","question":"1차 사전예고와 2차 실제 요청 Interface를 승인하는가?","options":["APPROVE","REVISE"],"decision":"PENDING"},
+    {"id":"Q7","question":"Variation Task 생성 경계와 UNKNOWN/CASE_ONLY 유지를 승인하는가?","options":["APPROVE","REVISE"],"decision":"PENDING"},
+    {"id":"Q8","question":"H0/H1/A1/U 자동화 등급 분포를 승인하는가?","options":["APPROVE","REVISE"],"decision":"PENDING"},
+    {"id":"Q9","question":"N-06을 J-02 전 필수 Build Gap으로 유지하는가?","options":["APPROVE","REVISE"],"decision":"PENDING"},
+    {"id":"Q10","question":"AG-P3 승인 후 별도 Work Order로 P4를 진행하는가?","options":["APPROVE","DEFER","REVISE"],"decision":"PENDING"}
+  ],
+  "conditions": [
+    "CP-05-P4 remains blocked until AG-P3 approval.",
+    "Actual Notion Build remains blocked until N-06 verification and J-02.",
+    "Actual Notion changes require a separate Build Work Order."
+  ],
+  "on_approval": ["GPT records AG-P3", "GPT may issue CP-05-P4 Work Order", "N-06 remains required before Build"],
+  "on_rejection": ["Create P3 revision work item", "Keep P4 blocked"],
+  "decision": {"result":"PENDING","approved_by":[],"approved_at":null}
+}

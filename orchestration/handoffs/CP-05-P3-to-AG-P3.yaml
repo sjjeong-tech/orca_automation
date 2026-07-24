@@ -1,0 +1,34 @@
+{
+  "handoff_id": "HO-CP-05-P3-AG-P3",
+  "source_work_item": "CP-05-P3",
+  "source_run": "orchestration/runs/codex/CP-05-P3-LR/run.yaml",
+  "from_agent": "CODEX",
+  "to_owner": "GPT_AND_USER",
+  "status": "READY_FOR_REVIEW",
+  "result": "COMPLETED_WITH_GAPS",
+  "outputs": [
+    "mappings/process-to-notion-map.yaml",
+    "mappings/process-to-notion-map.md",
+    "mappings/fund-type-notion-map.md",
+    "mappings/form1-form2-interface-map.md",
+    "reports/cp-05-p3-validation.md",
+    "reports/cp-05-p3-completion.md",
+    "orchestration/approvals/ag-p3-review.yaml"
+  ],
+  "validation": {
+    "atomic_tasks": 61,
+    "unique_atomic_tasks": 61,
+    "operational_tasks": 21,
+    "required_fields_missing": 0,
+    "notion_changes": 0,
+    "process_changes": 0,
+    "variation_changes": 0,
+    "source_changes": 0
+  },
+  "approval_gate": "AG-P3",
+  "downstream_candidate": "CP-05-P4",
+  "blocking_conditions": ["AG-P3 not approved"],
+  "build_blocking_conditions": ["N-06 not verified", "J-02 not passed"],
+  "open_gaps": ["N-06 rollup actual-value validation", "Form UI final configuration", "P3 conflict log"],
+  "created_at": "2026-07-24"
+}

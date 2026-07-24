@@ -6,9 +6,9 @@
 
 Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될 때만 이 파일을 갱신하며, 선행 Gate를 통과하지 않은 TAP은 실행하지 않는다.
 
-**Queue 전체 상태:** `PAUSED_FOR_N04_UI_WORKSTREAM`
+**Queue 전체 상태:** `PAUSED_FOR_AG_P3_REVIEW`
 
-**현재 Checkpoint:** `CP-00-O2 — COMPLETED`
+**현재 Checkpoint:** `CP-05-P3-LR — COMPLETED_WITH_GAPS`
 
 **최근 Revision:** `TAP P1-R2 — COMPLETED (PASS WITH NON-BLOCKING GAPS)`
 
@@ -16,9 +16,9 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 
 **최근 계획:** `TAP V0 — COMPLETED`
 
-**최근 실행:** `TAP CP-00-O2 — COMPLETED`
+**최근 실행:** `TAP CP-05-P3-LR — COMPLETED_WITH_GAPS`
 
-**다음 READY 후보:** `N-04 — USER_AND_NOTION_AI`
+**다음 READY 후보:** `AG-P3 — GPT_AND_USER`
 
 ## 자동 실행 Checkpoint
 
@@ -123,12 +123,14 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 | CP-00-O2 | Run `COMPLETED`; AG-P2 승인 기록 | N-04 Handoff |
 | CP-05-P2 | Execution `COMPLETED`; Plan `APPROVED` | 결과 보존 |
 | AG-P2 | `APPROVED`; Q1~Q10 APPROVE | J-01 입력 |
-| N-04 | `READY_FOR_USER_UI` | Notion AI·사용자 UI 작업 |
-| N-05 | `BLOCKED_BY_N04` | 1차 Form 제출 검증 |
-| N-06 | `BLOCKED_BY_N05`; `REQUIRED_BEFORE_BUILD` | Relation·Rollup 검증 |
-| J-01 | `BLOCKED_BY_N05` | Pilot Input 검증 |
-| J-02 | `BLOCKED`; Build Readiness | P3·P4·N-05·N-06·Build WO 대기 |
-| CP-05-P3 | `BLOCKED_UNTIL_J01` | 실행 금지 |
+| N-04 | `COMPLETED_WITH_FORM_UI_DEFERRED` | UI 최종 구성 Backlog |
+| N-05 | `VERIFIED` | J-01 근거 |
+| N-06 | `PARTIAL`; `REQUIRED_BEFORE_BUILD` | J-02 전 Relation·Rollup 실제값 검증 |
+| J-01 | `PASSED` | P3 Input Gate 완료 |
+| CP-05-P3 | Execution `COMPLETED_WITH_GAPS`; Plan `APPROVAL_REQUIRED` | AG-P3 검토 |
+| AG-P3 | `READY_FOR_GPT_USER_REVIEW` | Q1~Q10 승인 필요 |
+| CP-05-P4 | `BLOCKED_BY_AG_P3` | 자동 실행 금지 |
+| J-02 | `BLOCKED`; Build Readiness | P3·P4 승인, N-06, Build WO 대기 |
 
 ### CP-05-P0 Claude Finding 상태
 
