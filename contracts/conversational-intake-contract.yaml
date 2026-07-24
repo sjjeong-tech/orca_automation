@@ -1,86 +1,110 @@
 {
-  "version": "0.1.0",
-  "purpose": "Natural-language support request intake normalized for approved Notion Request and Task records",
-  "status": "DRAFT_FOR_CI_01_APPROVAL",
+  "version": "0.2.0",
+  "purpose": "고유번호증 신청 자연어 요청을 승인된 Notion 업무요청·Task로 변환하는 Pilot 계약",
+  "status": "CI1_PILOT_CONTRACT",
   "supported_interfaces": [
-    {"id": "CLAUDE_CODE_SKILL", "priority": 1, "status": "PLANNED"},
-    {"id": "CODEX_COMMAND", "priority": 1, "status": "PLANNED"},
+    {"id": "CODEX_COMMAND", "priority": 1, "status": "PROTOTYPE"},
+    {"id": "CLAUDE_CODE_SKILL", "priority": 1, "status": "REUSABLE_FUTURE_INTERFACE"},
     {"id": "GPT_DIRECT", "priority": 2, "status": "PLANNED"},
     {"id": "SLACK", "priority": 3, "status": "DEFERRED_TO_CI_06"},
     {"id": "NOTION_FORM", "priority": 4, "status": "OPTIONAL_FALLBACK"}
   ],
-  "required_fields": [
-    "related_fund",
-    "request_type",
-    "requester",
-    "fund_manager",
-    "target_date",
-    "urgent",
-    "document_status",
-    "notes"
-  ],
-  "optional_fields": [
-    "original_folder",
-    "desired_result",
-    "exception_notes"
-  ],
-  "conditional_fields": {
-    "account_opening_or_supplement": ["account_type", "bank_branch", "custody_type"],
-    "gp_dependent_process": ["gp_type"]
+  "pilot_scope": {
+    "supported_request_types": ["고유번호증 신청"],
+    "excluded_request_types": ["보안카드·홈택스", "계좌개설", "계좌개설 보완", "명판·인감", "고유번호증 정정", "폐업·청산"],
+    "batch_creation": false
   },
-  "normalization_rules": [
-    "Preserve source wording alongside normalized values",
-    "Use canonical request_type values only",
-    "Represent unknown values as CONFIRMATION_REQUIRED",
-    "Do not store sensitive identifiers or credentials"
-  ],
+  "required_fields": ["related_fund", "request_type", "requester", "fund_manager", "document_status"],
+  "optional_fields": ["target_date", "urgent", "original_folder", "notes"],
+  "conditional_fields": ["gp_type", "joint_gp", "fund_type", "fund_address", "source_document_status", "exception_notes"],
+  "normalization_rules": {
+    "request_type": {"고유번호증": "고유번호증 신청", "고유번호증 신청": "고유번호증 신청"},
+    "document_status": {"전달 완료": "DELIVERED", "일부 전달": "PARTIAL", "미전달": "NOT_DELIVERED"},
+    "urgent": {"긴급": true, "급함": true, "default": false},
+    "unknown_value": "CONFIRMATION_REQUIRED",
+    "sensitive_data": "REJECT_AND_DO_NOT_STORE"
+  },
   "missing_information_rules": {
-    "action": "ASK_ONLY_FOR_FIELDS_REQUIRED_BY_SELECTED_REQUEST_TYPE",
+    "required_action": "ASK_AND_BLOCK_WRITE",
+    "optional_action": "ALLOW_EMPTY_AND_SHOW_MISSING_IN_PREVIEW",
     "max_questions_per_turn": 3,
-    "record_state_before_complete": "WAITING_FOR_INPUT"
+    "questions": {
+      "related_fund": "관련 조합을 정확히 알려주세요.",
+      "request_type": "요청할 업무 유형을 알려주세요.",
+      "requester": "요청자를 알려주세요.",
+      "fund_manager": "담당 관리역을 알려주세요.",
+      "document_status": "서류 전달 상태(미전달/일부 전달/전달 완료)를 알려주세요."
+    }
+  },
+  "fund_resolution": {
+    "zero_matches": "BLOCK_AND_ASK",
+    "one_exact_match": "SELECT",
+    "multiple_matches": "BLOCK_AND_REQUIRE_USER_SELECTION",
+    "fuzzy_auto_select": false
+  },
+  "person_resolution": {
+    "exactly_one_workspace_match": "SELECT",
+    "zero_or_multiple_matches": "BLOCK_AND_ASK",
+    "text_fallback": false
   },
   "duplicate_detection": {
-    "candidate_keys": ["related_fund", "request_type", "active_status", "target_date_window"],
-    "on_candidate": "REQUIRE_HUMAN_CONFIRMATION",
+    "keys": ["related_fund", "request_type", "incomplete_status"],
+    "incomplete_statuses": ["시작 전", "진행 중"],
+    "on_candidate": "WARN_AND_REQUIRE_EXPLICIT_DUPLICATE_APPROVAL",
     "automatic_merge": false
   },
   "record_creation_gate": {
-    "required": ["required_fields_complete", "request_type_supported", "human_preview_approved"],
-    "blocked_by": ["sensitive_data_detected", "unknown_rule_required", "duplicate_unresolved"]
-  },
-  "human_approval_rules": [
-    "Preview approval before Notion write",
-    "Human decision for exceptions, cancellation and duplicate disposition",
-    "Human-only approvals from the P2 model remain human-only"
-  ],
-  "request_type_rules": {
-    "supported_pilot": [
-      "고유번호증 신청",
-      "보안카드·홈택스",
-      "계좌개설",
-      "계좌개설 보완"
-    ],
-    "unsupported_action": "ROUTE_TO_BACKLOG_OR_MANUAL_REVIEW"
+    "required": ["required_fields_complete", "fund_exactly_resolved", "people_exactly_resolved", "supported_request_type", "explicit_approval"],
+    "approval_tokens": ["승인", "생성", "확인 완료"],
+    "automation_flag": "--approve",
+    "write_before_gate": false,
+    "draft_record_before_gate": false
   },
   "notion_property_mapping": {
-    "source": "mappings/request-property-map.md",
-    "task_source": "mappings/task-property-map.md",
-    "canonical_databases": ["지원팀 업무요청", "지원팀 Task"]
+    "request_database": "지원팀 업무요청",
+    "request": {
+      "title": "요청명", "related_fund": "관련 조합", "request_type": "요청 업무 유형",
+      "requester": "요청자", "fund_manager": "담당 관리역", "target_date": "목표일",
+      "document_status": "실물서류 전달 여부", "original_folder": "원본 폴더",
+      "notes": "특이사항", "status": "요청 상태",
+      "urgent_and_next_action": "요청 내용", "tasks": "관련 Task"
+    },
+    "task_database": "지원팀 Task",
+    "task": {
+      "title": "Task명", "parent_request": "상위 요청", "related_fund": "관련 조합",
+      "process_id": "Process ID", "operational_task_id": "Operational Task ID",
+      "status": "Task 상태", "assignee": "담당자", "actor": "현재 Actor",
+      "target_date": "목표일", "next_action": "다음 Action", "blocker": "Blocker",
+      "completion_condition": "완료조건", "evidence": "완료증빙", "notes": "비고"
+    },
+    "prototype_encoding": {
+      "urgent": "요청 내용의 구조화 Text",
+      "request_current_actor": "요청 내용의 구조화 Text",
+      "request_next_action": "요청 내용의 구조화 Text",
+      "request_blocker": "특이사항의 구조화 Text"
+    }
   },
   "task_generation_policy": {
-    "source": "mappings/process-to-notion-map.yaml",
-    "automatic_write": false,
-    "requires_confirmed_intake": true,
-    "unknown_or_case_only": "HUMAN_REVIEW_REQUIRED"
+    "request_type": "고유번호증 신청",
+    "task_count": 6,
+    "tasks": [
+      {"order": 1, "process_id": "INTAKE", "name": "요청정보·착수조건 확인", "actor": "지원팀", "completion_condition": "필수 요청정보와 착수 가능 여부가 확인됨"},
+      {"order": 2, "process_id": "P03", "name": "제출서류 수령·누락 검수", "actor": "지원팀", "completion_condition": "수령 서류와 누락 항목이 확인됨"},
+      {"order": 3, "process_id": "P03", "name": "신청서류 작성·날인본 확인", "actor": "지원팀", "completion_condition": "신청서류 작성과 날인본 확인이 완료됨"},
+      {"order": 4, "process_id": "P03", "name": "세무서 제출 준비·접수", "actor": "지원팀", "completion_condition": "제출 준비와 세무서 접수가 확인됨"},
+      {"order": 5, "process_id": "P03", "name": "결과물 수령", "actor": "외부기관", "completion_condition": "고유번호증 결과물이 수령됨"},
+      {"order": 6, "process_id": "P03", "name": "스캔·저장·관리역 전달", "actor": "지원팀", "completion_condition": "결과물 스캔·Drive 저장·관리역 전달이 확인됨"}
+    ],
+    "atomic_task_expansion": false
   },
   "evidence_policy": {
-    "source": "notion/model/evidence-model.md",
-    "files_location": "GOOGLE_DRIVE",
-    "git_storage": "NON_SENSITIVE_PATH_OR_METADATA_ONLY"
+    "actual_files_location": "GOOGLE_DRIVE",
+    "git_storage": "NON_SENSITIVE_PATH_OR_METADATA_ONLY",
+    "notion_storage": "PATH_OR_NON_SENSITIVE_METADATA"
   },
   "error_handling": {
-    "notion_write_failure": "STOP_RECORD_ERROR_AND_REQUEST_REVIEW",
-    "partial_task_creation": "ROLLBACK_OR_MARK_INCOMPLETE_BY_APPROVED_BUILD_CONTRACT",
+    "notion_write_failure": "STOP_AND_REPORT_CREATED_RECORDS",
+    "partial_task_creation": "MARK_TEST_INCOMPLETE_AND_STOP",
     "missing_permission": "STOP_MISSING_INPUT",
     "unexpected_schema": "STOP_FOR_SCHEMA_REVIEW"
   }

@@ -147,39 +147,39 @@
       "execution_status": "READY_WITH_USER_UI_FIX", "label_ko": "Form Pilot 사용 가능 여부 판정", "current_status_ko": "대화형 Pilot 판정으로 대체", "next_action_ko": "CI-05에서 대화형 E2E 판정", "superseded_by": "CI-05", "result_preserved": true, "blocking": false
     },
     {
-      "id": "CI-01", "title": "CI-01 (대화형 요청 입력규격 확정)", "owner": "GPT_AND_USER_WITH_CODEX_BUILDER", "type": "CONTRACT", "phase": "CP-05-CI", "status": "READY", "priority": 1,
+      "id": "CI-01", "title": "CI-01 (대화형 요청 입력규격 확정)", "owner": "GPT_AND_USER_WITH_CODEX_BUILDER", "type": "CONTRACT", "phase": "CP-05-CI", "status": "APPROVED", "priority": 1,
       "depends_on": ["CP-05-P3"], "input_gate": "P3_MAPPING_AVAILABLE", "required_inputs": ["contracts/conversational-intake-contract.yaml", "mappings/process-to-notion-map.yaml"], "allowed_paths": ["contracts/**", "reports/**", "orchestration/runs/codex/**", "orchestration/handoffs/**"], "forbidden_paths": ["processes/**", "variations/**", "sources/**", "Notion", "Slack"],
       "outputs": ["Approved conversational intake contract"], "validation": ["FIELDS_AND_MISSING_QUESTION_RULES_DEFINED", "RECORD_CREATION_AND_DUPLICATE_GATES_DEFINED"], "approval_required": false, "continuation_policy": "STOP_FOR_CONTRACT_REVIEW",
-      "downstream": ["CI-03", "CI-04"], "blocking_reason": "", "source_of_truth": "contracts/conversational-intake-contract.yaml", "updated_by": "CODEX_CP-05-CI0-R", "updated_at": "2026-07-24",
-      "label_ko": "대화형 요청 입력규격 확정", "short_description_ko": "필수·조건부 항목과 누락질문·중복·생성 Gate 정의", "current_status_ko": "실행 준비", "next_action_ko": "GPT·사용자 Contract 검토 후 Codex Builder 실행"
+      "downstream": ["CI-03", "CI-04"], "blocking_reason": "", "source_of_truth": "contracts/conversational-intake-contract.yaml", "updated_by": "CODEX_CP-05-CI1-LR", "updated_at": "2026-07-24",
+      "label_ko": "대화형 요청 입력규격 확정", "short_description_ko": "고유번호증 신청 Pilot 필수·선택·조건부 항목과 생성 Gate 정의", "current_status_ko": "완료", "next_action_ko": "사용자 Pilot 결과로 확장 여부 검토", "execution_status": "COMPLETED"
     },
     {
-      "id": "CI-02", "title": "CI-02 (Notion 업무요청·Task 운영구조 정리)", "owner": "CODEX", "type": "VALIDATE", "phase": "CP-05-CI", "status": "READY", "priority": 2,
+      "id": "CI-02", "title": "CI-02 (Notion 업무요청·Task 운영구조 정리)", "owner": "CODEX", "type": "VALIDATE", "phase": "CP-05-CI", "status": "APPROVED", "priority": 2,
       "depends_on": ["CP-05-P3", "FT-03", "FT-04"], "input_gate": "DB_E2E_RESULTS_AVAILABLE", "required_inputs": ["notion/schema/support-request-db.md", "notion/schema/support-task-db.md", "reports/fast-track-form-e2e.md"], "allowed_paths": ["notion/schema/**", "contracts/**", "reports/**", "orchestration/runs/codex/**", "orchestration/handoffs/**"], "forbidden_paths": ["processes/**", "variations/**", "sources/**", "Notion operational write"],
       "outputs": ["Conversational-write DB contract and validation report"], "validation": ["REQUEST_TASK_SCHEMA_CONFIRMED", "RELATION_STATUS_ACTOR_EVIDENCE_CONTRACT_CONFIRMED"], "approval_required": false, "continuation_policy": "STOP_FOR_CONTRACT_REVIEW",
-      "downstream": ["CI-04"], "blocking_reason": "", "source_of_truth": "plans/conversational-intake-roadmap.md", "updated_by": "CODEX_CP-05-CI0-R", "updated_at": "2026-07-24",
-      "label_ko": "Notion 업무요청·Task 운영구조 정리", "short_description_ko": "Agent Write 기준 최소 DB 계약과 검증 View 정의", "current_status_ko": "실행 준비", "next_action_ko": "CI-01과 부분 병렬로 Schema 계약 검증"
+      "downstream": ["CI-04"], "blocking_reason": "", "source_of_truth": "reports/conversational-intake-ci1-e2e.md", "updated_by": "CODEX_CP-05-CI1-LR", "updated_at": "2026-07-24",
+      "label_ko": "Notion 업무요청·Task 운영구조 확인", "short_description_ko": "기존 13·14개 Property로 Agent Write 계약 검증", "current_status_ko": "완료", "next_action_ko": "신규 Property 없이 Pilot 유지", "execution_status": "COMPLETED"
     },
     {
-      "id": "CI-03", "title": "CI-03 (자연어 요청 해석 및 누락정보 확인)", "owner": "CODEX", "type": "BUILD", "phase": "CP-05-CI", "status": "BLOCKED", "priority": 3,
+      "id": "CI-03", "title": "CI-03 (자연어 요청 해석 및 누락정보 확인)", "owner": "CODEX", "type": "BUILD", "phase": "CP-05-CI", "status": "APPROVED", "priority": 3,
       "depends_on": ["CI-01"], "input_gate": "CI_01_CONTRACT_APPROVED", "required_inputs": ["Approved conversational intake contract"], "allowed_paths": ["future CI-03 work order required"], "forbidden_paths": ["Notion", "Slack", "processes/**", "variations/**", "sources/**"],
       "outputs": ["Intake parser and missing-information question logic"], "validation": ["PARSER_FIXTURES_PASS", "MISSING_INFORMATION_RULES_PASS"], "approval_required": false, "continuation_policy": "STOP_NO_WORK_ORDER",
-      "downstream": ["CI-04"], "blocking_reason": "CI-01 contract approval pending", "source_of_truth": "GPT_WORK_ORDER_PENDING", "updated_by": "CODEX_CP-05-CI0-R", "updated_at": "2026-07-24",
-      "label_ko": "자연어 요청 해석 및 누락정보 확인", "short_description_ko": "요청정보 구조화와 필요한 확인 질문 생성", "current_status_ko": "CI-01 대기", "next_action_ko": "Contract 승인 후 구현 Work Order 발행"
+      "downstream": ["CI-04"], "blocking_reason": "", "source_of_truth": "scripts/conversational-intake.mjs", "updated_by": "CODEX_CP-05-CI1-LR", "updated_at": "2026-07-24",
+      "label_ko": "자연어 요청 해석 및 누락정보 확인", "short_description_ko": "고유번호증 신청 규칙 기반 Parser와 누락 질문", "current_status_ko": "Prototype 검증 완료", "next_action_ko": "실제 사용자 표현 Pilot", "execution_status": "PROTOTYPE_VERIFIED"
     },
     {
-      "id": "CI-04", "title": "CI-04 (Notion 업무요청·표준 Task 자동 기록)", "owner": "CODEX", "type": "BUILD", "phase": "CP-05-CI", "status": "BLOCKED", "priority": 4,
+      "id": "CI-04", "title": "CI-04 (Notion 업무요청·표준 Task 자동 기록)", "owner": "CODEX", "type": "BUILD", "phase": "CP-05-CI", "status": "APPROVED", "priority": 4,
       "depends_on": ["CI-01", "CI-02", "CI-03"], "input_gate": "CI_01_02_03_COMPLETE_AND_WRITE_APPROVED", "required_inputs": ["Approved Intake Contract", "Validated DB contract", "Parser validation", "Explicit Notion write Work Order"], "allowed_paths": ["future CI-04 work order required"], "forbidden_paths": ["Unapproved Notion write", "Slack", "processes/**", "variations/**", "sources/**"],
       "outputs": ["Confirmed intake to Notion Request and standard Task records"], "validation": ["REQUEST_WRITE_PASS", "TASK_GENERATION_PASS", "ROLLBACK_AND_AUDIT_PASS"], "approval_required": true, "continuation_policy": "STOP_FOR_APPROVAL",
-      "downstream": ["CI-05"], "blocking_reason": "CI-01 through CI-03 and Notion write approval pending", "source_of_truth": "GPT_WORK_ORDER_PENDING", "updated_by": "CODEX_CP-05-CI0-R", "updated_at": "2026-07-24",
-      "label_ko": "Notion 업무요청·표준 Task 자동 기록", "short_description_ko": "확정된 Intake를 Request와 표준 Task로 기록", "current_status_ko": "선행 Contract·구현 대기", "next_action_ko": "별도 Write 승인 후 TEST 범위 실행"
+      "downstream": ["CI-05"], "blocking_reason": "", "source_of_truth": "reports/conversational-intake-ci1-e2e.md", "updated_by": "CODEX_CP-05-CI1-LR", "updated_at": "2026-07-24",
+      "label_ko": "Notion 업무요청·표준 Task 자동 기록", "short_description_ko": "승인된 Intake로 TEST Request 1건과 Task 6건 생성", "current_status_ko": "Prototype 검증 완료", "next_action_ko": "사용자 Pilot 검토", "execution_status": "PROTOTYPE_VERIFIED"
     },
     {
-      "id": "CI-05", "title": "CI-05 (Claude Code Skill 기반 대화형 E2E 테스트)", "owner": "CODEX_AND_USER", "type": "PILOT", "phase": "CP-05-CI", "status": "BLOCKED", "priority": 5,
-      "depends_on": ["CI-04"], "input_gate": "CI_04_TEST_WRITE_PASS", "required_inputs": ["Claude Code Skill Work Order", "Safe TEST data", "User confirmation"], "allowed_paths": ["future CI-05 work order required"], "forbidden_paths": ["Operational records without approval", "Slack"],
+      "id": "CI-05", "title": "CI-05 (대화형 E2E Pilot)", "owner": "CODEX_AND_USER", "type": "PILOT", "phase": "CP-05-CI", "status": "APPROVAL_REQUIRED", "priority": 5,
+      "depends_on": ["CI-04"], "input_gate": "CI_04_TEST_WRITE_PASS", "required_inputs": ["Prototype CLI", "Safe TEST data", "User confirmation"], "allowed_paths": ["scripts/**", "contracts/**", "reports/**", "orchestration/runs/codex/**"], "forbidden_paths": ["Operational records without approval", "Slack"],
       "outputs": ["Conversational Intake E2E pilot result"], "validation": ["NATURAL_LANGUAGE_TO_COMPLETED_REQUEST_E2E_PASS"], "approval_required": true, "continuation_policy": "STOP_FOR_APPROVAL",
-      "downstream": ["CI-06", "CI-07"], "blocking_reason": "CI-04 pending", "source_of_truth": "GPT_WORK_ORDER_PENDING", "updated_by": "CODEX_CP-05-CI0-R", "updated_at": "2026-07-24",
-      "label_ko": "Claude Code Skill 기반 대화형 E2E 테스트", "short_description_ko": "자연어부터 Notion 기록·상태 완료까지 TEST", "current_status_ko": "CI-04 대기", "next_action_ko": "Skill 구현과 TEST Pilot 별도 승인"
+      "downstream": ["CI-06", "CI-07"], "blocking_reason": "GPT_USER_PROTOTYPE_REVIEW_AND_N06_UI_CONFIRMATION", "source_of_truth": "reports/conversational-intake-ci1-e2e.md", "updated_by": "CODEX_CP-05-CI1-LR", "updated_at": "2026-07-24",
+      "label_ko": "대화형 E2E Pilot", "short_description_ko": "자연어 Preview부터 TEST Request·Task 재조회까지 검증", "current_status_ko": "TEST 검증, Rollup UI 확인 필요", "next_action_ko": "GPT·사용자 Prototype 사용성 검토", "execution_status": "TEST_VERIFIED_WITH_ROLLUP_UI_GAP"
     },
     {
       "id": "CI-06", "title": "CI-06 (Slack 요청 접수 연계 Pilot)", "owner": "CODEX_AND_USER", "type": "PILOT", "phase": "CP-05-CI", "status": "BLOCKED", "priority": 6,

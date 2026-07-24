@@ -1,0 +1,41 @@
+{
+  "run_id": "RUN-CP-05-CI1-LR-001",
+  "work_item_id": "CP-05-CI1-LR",
+  "agent": "CODEX",
+  "base_commit": "80cb01d8d15bef325f1f9979a31a35e14fbce5be",
+  "run_status": "COMPLETED_WITH_GAPS",
+  "started_at": "2026-07-24",
+  "completed_at": "2026-07-24",
+  "scope": "고유번호증 신청 Conversational Intake minimum prototype and TEST E2E",
+  "reporting_groups": {
+    "CI-A": "COMPLETED",
+    "CI-B": "PROTOTYPE_VERIFIED",
+    "CI-C": "TEST_VERIFIED_WITH_N06_UI_GAP"
+  },
+  "outputs": [
+    "START_HERE.md",
+    "docs/work-item-glossary.md",
+    "contracts/conversational-intake-contract.yaml",
+    "scripts/conversational-intake.mjs",
+    "scripts/conversational-intake.test.mjs",
+    "docs/conversational-intake-quickstart.md",
+    "reports/conversational-intake-ci1-e2e.md"
+  ],
+  "notion_test_request": "https://app.notion.com/p/3a772a41d9d781b698c3ffcabd8876f9",
+  "notion_test_request_count": 1,
+  "notion_test_task_count": 6,
+  "write_before_approval": 0,
+  "operational_records_changed": 0,
+  "schema_properties_added": 0,
+  "n06_rollup": "PARTIAL_UI_CONFIRMATION_REQUIRED",
+  "validation": {
+    "contract_parse": "PASS",
+    "syntax": "PASS",
+    "unit_tests": "PASS",
+    "request_task_reread": "PASS",
+    "duplicate_write_count": 0
+  },
+  "next_owner": "GPT_AND_USER",
+  "next_stage": "CI-C_USER_PILOT_REVIEW",
+  "auto_execute": false
+}
