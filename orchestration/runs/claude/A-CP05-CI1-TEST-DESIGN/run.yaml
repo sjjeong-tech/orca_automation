@@ -1,0 +1,34 @@
+run_id: RUN-A-CP05-CI1-TEST-DESIGN-001
+work_order_id: AD_HOC_USER_ISSUED_TAP
+work_item_id: A-CP05-CI1-TEST-DESIGN
+agent: CLAUDE
+base_commit: a364e70a26633307335999dd279b0216fe0ba6dc
+run_status: COMPLETED
+started_at: "2026-07-24"
+completed_at: "2026-07-24"
+checkpoint_count: 1
+outputs:
+  - reports/reviews/claude/ci1-independent-test-pack.md
+  - reports/reviews/claude/ci1-test-matrix.yaml
+  - orchestration/runs/claude/A-CP05-CI1-TEST-DESIGN/run.yaml
+  - orchestration/handoffs/claude/A-CP05-CI1-TEST-DESIGN.md
+validation_result: PASS
+commit: PENDING_SELF_COMMIT_RESOLVE_WITH_GIT_LOG
+push_status: PUSHED_TO_agent_claude_ci1_test_design_NOT_MAIN
+handoff: orchestration/handoffs/claude/A-CP05-CI1-TEST-DESIGN.md
+notes: >
+  Independent test design for the CI-03/CI-04 conversational intake path, scoped to 고유번호증 신청
+  only, per related Codex TAP CP-05-CI1-LR. No implementation code, Notion state, canonical workmap,
+  or intake contract was modified. Two open questions were deliberately left unresolved rather than
+  assumed (T06 fund-not-found policy vs. contract/property-map conflict; T20 partial-failure policy),
+  consistent with the instruction not to pre-assume implementation as correct.
+files_scanned: 20
+test_count: 20
+critical_test_count: 12
+high_test_count: 5
+approval_rule_proposed: true
+fund_ambiguity_policy: USER_SELECTION_REQUIRED
+person_ambiguity_policy: USER_SELECTION_REQUIRED
+duplicate_policy: WARNING_AND_EXPLICIT_APPROVAL
+repository_changes: 0
+next_owner: GPT_AND_USER

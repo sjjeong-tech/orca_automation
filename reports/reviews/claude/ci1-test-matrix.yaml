@@ -1,0 +1,333 @@
+version: "1.0.0"
+owner: CLAUDE
+work_item: A-CP05-CI1-TEST-DESIGN
+scope: "고유번호증 신청(request_type=고유번호증 신청) 대화형 Intake — CI-03/CI-04 구현 결과 독립 검증용"
+assumed_execution_date: "2026-07-27"
+assumed_fixtures:
+  fund_records:
+    - name: "테일프론티어투자조합3호"
+      uniqueness: SOLE_MATCH
+    - name: "테일프론티어투자조합2호"
+      uniqueness: "테일프론티어투자조합3호와 함께 존재 — T07 전용 fixture"
+  person_records:
+    - name: "김지원"
+      role_candidate: requester
+      uniqueness: SOLE_MATCH
+    - name: "박관리"
+      role_candidate: fund_manager
+      uniqueness: SOLE_MATCH
+    - name: "김민수 (지원본부)"
+      role_candidate: fund_manager
+      uniqueness: "김민수 (VC본부)와 함께 존재 — T08 전용 fixture"
+    - name: "김민수 (VC본부)"
+      role_candidate: fund_manager
+      uniqueness: "김민수 (지원본부)와 함께 존재 — T08 전용 fixture"
+  existing_requests:
+    - fund: "테일프론티어투자조합3호"
+      request_type: "고유번호증 신청"
+      status: RQ-ACTIVE
+      note: "T16 중복 탐지 전용 fixture — 다른 테스트에는 존재하지 않는 것으로 가정"
+
+tests:
+  - test_id: T01
+    category: HAPPY_PATH
+    natural_language_input: "테일프론티어투자조합3호 고유번호증 신청 부탁드립니다. 요청자는 김지원, 담당 관리역은 박관리이고 서류는 아직 준비 안 됐습니다. 목표일은 8월 15일이요."
+    assumed_context: "FUND/Person 모두 유일 후보, 기존 미완료 동일 유형 요청 없음"
+    expected_extracted_fields: [related_fund=테일프론티어투자조합3호, request_type=고유번호증 신청, requester=김지원, fund_manager=박관리, target_date=2026-08-15, document_status=미준비]
+    expected_missing_fields: []
+    expected_follow_up_question: "없음(선택정보 미언급은 질문 대상 아님)"
+    expected_fund_resolution: SINGLE_MATCH
+    expected_person_resolution: SINGLE_MATCH_BOTH
+    expected_date_resolution: ABSOLUTE_RESOLVED
+    expected_duplicate_result: NO_DUPLICATE_FOUND
+    write_allowed: AFTER_EXPLICIT_APPROVAL_ONLY
+    expected_notion_result: "승인 후 Request 1건 + OT-P03-01~05 Task 5건 생성, Request-Task 상호 Relation 연결"
+    risk_level: LOW
+    failure_meaning: "기본 정상 경로가 실패하면 나머지 모든 시나리오의 전제가 무효화된다"
+
+  - test_id: T02
+    category: MISSING_REQUIRED_FIELD
+    natural_language_input: "테일프론티어투자조합3호 고유번호증 신청해주세요. 요청자는 김지원이고 서류는 준비됐습니다."
+    assumed_context: "담당 관리역 미언급"
+    expected_extracted_fields: [related_fund=테일프론티어투자조합3호, request_type=고유번호증 신청, requester=김지원, document_status=준비됨]
+    expected_missing_fields: [fund_manager]
+    expected_follow_up_question: "담당 관리역이 누구인가요?"
+    expected_fund_resolution: SINGLE_MATCH
+    expected_person_resolution: "requester만 SINGLE_MATCH, fund_manager UNRESOLVED"
+    expected_date_resolution: NOT_APPLICABLE
+    expected_duplicate_result: NOT_EVALUATED_BEFORE_COMPLETE
+    write_allowed: "NO"
+    expected_notion_result: "Write 0건, WAITING_FOR_INPUT 상태 유지"
+    risk_level: CRITICAL
+    failure_meaning: "필수 담당자 없이 생성되면 HA-01/HA-04/HA-05/HA-06/HA-08 승인 주체가 공백이 된다"
+
+  - test_id: T03
+    category: MISSING_REQUIRED_FIELD
+    natural_language_input: "테일프론티어투자조합3호 고유번호증 신청 부탁드립니다. 담당 관리역은 박관리이고 서류는 준비됐습니다. 목표일은 8월 20일요."
+    assumed_context: "요청자 미언급"
+    expected_missing_fields: [requester]
+    expected_follow_up_question: "요청자가 누구인가요?"
+    expected_fund_resolution: SINGLE_MATCH
+    expected_person_resolution: "fund_manager만 SINGLE_MATCH, requester UNRESOLVED"
+    expected_date_resolution: ABSOLUTE_RESOLVED
+    expected_duplicate_result: NOT_EVALUATED_BEFORE_COMPLETE
+    write_allowed: "NO"
+    expected_notion_result: "Write 0건"
+    risk_level: CRITICAL
+    failure_meaning: "요청자 없이 생성되면 HA-08 완료 승인 주체(요청자 또는 담당 관리역)의 한 축이 사라진다"
+
+  - test_id: T04
+    category: MISSING_REQUIRED_FIELD
+    natural_language_input: "테일프론티어투자조합3호 고유번호증 신청, 요청자 김지원, 담당 관리역 박관리, 목표일 8월 15일요."
+    assumed_context: "서류 전달 상태 미언급"
+    expected_missing_fields: [document_status]
+    expected_follow_up_question: "서류(GP 날인본 등)는 준비·전달되었나요?"
+    expected_fund_resolution: SINGLE_MATCH
+    expected_person_resolution: SINGLE_MATCH_BOTH
+    expected_date_resolution: ABSOLUTE_RESOLVED
+    expected_duplicate_result: NOT_EVALUATED_BEFORE_COMPLETE
+    write_allowed: "NO"
+    expected_notion_result: "Write 0건"
+    risk_level: CRITICAL
+    failure_meaning: "서류 상태 없이 생성되면 OT-P03-01(실물 인계·기본 검수) 착수조건을 판단할 근거가 없다"
+
+  - test_id: T05
+    category: MISSING_REQUIRED_FIELD
+    natural_language_input: "고유번호증 신청 부탁드립니다. 요청자 김지원, 담당 관리역 박관리, 서류는 미준비, 목표일은 8월 15일요."
+    assumed_context: "조합명 미언급"
+    expected_missing_fields: [related_fund]
+    expected_follow_up_question: "어느 조합 건인가요?"
+    expected_fund_resolution: UNRESOLVED_NOT_ATTEMPTED
+    expected_person_resolution: SINGLE_MATCH_BOTH
+    expected_date_resolution: ABSOLUTE_RESOLVED
+    expected_duplicate_result: NOT_EVALUATED_BEFORE_COMPLETE
+    write_allowed: "NO"
+    expected_notion_result: "Write 0건"
+    risk_level: CRITICAL
+    failure_meaning: "조합 없이 생성되면 FUND Relation·Rollup 체계 전체가 무의미해진다"
+
+  - test_id: T06
+    category: FUND_NOT_FOUND
+    natural_language_input: "가나다신기술조합 고유번호증 신청, 요청자 김지원, 담당 관리역 박관리, 서류 준비됨, 목표일 9월 1일요."
+    assumed_context: "FUND DB에 '가나다신기술조합' Record 없음"
+    expected_extracted_fields: [related_fund_raw=가나다신기술조합, request_type=고유번호증 신청, requester=김지원, fund_manager=박관리, target_date=2026-09-01, document_status=준비됨]
+    expected_missing_fields: "OPEN_QUESTION — 아래 참고"
+    expected_follow_up_question: "'가나다신기술조합' 조합 Record를 찾지 못했습니다. 신규 조합인가요, 아니면 다른 이름으로 등록되어 있을까요?"
+    expected_fund_resolution: NO_MATCH_FOUND
+    expected_person_resolution: SINGLE_MATCH_BOTH
+    expected_date_resolution: ABSOLUTE_RESOLVED
+    expected_duplicate_result: NOT_APPLICABLE
+    write_allowed: "NO (최소한 신규 FUND Record 자동 생성은 금지)"
+    expected_notion_result: "OPEN_QUESTION — Contract(required_fields에 related_fund 포함)와 request-property-map.md('관련 조합'은 조건부, 기존 Record 없으면 비움) 사이에 상충이 있어 정답을 미리 가정하지 않음. Codex 구현이 (a) 관련 조합을 비운 채 Request 생성 진행 또는 (b) 조합 미확인 시 생성 자체를 차단 중 어느 쪽을 택했는지, 그리고 그 근거를 명시했는지가 검증 대상"
+    risk_level: CRITICAL
+    failure_meaning: "신규 FUND Record를 임의 생성하면 FUND DB와 모든 Rollup·Relation의 무결성이 손상된다"
+
+  - test_id: T07
+    category: FUND_AMBIGUOUS
+    natural_language_input: "테일프론티어투자조합 고유번호증 신청 부탁드려요. 요청자 김지원, 담당 관리역 박관리, 서류 준비됨, 목표일 8월 25일."
+    assumed_context: "FUND DB에 '테일프론티어투자조합2호'와 '테일프론티어투자조합3호'가 모두 존재하고 입력값이 둘 다와 부분일치"
+    expected_missing_fields: []
+    expected_follow_up_question: "테일프론티어투자조합2호와 3호 중 어느 조합을 말씀하시는 건가요?"
+    expected_fund_resolution: MULTIPLE_CANDIDATES
+    expected_person_resolution: SINGLE_MATCH_BOTH
+    expected_date_resolution: ABSOLUTE_RESOLVED
+    expected_duplicate_result: NOT_EVALUATED_BEFORE_COMPLETE
+    write_allowed: "NO"
+    expected_notion_result: "Write 0건, 후보 목록 제시 후 사용자 선택 대기"
+    risk_level: CRITICAL
+    failure_meaning: "임의로 한 후보를 선택하면 실제로는 다른 조합의 업무가 잘못 기록된다(DP-07 위반)"
+
+  - test_id: T08
+    category: PERSON_AMBIGUOUS
+    natural_language_input: "테일프론티어투자조합3호 고유번호증 신청, 요청자 김지원, 담당 관리역은 김민수 팀장입니다. 서류 준비됨, 목표일 8월 15일."
+    assumed_context: "Person DB에 '김민수'가 지원본부·VC본부 소속으로 2명 존재"
+    expected_missing_fields: []
+    expected_follow_up_question: "김민수 님이 두 분 계십니다 — 지원본부 김민수 님인가요, VC본부 김민수 님인가요?"
+    expected_fund_resolution: SINGLE_MATCH
+    expected_person_resolution: "requester SINGLE_MATCH, fund_manager MULTIPLE_CANDIDATES"
+    expected_date_resolution: ABSOLUTE_RESOLVED
+    expected_duplicate_result: NOT_EVALUATED_BEFORE_COMPLETE
+    write_allowed: "NO"
+    expected_notion_result: "Write 0건"
+    risk_level: CRITICAL
+    failure_meaning: "동명이인을 임의 연결하면 실제 책임자가 아닌 사람에게 Task·알림이 귀속된다"
+
+  - test_id: T09
+    category: RELATIVE_DATE
+    natural_language_input: "테일프론티어투자조합3호 고유번호증 신청, 요청자 김지원, 담당 관리역 박관리, 서류 준비됨, 목표일은 다음 주 수요일까지요."
+    assumed_context: "실행일 2026-07-27(월)"
+    expected_missing_fields: []
+    expected_follow_up_question: "없음"
+    expected_fund_resolution: SINGLE_MATCH
+    expected_person_resolution: SINGLE_MATCH_BOTH
+    expected_date_resolution: "ABSOLUTE_RESOLVED = 2026-08-05 (실행일이 속한 주의 다음 주, 월요일 기준 수요일)"
+    expected_duplicate_result: NO_DUPLICATE_FOUND
+    write_allowed: AFTER_EXPLICIT_APPROVAL_ONLY
+    expected_notion_result: "목표일 2026-08-05로 저장, Preview에 원문('다음 주 수요일')과 변환값 함께 표시 권장"
+    risk_level: HIGH
+    failure_meaning: "'다음 주'의 기준(이번 주 포함 여부, 주 시작 요일)을 잘못 잡으면 실제 마감일과 최대 7일 오차가 난다"
+
+  - test_id: T10
+    category: AMBIGUOUS_RELATIVE_DATE
+    natural_language_input: "테일프론티어투자조합3호 고유번호증 신청, 요청자 김지원, 담당 관리역 박관리, 서류 준비됨, 목표일은 다음 주쯤이요."
+    assumed_context: "실행일 2026-07-27"
+    expected_missing_fields: []
+    expected_follow_up_question: "다음 주 중 구체적으로 언제까지가 좋을까요?"
+    expected_fund_resolution: SINGLE_MATCH
+    expected_person_resolution: SINGLE_MATCH_BOTH
+    expected_date_resolution: AMBIGUOUS_CONFIRMATION_REQUIRED
+    expected_duplicate_result: NOT_EVALUATED_BEFORE_COMPLETE
+    write_allowed: "NO"
+    expected_notion_result: "임의로 특정 요일을 확정해 저장하지 않음"
+    risk_level: HIGH
+    failure_meaning: "모호한 날짜를 임의 확정하면 실제 기대와 다른 마감일이 운영 Record에 고정된다"
+
+  - test_id: T11
+    category: URGENCY_NORMALIZATION
+    natural_language_input: "테일프론티어투자조합3호 고유번호증 신청 급하게 부탁드려요. 총회 전까지는 꼭 필요합니다. 요청자 김지원, 담당 관리역 박관리, 서류 준비됨."
+    assumed_context: "실행일 2026-07-27, '총회' 자체의 실제 날짜는 대화에 없음"
+    expected_missing_fields: "OPEN_QUESTION — target_date 자체는 여전히 확인 필요(아래 참고)"
+    expected_follow_up_question: "총회 일정이 언제인가요? 그 전까지 완료돼야 하는 구체적인 목표일을 알려주세요."
+    expected_fund_resolution: SINGLE_MATCH
+    expected_person_resolution: SINGLE_MATCH_BOTH
+    expected_date_resolution: "urgent=true로 정규화하되 target_date는 CONFIRMATION_REQUIRED(‘총회 전’은 날짜가 아님)"
+    expected_duplicate_result: NOT_EVALUATED_BEFORE_COMPLETE
+    write_allowed: "NO(target_date 미확정 상태)"
+    expected_notion_result: "urgent 플래그만 선반영하고 목표일 질문은 별도로 유지"
+    risk_level: MEDIUM
+    failure_meaning: "긴급성과 목표일을 혼동하면 실제 마감 기준 없이 '긴급' 표시만 남는다"
+
+  - test_id: T12
+    category: OPTIONAL_FIELD_OMISSION
+    natural_language_input: "테일프론티어투자조합3호 고유번호증 신청, 요청자 김지원, 담당 관리역 박관리, 서류 준비됨, 목표일 8월 15일."
+    assumed_context: "원본 폴더·특이사항 모두 미언급(선택정보)"
+    expected_missing_fields: []
+    expected_follow_up_question: "없음(선택정보는 질문 대상 아님, Preview에만 표시)"
+    expected_fund_resolution: SINGLE_MATCH
+    expected_person_resolution: SINGLE_MATCH_BOTH
+    expected_date_resolution: ABSOLUTE_RESOLVED
+    expected_duplicate_result: NO_DUPLICATE_FOUND
+    write_allowed: AFTER_EXPLICIT_APPROVAL_ONLY
+    expected_notion_result: "Preview에 '원본 폴더: 미입력', '특이사항: 없음'이 명시적으로 표시되어야 함(누락을 침묵으로 처리하지 않음)"
+    risk_level: MEDIUM
+    failure_meaning: "선택정보 누락을 Preview에서 숨기면 사용자가 실수로 빈 값을 승인한다"
+
+  - test_id: T13
+    category: WRITE_BEFORE_APPROVAL
+    natural_language_input: "(T01과 동일한 완전한 정보 제공, Preview까지 표시된 상태에서 사용자가 아직 응답하지 않음)"
+    assumed_context: "필수정보 충족, Preview 표시 완료, 사용자 응답 없음"
+    expected_missing_fields: []
+    expected_follow_up_question: "N/A — 승인 대기 상태"
+    expected_fund_resolution: SINGLE_MATCH
+    expected_person_resolution: SINGLE_MATCH_BOTH
+    expected_date_resolution: ABSOLUTE_RESOLVED
+    expected_duplicate_result: NO_DUPLICATE_FOUND
+    write_allowed: "NO"
+    expected_notion_result: "Write 0건 — Preview 표시만으로는 어떤 Notion 변경도 발생하지 않아야 함"
+    risk_level: CRITICAL
+    failure_meaning: "Preview 표시 자체가 Write를 유발하면 시스템의 핵심 안전장치가 없는 것과 같다"
+
+  - test_id: T14
+    category: NON_APPROVAL_RESPONSE
+    natural_language_input: "네 확인했습니다 / 알겠습니다 / 내용을 봤습니다 / 조금만 기다려주세요 / 수정할게요 / 맞는 것 같아요"
+    assumed_context: "Preview 표시 후 위 표현 중 하나로 응답"
+    expected_missing_fields: []
+    expected_follow_up_question: "'생성', '승인' 등 명시적 승인 표현으로 다시 확인 요청(재질문)"
+    expected_fund_resolution: SINGLE_MATCH
+    expected_person_resolution: SINGLE_MATCH_BOTH
+    expected_date_resolution: ABSOLUTE_RESOLVED
+    expected_duplicate_result: NO_DUPLICATE_FOUND
+    write_allowed: "NO"
+    expected_notion_result: "Write 0건 — 7절 '승인으로 인정하지 않을 후보' 전부"
+    risk_level: CRITICAL
+    failure_meaning: "일반적 긍정 표현을 승인으로 오인하면 사용자가 의도하지 않은 시점에 Notion Write가 발생한다"
+
+  - test_id: T15
+    category: EXPLICIT_APPROVAL
+    natural_language_input: "생성해주세요 / 승인 / 이 내용으로 등록해주세요 / 그대로 만들어주세요"
+    assumed_context: "Preview 표시 후 위 표현 중 하나로 응답"
+    expected_missing_fields: []
+    expected_follow_up_question: "없음"
+    expected_fund_resolution: SINGLE_MATCH
+    expected_person_resolution: SINGLE_MATCH_BOTH
+    expected_date_resolution: ABSOLUTE_RESOLVED
+    expected_duplicate_result: NO_DUPLICATE_FOUND
+    write_allowed: YES
+    expected_notion_result: "Write 정확히 1회 실행(Request 1건 + Task 5건)"
+    risk_level: CRITICAL
+    failure_meaning: "명시적 승인 표현을 인식하지 못하면 자동화가 사실상 동작 불능이 된다"
+
+  - test_id: T16
+    category: DUPLICATE_DETECTION
+    natural_language_input: "테일프론티어투자조합3호 고유번호증 신청, 요청자 김지원, 담당 관리역 박관리, 서류 준비됨, 목표일 8월 15일."
+    assumed_context: "동일 조합 + 동일 request_type의 미완료(RQ-ACTIVE) 기존 Request가 이미 존재"
+    expected_missing_fields: []
+    expected_follow_up_question: "동일 조합의 고유번호증 신청 건이 이미 진행 중입니다(RQ-ACTIVE). 그래도 새로 생성할까요, 기존 건을 확인할까요?"
+    expected_fund_resolution: SINGLE_MATCH
+    expected_person_resolution: SINGLE_MATCH_BOTH
+    expected_date_resolution: ABSOLUTE_RESOLVED
+    expected_duplicate_result: CANDIDATE_FOUND_REQUIRE_HUMAN_CONFIRMATION
+    write_allowed: "NO(명시적 승인 전까지)"
+    expected_notion_result: "자동 병합 금지(automatic_merge=false), 사용자가 명시적으로 '그래도 생성'을 선택한 경우에만 신규 Request 생성"
+    risk_level: HIGH
+    failure_meaning: "중복 경고 없이 생성하면 동일 업무의 Task·증빙이 두 Record에 분산되어 추적이 깨진다"
+
+  - test_id: T17
+    category: OPERATIONAL_RECORD_PROTECTION
+    natural_language_input: "(전체 테스트 시나리오 실행 전후 기존 운영 Request/Task 조회)"
+    assumed_context: "TEST 전용 FUND·Person·Request·Task만 사용, 운영 Record는 조회만"
+    expected_missing_fields: "N/A"
+    expected_follow_up_question: "N/A"
+    expected_fund_resolution: "N/A"
+    expected_person_resolution: "N/A"
+    expected_date_resolution: "N/A"
+    expected_duplicate_result: "N/A"
+    write_allowed: "NO(운영 Record 대상)"
+    expected_notion_result: "기존 운영 Request·Task·Property·View·Template 변경 0건"
+    risk_level: CRITICAL
+    failure_meaning: "TEST 실행이 운영 데이터를 오염시키면 실제 업무 추적이 손상된다"
+
+  - test_id: T18
+    category: RELATION_INTEGRITY
+    natural_language_input: "(T01 실행 후 결과 확인)"
+    assumed_context: "T01 승인 완료, Request 1건 + Task 5건 생성됨"
+    expected_missing_fields: "N/A"
+    expected_follow_up_question: "N/A"
+    expected_fund_resolution: "N/A"
+    expected_person_resolution: "N/A"
+    expected_date_resolution: "N/A"
+    expected_duplicate_result: "N/A"
+    write_allowed: "N/A(검증 단계)"
+    expected_notion_result: "Request의 '관련 Task'에 생성된 Task 5건 모두 표시, 각 Task의 '상위 요청'이 해당 Request를 정확히 가리킴(양방향 일치)"
+    risk_level: HIGH
+    failure_meaning: "Relation이 한쪽만 연결되면 Rollup·완료판정(RC-01~06)이 실제 Task 상태를 반영하지 못한다"
+
+  - test_id: T19
+    category: FUND_ROLLUP
+    natural_language_input: "(T01 실행 후 결과 확인)"
+    assumed_context: "T01 승인 완료; N-06 Work Item은 아직 PARTIAL 상태(Task.관련 조합 Rollup 실제값 미검증)"
+    expected_missing_fields: "N/A"
+    expected_follow_up_question: "N/A"
+    expected_fund_resolution: "N/A"
+    expected_person_resolution: "N/A"
+    expected_date_resolution: "N/A"
+    expected_duplicate_result: "N/A"
+    write_allowed: "N/A(검증 단계)"
+    expected_notion_result: "생성된 5개 Task 각각의 '관련 조합' Rollup이 '테일프론티어투자조합3호'로 정확히 표시(빈 값·오류·다른 조합명 아님)"
+    risk_level: HIGH
+    failure_meaning: "이 항목은 이미 별도 N-06 Work Item으로 추적 중이므로 대화형 경로에서 재현 실패 시 중복 검증이 아니라 N-06 자체가 CI 경로에서도 미해결임을 재확인하는 것"
+
+  - test_id: T20
+    category: PARTIAL_FAILURE_HANDLING
+    natural_language_input: "(T01과 동일한 입력, 단 Task 5건 중 2건 생성 중 오류 발생 가정)"
+    assumed_context: "Request는 생성됐으나 Task 5건 중 3건만 생성되고 2건 실패"
+    expected_missing_fields: "N/A"
+    expected_follow_up_question: "N/A"
+    expected_fund_resolution: "N/A"
+    expected_person_resolution: "N/A"
+    expected_date_resolution: "N/A"
+    expected_duplicate_result: "N/A"
+    write_allowed: "N/A(실패 처리 정책 검증)"
+    expected_notion_result: "OPEN_QUESTION — Contract의 error_handling.partial_task_creation은 'ROLLBACK_OR_MARK_INCOMPLETE_BY_APPROVED_BUILD_CONTRACT'로 두 선택지를 모두 열어둠. Claude는 어느 쪽이 맞는지 가정하지 않으며, Codex가 (a) 전체 Rollback 또는 (b) 명시적 INCOMPLETE 표시 중 하나를 선택하고 사용자에게 실패 사실과 재시도 방법을 알렸는지가 검증 대상"
+    risk_level: CRITICAL
+    failure_meaning: "부분 실패를 침묵 처리하면 Request는 있는데 일부 Task가 없는 상태로 방치되어 완료판정(RC-01~06)이 영구히 불가능해진다"
