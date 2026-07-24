@@ -1,0 +1,135 @@
+transaction_id: CI5-E2E03-ALPHA-LOOP-001
+prefix: "[TEST][ALPHA-LOOP]"
+request:
+  url: https://app.notion.com/p/3a772a41d9d78124a81bf24e9781563e
+  title: "[TEST][ALPHA-LOOP] 가상조합1호 — 고유번호증 신청"
+  fund_reused: "[TEST][CI1-PILOT] 가상조합1호 (https://app.notion.com/p/3a772a41d9d78101b548f4e5c021ca94)"
+tasks:
+  P03-T01:
+    url: https://app.notion.com/p/3a772a41d9d781d793b4d68d63937d1f
+  P03-T02:
+    url: https://app.notion.com/p/3a772a41d9d7810ca9faf80c3b99edad
+  P03-T03:
+    url: https://app.notion.com/p/3a772a41d9d78127a5c6e875f8251f83
+  P03-T04:
+    url: https://app.notion.com/p/3a772a41d9d781d7813bc42139858ac9
+  P03-T05:
+    url: https://app.notion.com/p/3a772a41d9d7818c90ebc5e8055e144d
+  P03-T06:
+    url: https://app.notion.com/p/3a772a41d9d7810a9b78e6d88b42d27c
+
+snapshots:
+  - id: S0_CREATION
+    phase: 0
+    request: {요청_상태: "시작 전", 서류_상태: "미전달"}
+    tasks: {T01: "시작 전", T02: "시작 전", T03: "시작 전", T04: "시작 전", T05: "시작 전", T06: "시작 전"}
+    note: "Request 1건 + Task 6건 동시 생성(COMMIT). Actual Write=7. 이전 3턴(조합 미확정, 필수정보 누락) 동안 Write 0 확인."
+
+  - id: S1_T01_ACTIVE
+    phase: 1
+    request: {요청_상태: "진행 중"}
+    tasks: {T01: {상태: "진행 중", actor: 지원팀}}
+    note: "Task 생성 즉시 T01 자동 착수, Request는 동시에 RQ-ACTIVE 상당(진행 중)으로 전환."
+
+  - id: S2_T01_DONE_T02_ACTIVE
+    phase: 1→2
+    tasks:
+      T01: {상태: "완료", blocker: null, 완료증빙: "조합 폴더·기본정보 확인 완료"}
+      T02: {상태: "진행 중", actor: 지원팀}
+
+  - id: S3_T02_PARTIAL_DELIVERY
+    phase: 2
+    request: {서류_상태: "일부 전달"}
+    note: "사용자: 서류 일부 도착"
+
+  - id: S4_T02_REWORK_NEEDED
+    phase: 2
+    request: {서류_상태: "보완 필요"}
+    tasks:
+      T02: {actor: "관리역 확인", blocker: "누락서류: OO증빙 1건(전체 3건 중 2건 수령)", 다음_action: "누락서류 보완 요청"}
+    note: "핵심 관찰 지점 — '일부 전달'과 '보완 필요'가 동시에 참인 상태를 Select 하나로 표현 못해 서류_상태는 '보완 필요'만 반영, 수령 범위(2/3)는 Task Blocker 텍스트로 보완."
+
+  - id: S5_T02_RESOLVED
+    phase: 2
+    request: {서류_상태: "전달 완료"}
+    tasks:
+      T02: {actor: 지원팀, blocker: null, 다음_action: "보완 수령분 재검수"}
+
+  - id: S6_T02_DONE_T03_ACTIVE
+    phase: 2→3
+    tasks:
+      T02: {상태: "완료", 완료증빙: "보완 수령분 포함 전체 서류 재검수 완료"}
+      T03: {상태: "진행 중", actor: 지원팀}
+
+  - id: S7_T03_AWAITING_GP
+    phase: 3
+    tasks:
+      T03: {actor: GP, blocker: "날인 대기", 다음_action: "날인본 회신 대기"}
+
+  - id: S8_T03_SEAL_ERROR
+    phase: 3
+    tasks:
+      T03: {actor: GP, blocker: "날인 오류(조합인감 아님)", 다음_action: "정상 날인본 재요청"}
+    note: "동일 Task(T03) 내에서 처리 — 신규 Task 생성하지 않음"
+
+  - id: S9_T03_RESOLVED
+    phase: 3
+    tasks:
+      T03: {actor: 지원팀, blocker: null, 다음_action: "제출 가능 여부 최종 판정"}
+
+  - id: S10_T03_DONE_T04_ACTIVE
+    phase: 3→4
+    tasks:
+      T03: {상태: "완료", 완료증빙: "재날인본 검수 완료, 제출 가능 판정"}
+      T04: {상태: "진행 중", actor: 지원팀}
+
+  - id: S11_T04_AGENCY_REQUEST
+    phase: 4
+    tasks:
+      T04: {actor: "관리역 확인", blocker: "세무서 현장 추가요청(주소증빙 추가)", 다음_action: "추가서류 확보 후 접수 재개"}
+    note: "동일 Task(T04) 내에서 처리 — 신규 Task 생성하지 않음"
+
+  - id: S12_T04_RESOLVED
+    phase: 4
+    tasks:
+      T04: {actor: 지원팀, blocker: null, 다음_action: "처리완료 통지 대기", 완료증빙: "접수증 스캔본 확인"}
+
+  - id: S13_T04_DONE_T05_ACTIVE
+    phase: 4→5
+    tasks:
+      T04: {상태: "완료"}
+      T05: {상태: "진행 중", actor: "외부기관"}
+    note: "접수 완료 ≠ 전체 완료 — 이 시점 Request는 여전히 '진행 중'"
+
+  - id: S14_T05_NOTIFIED
+    phase: 5
+    tasks:
+      T05: {actor: 지원팀, 다음_action: "세무서 방문해 고유번호증 수령"}
+
+  - id: S15_T05_DONE_T06_ACTIVE
+    phase: 5→6
+    tasks:
+      T05: {상태: "완료", 완료증빙: "고유번호증 실물 수령 확인"}
+      T06: {상태: "진행 중", actor: 지원팀}
+
+  - id: S16_T06_DONE
+    phase: 6
+    tasks:
+      T06: {상태: "완료", 완료증빙: "스캔본 저장 경로 확인, 관리역 전달 확인"}
+    note: "전체 6개 Task 완료 확인"
+
+  - id: S17_REQUEST_DONE
+    phase: 6
+    request: {요청_상태: "완료"}
+    note: "T06 완료 확인 '이후'에만 Request 완료 반영 — 순서 보장 확인"
+
+final_state_verified_by_direct_query:
+  requests_matching_ALPHA-LOOP: 1
+  tasks_matching_ALPHA-LOOP: 6
+  all_tasks_status: "완료"
+  all_tasks_blocker: null
+  request_status: "완료"
+  request_document_status: "전달 완료"
+  duplicate_operational_task_ids: 0
+  operating_records_modified: 0
+  ci1_ci4_test_records_modified: 0
