@@ -1,0 +1,92 @@
+tap: CP-05-CI4-E2E03-SCHEMA-ALPHA
+as_of: 2026-07-24
+scope: E2E-03
+result: COMPLETED_WITH_ONE_SCHEMA_GAP
+
+applied_schema:
+  request_db:
+    property: 서류 상태
+    type: select
+    options:
+      - 미전달
+      - 일부 전달
+      - 전달 완료
+      - 보완 필요
+    status: APPLIED_AND_VERIFIED
+    legacy_checkbox:
+      property: 실물서류 전달 여부
+      retained: true
+      written_by_ci4: false
+      backfilled: false
+  task_db:
+    property: Task 상태
+    existing_options_preserved:
+      - 시작 전
+      - 진행 중
+      - 완료
+    requested_option: 취소
+    status: NOT_APPLIED_PLATFORM_UI_REQUIRED
+
+gaps:
+  - gap_id: CI4-G01
+    description: Task 상태에 취소 옵션 추가 필요
+    linked_test_cases:
+      - TC-A06
+    current_state: 기존 세 옵션만 존재
+    evidence:
+      - 페이지 값으로 취소 지정 시 Notion API validation_error
+      - schema connector는 기존 Status 옵션을 보존하며 단일 옵션을 추가하는 문법을 노출하지 않음
+      - 로컬 Chrome UI 자동화는 window_not_focused로 중단
+    impact: A01~A07 실행에는 비차단, 명시적 취소 Lifecycle에는 필요
+    proposed_action: Notion UI에서 기존 옵션을 유지하고 취소 하나만 추가한 뒤 schema 재조회
+    status: OPEN_UI_ACTION
+
+  - gap_id: CI4-G02
+    description: 신규 Alpha Task의 관련 조합 Rollup 값 API 자동 검증 제한
+    linked_test_cases:
+      - TC-A01
+      - TC-A02
+      - TC-A03
+      - TC-A04
+      - TC-A05
+    current_state: Relation 경로는 재조회됐으나 page fetch가 Rollup을 <omitted />로 반환
+    evidence:
+      - FUND→Request Relation PASS
+      - Request→Task Relation PASS
+      - N-06 기존 Notion UI 육안검증 VERIFIED
+    impact: Relation 무결성은 확인, 신규 Alpha 값의 UI 표시만 추가 확인 가능
+    proposed_action: Claude 또는 사용자가 신규 Alpha Task 1건의 관련 조합 표시를 UI에서 확인
+    status: UI_CONFIRMATION_RECOMMENDED
+
+not_added:
+  - property: Request 현재 Actor
+    reason: 활성 Task가 단일 Source of Truth
+    linked_test_cases: [TC-A01, TC-A02, TC-A03, TC-A04, TC-A05]
+  - property: Request 다음 Action
+    reason: 활성 Task가 단일 Source of Truth
+    linked_test_cases: [TC-A01, TC-A02, TC-A03, TC-A04, TC-A05]
+  - property: Request Blocker
+    reason: 활성 Task가 단일 Source of Truth
+    linked_test_cases: [TC-A02, TC-A03, TC-A04, TC-A05]
+  - option: Task 상태 대기
+    reason: 진행 중 + 현재 Actor + Blocker + 다음 Action으로 표현 가능
+    linked_test_cases: [TC-A02, TC-A05]
+  - option: Task 상태 보완
+    reason: 진행 중 + 현재 Actor + Blocker + 다음 Action으로 표현 가능
+    linked_test_cases: [TC-A03, TC-A04]
+
+test_summary:
+  TC-A01: PASS
+  TC-A02: PASS
+  TC-A03: PASS
+  TC-A04: PASS
+  TC-A05: PASS
+  TC-A06: PASS
+  TC-A07: PASS
+
+safety:
+  operating_record_changes: 0
+  view_changes: 0
+  filter_changes: 0
+  legacy_checkbox_writes: 0
+  automatic_deletes: 0
