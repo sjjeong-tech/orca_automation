@@ -8,7 +8,7 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 
 **Queue 전체 상태:** `PAUSED_FOR_AG_P3_REVIEW`
 
-**현재 Checkpoint:** `CP-05-P3-LR — COMPLETED_WITH_GAPS`
+**현재 Checkpoint:** `CP-00-O3 — COMPLETED`
 
 **최근 Revision:** `TAP P1-R2 — COMPLETED (PASS WITH NON-BLOCKING GAPS)`
 
@@ -16,7 +16,7 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 
 **최근 계획:** `TAP V0 — COMPLETED`
 
-**최근 실행:** `TAP CP-05-P3-LR — COMPLETED_WITH_GAPS`
+**최근 실행:** `TAP CP-00-O3 — COMPLETED`
 
 **다음 READY 후보:** `AG-P3 — GPT_AND_USER`
 
@@ -125,12 +125,13 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 | AG-P2 | `APPROVED`; Q1~Q10 APPROVE | J-01 입력 |
 | N-04 | `COMPLETED_WITH_FORM_UI_DEFERRED` | UI 최종 구성 Backlog |
 | N-05 | `VERIFIED` | J-01 근거 |
-| N-06 | `PARTIAL`; `REQUIRED_BEFORE_BUILD` | J-02 전 Relation·Rollup 실제값 검증 |
+| N-06 | `PARTIAL`; `REQUIRED_BEFORE_BUILD`; FUND Rollup 검증 완료, Task 관련 조합 Rollup 대기 | J-02 선행조건 미충족 |
 | J-01 | `PASSED` | P3 Input Gate 완료 |
 | CP-05-P3 | Execution `COMPLETED_WITH_GAPS`; Plan `APPROVAL_REQUIRED` | AG-P3 검토 |
-| AG-P3 | `READY_FOR_GPT_USER_REVIEW` | Q1~Q10 승인 필요 |
+| CP-00-O3 | `COMPLETED` | N-06·Conflict·Gap·AG-P3 Packet 정합화 |
+| AG-P3 | `READY_FOR_GPT_USER_REVIEW` | 통합 질문 7개 승인 필요 |
 | CP-05-P4 | `BLOCKED_BY_AG_P3` | 자동 실행 금지 |
-| J-02 | `BLOCKED`; Build Readiness | P3·P4 승인, N-06, Build WO 대기 |
+| J-02 | `BLOCKED`; Build Readiness | AG-P3·후속 P4/P5 설계 승인·Build WO 대기; N-06 충족 |
 
 ### CP-05-P0 Claude Finding 상태
 

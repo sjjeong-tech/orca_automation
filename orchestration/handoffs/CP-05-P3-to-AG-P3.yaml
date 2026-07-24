@@ -28,7 +28,14 @@
   "approval_gate": "AG-P3",
   "downstream_candidate": "CP-05-P4",
   "blocking_conditions": ["AG-P3 not approved"],
-  "build_blocking_conditions": ["N-06 not verified", "J-02 not passed"],
-  "open_gaps": ["N-06 rollup actual-value validation", "Form UI final configuration", "P3 conflict log"],
+  "post_run_reconciliation": {
+    "N-06": "PARTIAL",
+    "verified_subtests": "FUND_RELATION_AND_FOUR_ROLLUPS",
+    "remaining_test": "TASK_RELATED_FUND_ROLLUP_ACTUAL_VALUE",
+    "requirement_satisfied": false,
+    "blocking_for_J02": true
+  },
+  "build_blocking_conditions": ["N-06 Task related-fund Rollup validation", "future P4/P5 design approvals", "J-02 not passed", "Notion Build Work Order not issued"],
+  "open_gaps": ["Form UI final configuration", "P2 status option Build application", "P3 open conflicts and data-quality backlog"],
   "created_at": "2026-07-24"
 }

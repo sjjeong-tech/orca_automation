@@ -2,6 +2,10 @@
 
 > Non-canonical. Approval-required items are not executable Agent work.
 
-| Work Item | Owner | Type | Approval Required | Input Gate |
-|---|---|---|---:|---|
-| AG-P3 | GPT_AND_USER | APPROVAL | true | P3_VALIDATION_PASS |
+## Agent READY work
+
+- None
+
+## Approval review
+
+- `AG-P3` ? owner: `GPT_AND_USER`; status: `READY_FOR_GPT_USER_REVIEW`

@@ -17,7 +17,7 @@
 | Approval 승인자 | PASS | 8/8 |
 | Variation 4축 | PASS | Fund/GP/Account/Institution |
 | Form 1·2 역할 구분 | PASS | 사전예고/실제 요청 분리 |
-| N-06 경계 | PASS | PARTIAL, REQUIRED_BEFORE_BUILD |
+| N-06 실행시점 경계 | PASS | at_run_completion: PARTIAL, REQUIRED_BEFORE_BUILD |
 | 실제 Notion 변경 | PASS | 0 |
 | Process·Variation·Source 변경 | PASS | 0/0/0 |
 
@@ -34,7 +34,7 @@
 
 과도한 자동화 판정을 피했다. 외부 발송, 실물, 인증, 계좌·수탁 판단, 승인 행위는 Human-only 또는 승인 기반으로 남겼다.
 
-## N-06 Build Test Contract
+## N-06 Build Test Contract와 사후 결과
 
 | 항목 | 기대값 |
 |---|---|
@@ -45,6 +45,13 @@
 | Function | 원본 표시 또는 unique values; 실제 UI 지원값 확인 |
 | 빈 값 | 상위 요청의 관련 조합이 없으면 빈 값, 오류/임의 문자열 금지 |
 | TEST | 안전한 TEST FUND ↔ TEST 요청 ↔ TEST Task 연결 후 정확히 같은 조합 1건 표시 확인 |
-| 통과 시점 | J-02 전 |
+| 통과 시점 | J-02 전 — 2026-07-24 충족 |
 
-N-06은 이 보고서로 PASS 처리하지 않는다.
+P3 실행 종료 시에는 이 보고서만으로 N-06을 PASS 처리하지 않았다. 이후 GPT와 사용자가 안전한 TEST Relation을 연결하고 GP명·조합구분·담당자·담당자(변경후) Rollup 표시를 확인했다.
+
+- at_run_completion: `PARTIAL`
+- post_run_validation: `PARTIAL`
+- verified_subtests: `TO DO LIST (FUND)` Relation과 GP명·조합구분·담당자·담당자(변경후) Rollup
+- remaining_test: `지원팀 Task.상위 요청 → 지원팀 업무요청.관련 조합 → 지원팀 Task.관련 조합` 실제값
+- requirement_satisfied: `false`
+- blocking_for_J02: `true`

@@ -14,5 +14,15 @@
     "J-01": ["AG-P2", "N-05", "FORM_INITIAL_STATUS_DECISION", "VIEW_DISPLAY_VERIFIED", "PERSON_VERIFIED", "RELATION_OPTIONAL_VERIFIED"],
     "J-02": ["CP-05-P3", "CP-05-P4", "N-05", "N-06", "RELATION_ROLLUP_CONFIRMED", "NOTION_BUILD_WORK_ORDER"]
   },
+  "prerequisite_status": {
+    "J-02": {
+      "N-05": {"required": true, "satisfied": true},
+      "N-06": {"required": true, "satisfied": false},
+      "RELATION_ROLLUP_CONFIRMED": {"required": true, "satisfied": false},
+      "AG-P3": {"required": true, "satisfied": false},
+      "FUTURE_P4_P5_DESIGN_APPROVALS": {"required": true, "satisfied": false},
+      "NOTION_BUILD_WORK_ORDER": {"required": true, "satisfied": false}
+    }
+  },
   "cycle_policy": "FORBIDDEN"
 }

@@ -4,53 +4,64 @@
   "owner": "GPT_AND_USER",
   "status": "READY_FOR_GPT_USER_REVIEW",
   "source_commit": "cecf0f35d52e0b01a271caaae593d469064e2ad4",
+  "reconciliation_commit": "SELF_COMMIT_RESOLVE_WITH_GIT_LOG",
   "source_report": "reports/cp-05-p3-completion.md",
+  "recommendation": {
+    "result": "APPROVE_WITH_CONDITIONS",
+    "reason": "P3 mapping supports P4; N-06 Task Rollup and UI/Build gaps remain gated before actual Build.",
+    "conditions": [
+      "Approve the 61 Atomic to 21 Operational Task aggregation contract.",
+      "P4 must define Form/collaboration contracts without changing approved P2 semantics.",
+      "UN-14 and AO-03 remain U and Human-controlled until authoritative rules exist.",
+      "N-06 Task related-fund Rollup must be verified before J-02 passes.",
+      "Actual Notion Build remains blocked until future design approvals, J-02 and a Build Work Order."
+    ]
+  },
   "summary": {
-    "processes": 5,
+    "process_mappings": 5,
     "atomic_task_mappings": 61,
     "operational_tasks": 21,
-    "request_properties": 13,
-    "task_properties": 14,
-    "request_statuses": 7,
-    "task_statuses": 6,
-    "canonical_transitions": 24,
-    "evidence_types": 9,
-    "human_approvals": 8,
+    "request_property_mappings": 13,
+    "task_property_mappings": 14,
+    "status_mappings": 24,
+    "evidence_mappings": 9,
+    "human_approval_mappings": 8,
     "variation_axes": 4,
     "form_interfaces": 2,
+    "automation_grades": {"H0":16,"H1":35,"A1":8,"A2":0,"A3":0,"U":2},
+    "conflicts_at_p3_completion": 7,
+    "resolved_conflicts": 0,
     "open_conflicts": 7,
-    "verified_subtests": ["TO DO LIST (FUND) Relation and GP/Fund-type/Manager Rollups"],
-    "remaining_n06_test": "지원팀 Task.상위 요청 → 지원팀 업무요청.관련 조합 → 지원팀 Task.관련 조합 Rollup actual value",
-    "actual_notion_changes": 0
+    "ag_p3_blocking_conflicts": 1,
+    "gaps_at_p3_completion": 13,
+    "resolved_gaps": 0,
+    "open_gaps": 13,
+    "actual_notion_changes_by_this_tap": 0
   },
-  "design_choices": [
-    "Every atomic ID is traceable; 61 atomic tasks aggregate into 21 operational tasks.",
-    "Request and Task lifecycles remain separate.",
-    "Waiting uses TS-WAIT plus Current Actor, Blocker and Next Action.",
-    "Evidence remains in Drive with non-sensitive Notion metadata; no Evidence DB for Pilot.",
-    "CASE_ONLY, PROVISIONAL and UNKNOWN boundaries are preserved.",
-    "Automation grades are conservative: H0/H1/A1/U only.",
-    "TO DO LIST (FUND) source rollups were verified, but N-06 Task related-fund rollup remains REQUIRED_BEFORE_BUILD."
+  "N-06": {
+    "status": "PARTIAL",
+    "classification": "REQUIRED_BEFORE_BUILD",
+    "build_requirement_satisfied": false,
+    "blocking_for_P3": false,
+    "blocking_for_J02": true,
+    "verified_subtests": ["TO DO LIST (FUND) Relation storage", "GP명 displayed", "조합구분 displayed", "담당자 displayed", "담당자(변경후) displayed"],
+    "remaining_test": "지원팀 Task.상위 요청 → 지원팀 업무요청.관련 조합 → 지원팀 Task.관련 조합 Rollup actual value"
+  },
+  "unknown_automation_items": [
+    {"atomic_task_id":"UN-14","subject":"대리·제3자 수령 요건","decision":"KEEP_U","reason":"공식 수령자격·위임·추가서류 Rule 부족","required_information":"세무서 공식 요건 또는 검증된 독립 사례","reevaluate_at":"Pilot/Gap Resolution","P4_impact":"NONE; Human confirmation route remains"},
+    {"atomic_task_id":"AO-03","subject":"수탁계좌 정의·적용","decision":"KEEP_U","reason":"수탁 적용 기준과 책임 주체가 UNKNOWN","required_information":"공식 수탁 기준과 Actor","reevaluate_at":"Before affected-route Build/Pilot","P4_impact":"NON_BLOCKING; keep Human Gate and no automatic branch"}
   ],
-  "approval_questions": [
-    {"id":"Q1","question":"P01·03·04·07·08의 Process → Request Mapping을 승인하는가?","options":["APPROVE","REVISE"],"decision":"PENDING"},
-    {"id":"Q2","question":"61 Atomic Task를 21 Operational Task로 집약한 Mapping을 승인하는가?","options":["APPROVE","REVISE"],"decision":"PENDING"},
-    {"id":"Q3","question":"Request 7상태·Task 6상태 연결을 승인하는가?","options":["APPROVE","REVISE"],"decision":"PENDING"},
-    {"id":"Q4","question":"Evidence 9종의 Notion/Drive 저장 Mapping을 승인하는가?","options":["APPROVE","REVISE"],"decision":"PENDING"},
-    {"id":"Q5","question":"Human Approval 8개 Control Point Mapping을 승인하는가?","options":["APPROVE","REVISE"],"decision":"PENDING"},
-    {"id":"Q6","question":"1차 사전예고와 2차 실제 요청 Interface를 승인하는가?","options":["APPROVE","REVISE"],"decision":"PENDING"},
-    {"id":"Q7","question":"Variation Task 생성 경계와 UNKNOWN/CASE_ONLY 유지를 승인하는가?","options":["APPROVE","REVISE"],"decision":"PENDING"},
-    {"id":"Q8","question":"H0/H1/A1/U 자동화 등급 분포를 승인하는가?","options":["APPROVE","REVISE"],"decision":"PENDING"},
-    {"id":"Q9","question":"N-06 Task 관련 조합 Rollup 검증을 J-02 전 필수 Build Gap으로 유지하는가?","options":["APPROVE","REVISE"],"decision":"PENDING"},
-    {"id":"Q10","question":"AG-P3 승인 후 별도 Work Order로 P4를 진행하는가?","options":["APPROVE","DEFER","REVISE"],"decision":"PENDING"}
+  "review_questions": [
+    {"id":"Q1","question":"P01·03·04·07·08의 61 Atomic Task를 추적하면서 21 Operational Task로 집약하는 핵심 Mapping을 승인하는가?","covers":["P3-C01"],"options":["APPROVE","REVISE"],"recommended_decision":"APPROVE","decision":"PENDING"},
+    {"id":"Q2","question":"Request 7상태·Task 6상태와 Property Mapping을 유지하고 실제 Skeleton 옵션 적용은 Build Gate로 넘기는가?","covers":["P3-C04"],"options":["APPROVE","REVISE"],"recommended_decision":"APPROVE","decision":"PENDING"},
+    {"id":"Q3","question":"Evidence 9종과 Human Approval 8개 Control Mapping을 승인하는가?","covers":["Evidence","Human Control"],"options":["APPROVE","REVISE"],"recommended_decision":"APPROVE","decision":"PENDING"},
+    {"id":"Q4","question":"1차 사전예고·2차 실제 요청 Interface를 승인하고 Form 세부 Contract는 P4에서 확정하는가?","covers":["P3-C05"],"options":["APPROVE","REVISE"],"recommended_decision":"APPROVE","decision":"PENDING"},
+    {"id":"Q5","question":"Variation의 UNKNOWN·CASE_ONLY 경계를 유지하고 U 2건은 Human-controlled로 두는가?","covers":["P3-C02","P3-C06","P3-C07"],"options":["APPROVE","REVISE"],"recommended_decision":"APPROVE","decision":"PENDING"},
+    {"id":"Q-N06","question":"FUND 원본 Rollup 검증과 N-06 Task Rollup 미검증을 구분하고, Task Rollup을 J-02 전 필수 Gap으로 유지하는가?","covers":["P3-C03","P3-G01"],"options":["APPROVE","REVISE"],"recommended_decision":"APPROVE","decision":"PENDING"},
+    {"id":"Q7","question":"위 조건으로 AG-P3를 승인하고 별도 Work Order를 통해 CP-05-P4로 진행하는가?","covers":["next path"],"options":["APPROVE_WITH_CONDITIONS","REVISE","DEFER"],"recommended_decision":"APPROVE_WITH_CONDITIONS","decision":"PENDING"}
   ],
-  "conditions": [
-    "CP-05-P4 remains blocked until AG-P3 approval.",
-    "TO DO LIST (FUND) source rollups are verified, but the N-06 Task related-fund rollup is not yet verified.",
-    "Actual Notion Build remains blocked until N-06 verification and J-02.",
-    "Actual Notion changes require a separate Build Work Order."
-  ],
-  "on_approval": ["GPT records AG-P3", "GPT may issue CP-05-P4 Work Order", "N-06 Task rollup remains required before Build"],
-  "on_rejection": ["Create P3 revision work item", "Keep P4 blocked"],
+  "next_path": {"recommended":"CP-05-P4","status":"BLOCKED_UNTIL_AG_P3_USER_APPROVAL","revision_path_if_rejected":"CP-05-P3-R1","auto_execute":false},
+  "on_approval": ["GPT records AG-P3 decision", "GPT may issue CP-05-P4 Work Order with approved conditions"],
+  "on_rejection": ["Create CP-05-P3-R1 work item", "Keep P4 blocked"],
   "decision": {"result":"PENDING","approved_by":[],"approved_at":null}
 }
