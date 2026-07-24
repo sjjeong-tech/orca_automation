@@ -1,0 +1,236 @@
+version: "1.0.0"
+owner: CLAUDE
+work_item: A-CP05-CI2-INDEPENDENT-ALIGNMENT-VALIDATION
+review_target_commit: "794343cf5d037afe87c5ab2c1548ef4460a33b09"
+verification_method: "문서 대조 + scripts/conversational-intake.test.mjs 실제 실행(node v24.16.0) + 독립 Node 스크립트로 어드버서리얼 재현 + Notion 실시간 fetch(3건: Task 페이지, E2E-03, 업무 실행 기본 템플릿)"
+
+tests:
+  - test_id: ALIGN-A1
+    category: LAYER_SEPARATION
+    check: "E2E Roadmap DB가 실행 Task DB로 오용되지 않는가"
+    expected: "Process Model(E2E-03/세무서_1/Atomic 01~16)과 Operational Task(P03/P03-T01~06)와 Execution Instance({transaction_id}-P03-Tnn)가 별도 계층으로 문서화됨"
+    result: PASS
+    evidence: "docs/process-execution-layering.md 계층표; scripts/conversational-intake.mjs의 buildTasks가 transaction_id와 operational_task_id를 결합해 별도 Instance ID 생성"
+
+  - test_id: ALIGN-A2
+    category: LAYER_SEPARATION
+    check: "Atomic Step과 Operational Task가 동일 개념으로 취급되지 않는가"
+    expected: "Atomic Step은 Process 지식 단위로만 참조되고 Notion Task로 그대로 복제되지 않음"
+    result: PASS
+    evidence: "docs/process-execution-layering.md: 'Atomic Step은 Process 지식 단위이며 Notion Task로 그대로 복제하지 않는다'; Task 6개 vs Atomic 16개로 명확히 압축"
+
+  - test_id: ALIGN-A3
+    category: LAYER_SEPARATION
+    check: "CI 프로젝트 ID(transaction_id)가 장기 운영 ID로 오용되지 않는가"
+    expected: "transaction_id는 단일 실행 식별자로만 쓰이고, Legacy ID(CI1-P03-01 등)는 별도 보존"
+    result: PASS
+    evidence: "contracts/process-execution-mapping.yaml legacy_id_policy: preserve_existing_ids=true, existing_notion_records_must_not_be_rewritten=true; 실시간 Notion fetch로 기존 CI1-P03-01 레코드가 재작성되지 않고 그대로임을 확인"
+
+  - test_id: ALIGN-B1
+    category: E2E03_MAPPING
+    check: "Atomic Step 01~16 전체가 6개 Operational Task에 누락 없이 매핑되는가"
+    expected: "16/16 Coverage, 누락 0"
+    result: PASS
+    evidence: "Notion E2E-03 페이지 실시간 fetch로 Mermaid 01~16 순서 확인 후 process-execution-mapping.yaml과 대조 — P03-T01(01,03,04)/T02(02,05,06,07)/T03(02,08)/T04(09,10,11,12)/T05(13,14,15)/T06(16) 전체 일치"
+
+  - test_id: ALIGN-B2
+    category: E2E03_MAPPING
+    check: "중복 Step에 의도와 근거가 명시됐는가"
+    expected: "허용 중복은 근거와 함께 선언, 그 외 중복 없음"
+    result: PASS
+    evidence: "atomic_step_coverage.allowed_overlaps에 Step 02(P03-T02,T03) 근거 명시; 그 외 step은 정확히 1개 Task에만 속함(코드 자체 테스트로도 재확인됨)"
+
+  - test_id: ALIGN-B3
+    category: E2E03_MAPPING
+    check: "P03-T05(결과물 수령)의 Actor가 원문과 일치하는가"
+    expected: "E2E-03 원문은 처리완료 확인·수령 단계를 '지원팀 / 세무서' 공동 수행으로 명시"
+    result: FAIL_NONBLOCKING
+    evidence: "contracts/process-execution-mapping.yaml은 P03-T05 actor를 '외부기관' 단독으로 지정. Notion 실시간 fetch 결과 E2E-03 원문은 해당 단계를 '지원팀 / 세무서' 공동으로 명시하여, 내부 담당자(지원팀) 책임 소재가 Operational Task Actor에서 누락됨"
+
+  - test_id: ALIGN-C1
+    category: TEMPLATE
+    check: "업무 실행 기본 템플릿 9개 섹션이 누락 없이 반영됐는가"
+    expected: "9개 섹션 전체 존재"
+    result: PASS
+    evidence: "Notion 템플릿 페이지 실시간 fetch로 9개 섹션명 확인 후 templates/request-execution-template.md와 1:1 대조, 전체 일치. 테스트 스크립트도 9개 섹션 헤더 존재를 검증"
+
+  - test_id: ALIGN-C2
+    category: TEMPLATE
+    check: "DB Property 과잉 승격이 없는가"
+    expected: "신규 Property 0개, 기본 미적용"
+    result: PASS
+    evidence: "contracts/conversational-intake-contract.yaml request_body_template.default_apply=false, notion_schema_change_required=false"
+
+  - test_id: ALIGN-C3
+    category: TEMPLATE
+    check: "구조화된 다중행 섹션(착수조건/서류체크리스트 등)이 단순화 없이 반영됐는가"
+    expected: "원문과 동일한 표 구조 또는 명시적 단순화 고지"
+    result: PASS_WITH_NOTE
+    evidence: "Notion 원문은 착수조건·서류체크리스트·실제처리순서·예외보완·결과물 섹션을 다중행 표로 관리하나, Markdown 템플릿은 이를 단일 값 placeholder로 평탄화함. docs/process-execution-layering.md가 이를 '초안'으로 명시해 은폐된 정보손실은 아니나, Pilot 확장 시 항목별 추적력이 원문보다 낮아질 수 있음"
+
+  - test_id: ALIGN-D1
+    category: CONTRACT
+    check: "Process Mapping 없는 request_type의 Commit이 차단되는가"
+    expected: "차단, Write 0"
+    result: PASS
+    evidence: "node 실행 재현 — request_type='계좌개설'로 변경 시 process_mapping_supported=false, commit_allowed=false, planned_write_count=0(테스트 스크립트 unsupported 시나리오와 동일 결과 재현)"
+
+  - test_id: ALIGN-D2
+    category: CONTRACT
+    check: "Person(요청자/담당 관리역) 모호성이 자동 선택되지 않는가"
+    expected: "0건 또는 2건 이상 시 BLOCK_AND_ASK"
+    result: PASS
+    evidence: "prepare_complete가 requesterMatches.length===1 && managerMatches.length===1을 명시적으로 요구; 0건·2건 이상 모두 차단"
+
+  - test_id: ALIGN-D3
+    category: CONTRACT
+    check: "조합(FUND) 후보 0건일 때 Contract의 fund_resolution.zero_matches='BLOCK_AND_ASK' 정책이 실제로 구현되는가"
+    expected: "BLOCK_AND_ASK — 신규 Fund 자동 생성 계획을 세우지 않고 확인 질문으로 전환"
+    result: FAIL_BLOCKING
+    evidence: |
+      독립 Node 실행으로 재현(가상 조합명, fund_matches=[] 전달):
+      prepare_complete=true, resolution.fund={"status":"CREATE_ON_COMMIT"},
+      commit_plan.fund={"action":"CREATE","planned_writes":1}, commit_allowed=true, planned_write_count=8.
+      Contract는 zero_matches를 BLOCK_AND_ASK로 선언하지만 실제 구현은 prepare_complete·blocked 판정 모두에 fund 0건 상태를 포함하지 않아,
+      승인 시 신규 FUND(조합) Notion Record를 자동으로 생성 계획한다. scripts/conversational-intake.test.mjs의 missingFundPreview 테스트도
+      이 동작(action=CREATE)을 의도된 것으로 단정하고 있어, Contract 선언과 실제 구현·테스트가 서로 다른 정책을 전제한다.
+
+  - test_id: ALIGN-D4
+    category: CONTRACT
+    check: "Preview 이전에 실제 Notion Write가 발생하지 않는가"
+    expected: "PREPARE·PREVIEW 단계 Write 0"
+    result: PASS
+    evidence: "테스트 스크립트 전 시나리오에서 actual_write_count=0(PREPARE/PREVIEW), commitTransaction 호출 전까지 adapter 함수가 전혀 호출되지 않음을 mockAdapter 호출 카운트로 확인"
+
+  - test_id: ALIGN-D5
+    category: CONTRACT
+    check: "필수정보 누락 상태에서 write_allowed=true로 오판되지 않는가"
+    expected: "누락 시 write_allowed=false"
+    result: PASS
+    evidence: "buildPreview/buildWritePlan 모두 missing.length>0이면 write_allowed=false, status=BLOCKED 반환(테스트로 재확인)"
+
+  - test_id: ALIGN-D6
+    category: CONTRACT
+    check: "승인 문구(자연어)를 실제로 판별하는 로직이 존재하는가"
+    expected: "Contract의 approval_tokens(승인/생성/확인 완료)를 텍스트에서 판별"
+    result: NOT_VERIFIABLE
+    evidence: "conversational-intake.mjs 전체를 grep한 결과 approval_tokens 관련 텍스트 판별 함수가 없음. commitTransaction은 외부에서 전달되는 boolean approved 플래그만 사용. 자연어 승인 판별은 아직 별도 Interface(Claude Code Skill, CI-05 이후 확장)에서 구현될 것으로 보이며 이번 CI2 Commit의 검증 대상이 아님 — 다음 TAP에서 재확인 필요"
+
+  - test_id: ALIGN-E1
+    category: CANONICAL_STATE
+    check: "N-06(Task 관련 조합 Rollup) VERIFIED 판정이 실제 근거로 뒷받침되는가"
+    expected: "Task의 '관련 조합' Rollup이 실제 조합명으로 표시됨을 확인한 근거 존재"
+    result: FAIL_BLOCKING
+    evidence: |
+      orchestration/plan/master-workmap.yaml은 N-06을 execution_status=VERIFIED, requirement_satisfied=true, blocking_for_J02=false로 표시하며
+      source_of_truth를 'CI-05 user pilot transaction verification'으로 명시한다.
+      그러나 그 근거 문서인 reports/conversational-intake-ci1-e2e.md는 동일 Rollup 검증을 'PARTIAL_UI_CONFIRMATION_REQUIRED'로 명시하며
+      "API 실제 Rollup 값: <omitted />", "UI 확인: 브라우저 연결이 제공되지 않아 미실행"이라고 기록했다.
+      Claude가 이번 TAP에서 해당 Task 페이지(https://app.notion.com/p/3a772a41d9d781d0b23aed739886ca40)를 실시간 재조회한 결과
+      "관련 조합":"<omitted />" 그대로였다 — 즉 VERIFIED 판정을 뒷받침할 새로운 확인 근거가 없다.
+
+  - test_id: ALIGN-E2
+    category: CANONICAL_STATE
+    check: "CI-08 완료 여부와 CI-09/CI-10 선후관계가 workmap·dependency와 일치하는가"
+    expected: "CI-08 COMPLETED/APPROVED → CI-09 READY → CI-10 BLOCKED, dependencies 배열과 일치"
+    result: PASS
+    evidence: "master-workmap.yaml: CI-08 status=APPROVED execution_status=COMPLETED, CI-09 status=READY(depends_on=[CI-08]), CI-10 status=BLOCKED(depends_on=[CI-09]); dependencies 배열에 CI-08→CI-09→CI-10 엣지 존재, 모순 없음"
+
+  - test_id: ALIGN-E3
+    category: CANONICAL_STATE
+    check: "CI-05 상태 변경 후 CI-07의 blocking_reason이 갱신됐는가"
+    expected: "CI-05가 APPROVED로 바뀌었으면 CI-07의 차단 사유 텍스트도 최신 상태를 반영"
+    result: FAIL_NONBLOCKING
+    evidence: "CI-07의 blocking_reason은 여전히 'Conversational pilot pending'으로 남아 있으나 CI-05는 이번 Commit에서 APPROVED/USER_PILOT_VERIFIED로 변경됨. 로직상 즉시 오류는 아니나(CI-07은 실제 1~3건 운영 Pilot을 요구하므로 BLOCKED 유지 자체는 타당할 수 있음) 사유 텍스트가 최신 근거를 반영하지 못해 다음 검토자에게 혼동을 줄 수 있음"
+
+  - test_id: ALIGN-F1
+    category: REGRESSION
+    check: "기존 Parser 테스트"
+    expected: PASS
+    result: PASS
+    evidence: "node scripts/conversational-intake.test.mjs 실제 실행 — 'conversational-intake tests: PASS (5 scenarios + status variants)'"
+
+  - test_id: ALIGN-F2
+    category: REGRESSION
+    check: "조사 제거(예: '~의') 파싱"
+    expected: PASS
+    result: PASS
+    evidence: "relatedFund capture 정규식이 '(?:의)?' 선택적 매칭 유지, 테스트의 '디토 케이스테이 투자조합의 고유번호증' 입력에서 정상 추출 확인"
+
+  - test_id: ALIGN-F3
+    category: REGRESSION
+    check: "서류 상태(전달완료/일부전달/미전달) 파싱"
+    expected: PASS
+    result: PASS
+    evidence: "테스트의 status variants 케이스(일부만 전달/모두 전달) 통과"
+
+  - test_id: ALIGN-F4
+    category: REGRESSION
+    check: "긴급 부정 표현('긴급 요청은 아니며') 처리"
+    expected: "urgent=false"
+    result: PASS
+    evidence: "pilot 테스트에서 urgent=false 확인"
+
+  - test_id: ALIGN-F5
+    category: REGRESSION
+    check: "Transaction Preview 단계 Write 0"
+    expected: PASS
+    result: PASS
+    evidence: "전 시나리오 actual_write_count=0(PREPARE/PREVIEW)"
+
+  - test_id: ALIGN-F6
+    category: REGRESSION
+    check: "동일 Transaction 재실행 시 중복 생성 방지"
+    expected: PASS
+    result: PASS
+    evidence: "retried 테스트 — execution_log 재사용 시 request/fund 재호출 0회, 누락 Task만 생성"
+
+  - test_id: ALIGN-F7
+    category: REGRESSION
+    check: "Partial Failure 복구(일부 Task 생성 실패 후 재시도)"
+    expected: PASS
+    result: PASS
+    evidence: "taskPartial(PARTIAL, 5/6 성공) → retried(COMPLETED, 누락 1건만 재생성) 시나리오로 확인"
+
+  - test_id: ALIGN-F8
+    category: REGRESSION
+    check: "기존 FUND 재사용(중복 생성 없이)"
+    expected: PASS
+    result: PASS
+    evidence: "existingFundPreview.commit_plan.fund.action=USE_EXISTING, planned_writes=0"
+
+  - test_id: ALIGN-F9
+    category: REGRESSION
+    check: "미존재 FUND CREATE_ON_COMMIT 동작"
+    expected: "Contract 정책과 일치 여부 확인"
+    result: FAIL_BLOCKING
+    evidence: "ALIGN-D3과 동일 근거 — 코드 자체는 의도대로 동작하나 그 의도(CREATE_ON_COMMIT)가 Contract의 BLOCK_AND_ASK 선언과 상충"
+
+  - test_id: ALIGN-F10
+    category: REGRESSION
+    check: "Relation 검증 후 Task 생성(순서 보장)"
+    expected: PASS
+    result: PASS
+    evidence: "commitTransaction이 verifyRequestFundRelation 실패 시 Task 생성 단계로 진행하지 않고 FAILED 반환함을 코드 흐름과 requestFail 테스트로 확인"
+
+  - test_id: ALIGN-F11
+    category: REGRESSION
+    check: "Process Mapping 없는 업무 차단"
+    expected: PASS
+    result: PASS
+    evidence: "unsupported 테스트 — commit_allowed=false, write 0, task 0"
+
+  - test_id: ALIGN-F12
+    category: REGRESSION
+    check: "Template Rendering(9개 섹션, placeholder 잔존 없음)"
+    expected: PASS
+    result: PASS
+    evidence: "renderedTemplate 테스트 — 9개 섹션 헤더 전체 포함, '{{' 잔존 없음 확인"
+
+summary:
+  pass: 22
+  pass_with_note: 1
+  fail_nonblocking: 2
+  fail_blocking: 3
+  not_verifiable: 1
+  total: 29
