@@ -18,3 +18,7 @@
 | DEC-CP05-S1-02 | 사용자 UI에서 생성한 1차 Form을 Pilot A 기준 후보로 유지하고 기존 FUND 자산은 변경하지 않으며, 2차 Form은 지원팀 업무요청 DB를 원본으로 사용한다. 상세 상태·증빙은 P2에서 확정한다. | Form 질문·기본값·제출 결과가 미검증이므로 Pilot 기준의 최종 승인은 GPT UI Review 후 결정 | PROPOSED | GPT·사용자 검토 필요 | S1-R1,P2 | 2026-07-23 |
 | DEC-CP05-11 | Notion AI는 Form·UI, Codex는 Git 기반 Model Builder, GPT는 Roadmap·Gate Orchestrator, 사용자·정상준은 Process Owner·UI 최종 승인자를 담당 | 병렬 결과의 소유권과 Main Roadmap 반영 책임을 분리 | DECIDED | 사용자·정상준 | P2 이후 | 2026-07-23 |
 | DEC-CP05-12 | Form UI 수정·실제 제출 검증은 별도 UI Workstream으로 관리하고 P2 설계를 차단하지 않으며, 실제 Notion Status·Property 적용은 AG-P2 승인 후 별도 Build TAP에서 수행 | UI 제약과 Canonical Contract 설계를 분리 | DECIDED | 사용자·정상준 | P2,P4,Build | 2026-07-23 |
+| DEC-ORCH-01 | GPT가 Canonical Master Workmap을 소유하고 Codex·Claude는 Run Capsule·Handoff·Proposal만 기록 | 계획 소유권과 동시 수정 충돌 방지 | DECIDED | 사용자·정상준 | CP-00-O1 이후 | 2026-07-24 |
+| DEC-ORCH-02 | 계획 상태는 GPT Workmap, 실행 상태는 Agent Run Capsule로 분리 | Agent 완료와 계획 승인 오인 방지 | DECIDED | 사용자·정상준 | CP-00-O1 이후 | 2026-07-24 |
+| DEC-ORCH-03 | 승인 불필요·Input 충족·동일 Agent READY 작업만 제한적으로 연속 실행하고 승인·위험·누락·검증 실패 시 정지 | 안전한 무인 연속 실행 경계 설정 | DECIDED | 사용자·정상준 | CP-00-O1 이후 | 2026-07-24 |
+| DEC-ORCH-04 | Work Order 90분, Checkpoint 30분, 세션당 최대 3개 Work Order·4시간으로 제한하고 예외는 사전 승인 | 장기 단일 실행 재발 방지 | DECIDED | 사용자·정상준 | CP-00-O1 이후 | 2026-07-24 |

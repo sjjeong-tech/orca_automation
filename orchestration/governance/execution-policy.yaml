@@ -1,0 +1,19 @@
+{
+  "owner": "GPT",
+  "version": "1.0.0",
+  "auto_continue_all_required": [
+    "CURRENT_RUN_COMPLETED", "VALIDATION_PASS", "COMMIT_PUSH_SUCCESS", "SAME_AGENT_OWNER",
+    "NEXT_ITEM_READY", "APPROVAL_REQUIRED_FALSE", "REQUIRED_INPUTS_PRESENT", "NO_PATH_CONFLICT",
+    "NO_SCOPE_EXPANSION", "RUNTIME_BUDGET_AVAILABLE", "NO_USER_STOP"
+  ],
+  "stop_conditions": [
+    "HUMAN_APPROVAL_REQUIRED", "USER_JUDGMENT_REQUIRED", "NOTION_OPERATIONAL_WRITE",
+    "EXTERNAL_SYSTEM_WRITE", "SENSITIVE_DATA", "MISSING_REQUIRED_INPUT", "SOURCE_CONFLICT",
+    "PROCESS_MEANING_CHANGE", "ARCHITECTURE_CHANGE", "NEW_SCOPE", "VALIDATION_FAILURE",
+    "TEST_FAILURE", "BASE_COMMIT_MISMATCH", "PATH_CONFLICT", "PLAN_CHANGE_REQUIRED",
+    "RUNTIME_LIMIT", "ESTIMATE_EXCEEDS_2X"
+  ],
+  "commit_policy": {"max_per_work_order": 3, "message_required": true, "force_push": false},
+  "push_policy": {"required_when_work_order_says": true, "force_push": false},
+  "continuation_default": "STOP"
+}

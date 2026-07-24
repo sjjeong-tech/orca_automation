@@ -1,0 +1,20 @@
+{
+  "owner": "GPT",
+  "version": "1.0.0",
+  "canonical_gpt_paths": [
+    "orchestration/plan/**", "orchestration/governance/**",
+    "orchestration/work-orders/**", "orchestration/approvals/**"
+  ],
+  "agent_paths": {
+    "CODEX": ["orchestration/runs/codex/**", "orchestration/handoffs/**", "orchestration/proposals/**"],
+    "CLAUDE": ["orchestration/runs/claude/**", "orchestration/handoffs/**", "orchestration/proposals/**"]
+  },
+  "generated_paths": ["orchestration/generated/**"],
+  "bootstrap_exception": {
+    "work_item": "CP-00-O1",
+    "authorized_agent": "CODEX",
+    "reason": "Initial structure creation from user-issued GPT specification",
+    "ends_after_commit": true
+  },
+  "change_rule": "After bootstrap, agents propose changes under orchestration/proposals instead of editing canonical paths."
+}

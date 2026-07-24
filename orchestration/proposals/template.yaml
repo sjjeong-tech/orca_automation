@@ -1,0 +1,15 @@
+{
+  "proposal_id": "P-PLACEHOLDER",
+  "author_agent": "CODEX_OR_CLAUDE",
+  "source_run": "RUN-ID",
+  "proposed_change": "",
+  "affected_work_items": [],
+  "reason": "",
+  "evidence": [],
+  "risk": "",
+  "alternatives": [],
+  "urgency": "NORMAL",
+  "blocking": false,
+  "recommended_decision": "",
+  "status": "SUBMITTED"
+}

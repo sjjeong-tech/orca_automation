@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Master Workmap",
+  "type": "object",
+  "required": ["project", "version", "plan_owner", "last_plan_commit", "current_phase", "workstreams", "work_items", "dependencies", "join_gates", "approval_gates", "execution_policy_reference", "status", "next_review"],
+  "properties": {
+    "plan_owner": {"const": "GPT"},
+    "status": {"enum": ["PLANNED", "READY", "BLOCKED", "APPROVAL_REQUIRED", "APPROVED", "CANCELLED", "SUPERSEDED"]},
+    "work_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "owner", "type", "phase", "status", "priority", "depends_on", "input_gate", "required_inputs", "allowed_paths", "forbidden_paths", "outputs", "validation", "approval_required", "continuation_policy", "downstream", "blocking_reason", "source_of_truth", "updated_by", "updated_at"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "status": {"enum": ["PLANNED", "READY", "BLOCKED", "APPROVAL_REQUIRED", "APPROVED", "CANCELLED", "SUPERSEDED"]},
+          "depends_on": {"type": "array", "items": {"type": "string"}},
+          "required_inputs": {"type": "array"},
+          "allowed_paths": {"type": "array", "minItems": 1},
+          "forbidden_paths": {"type": "array"},
+          "outputs": {"type": "array", "minItems": 1},
+          "validation": {"type": "array", "minItems": 1},
+          "approval_required": {"type": "boolean"}
+        }
+      }
+    }
+  }
+}

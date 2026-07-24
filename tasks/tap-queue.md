@@ -1,10 +1,14 @@
 # Conditional TAP Queue
 
+> Canonical planning state is maintained in `orchestration/plan/master-workmap.yaml` by GPT. Agent execution state is recorded only in `orchestration/runs` and `orchestration/handoffs`.
+>
+> 이 파일은 사람용 요약 View와 Historical Queue다. 현재 상태는 [Generated Current State](../orchestration/generated/current-state.md), 실행 가능 후보는 [Generated Ready Work](../orchestration/generated/ready-work.md)를 참고한다.
+
 Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될 때만 이 파일을 갱신하며, 선행 Gate를 통과하지 않은 TAP은 실행하지 않는다.
 
-**Queue 전체 상태:** `PAUSED_FOR_AG-P2_REVIEW`
+**Queue 전체 상태:** `PAUSED_FOR_AG_P2_AND_UI_WORKSTREAM`
 
-**현재 Checkpoint:** `CP-05-P2 — COMPLETED_WITH_OPEN_UI_GAPS`
+**현재 Checkpoint:** `CP-00-O1 — COMPLETED`
 
 **최근 Revision:** `TAP P1-R2 — COMPLETED (PASS WITH NON-BLOCKING GAPS)`
 
@@ -12,9 +16,9 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 
 **최근 계획:** `TAP V0 — COMPLETED`
 
-**최근 실행:** `TAP CP-05-P2 — COMPLETED_WITH_OPEN_UI_GAPS`
+**최근 실행:** `TAP CP-00-O1 — COMPLETED`
 
-**다음 READY 후보:** `AG-P2 — GPT_USER_REVIEW`
+**다음 READY 후보:** `AG-P2 — GPT_AND_USER_REVIEW`
 
 ## 자동 실행 Checkpoint
 
@@ -110,6 +114,18 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 | C16 | CP-07-P1~B1 | Agent Write Governance·Execution | Write Governance 승인 | BLOCKED_UNTIL_WRITE_GOVERNANCE | MD-09 | AG-26~31·34 대기 |
 | C17 | CP-08-P1 | Operations-team Expansion | 지원팀 MVP 안정화 | FUTURE | MD-10 | AG-32~35 대기 |
 | X1 | Gap Resolution | 단계별 필요한 Known Gap 해소 | 각 TAP Gate | CROSS_CUTTING_WORKSTREAM | MD-01~11 | 독립 선행 실행 금지 |
+
+## Git-Native Orchestration Migration
+
+| Work Item | 계획·실행 요약 | 다음 조치 |
+|---|---|---|
+| CP-00-O1 | Run `COMPLETED`; Bootstrap 이후 Canonical Plan은 GPT 소유 | 결과 검토 |
+| CP-05-P2 | Execution `COMPLETED`; Plan `APPROVAL_REQUIRED` | AG-P2 |
+| AG-P2 | `READY_FOR_GPT_USER_REVIEW` | GPT·사용자 승인 |
+| N-04 | `WAITING_FOR_USER` | Notion AI·사용자 UI 작업 |
+| N-05 | `BLOCKED_BY_N04` | 1차 Form 제출 검증 |
+| N-06 | `BLOCKED_BY_N05` | Rollup 분류 Proposal 검토 |
+| CP-05-P3 | `BLOCKED_UNTIL_AG_P2_AND_JOIN_GATE` | 실행 금지 |
 
 ### CP-05-P0 Claude Finding 상태
 

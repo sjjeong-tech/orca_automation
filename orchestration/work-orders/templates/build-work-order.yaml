@@ -1,0 +1,22 @@
+{
+  "work_order_id": "WO-BUILD-PLACEHOLDER",
+  "work_item_id": "WORK-ITEM-ID",
+  "issued_by": "GPT",
+  "assigned_to": "CODEX",
+  "base_commit": "FULL_SHA",
+  "objective": "Describe build objective.",
+  "input_gate": [],
+  "required_inputs": [],
+  "allowed_actions": [],
+  "forbidden_actions": [],
+  "allowed_paths": [],
+  "outputs": [],
+  "validation": [],
+  "continuation_policy": "STOP",
+  "stop_conditions": [],
+  "runtime_limit": 90,
+  "checkpoint_interval": 30,
+  "commit_policy": {"max_commits": 3, "message": ""},
+  "push_policy": {"required": true, "force": false},
+  "handoff_required": true
+}

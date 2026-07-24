@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Plan Change Proposal",
+  "type": "object",
+  "required": ["proposal_id", "author_agent", "source_run", "proposed_change", "affected_work_items", "reason", "evidence", "risk", "alternatives", "urgency", "blocking", "recommended_decision", "status"],
+  "properties": {
+    "author_agent": {"enum": ["CODEX", "CLAUDE"]},
+    "status": {"const": "SUBMITTED"},
+    "affected_work_items": {"type": "array", "minItems": 1},
+    "blocking": {"type": "boolean"}
+  }
+}

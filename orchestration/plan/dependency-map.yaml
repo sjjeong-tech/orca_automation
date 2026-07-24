@@ -1,0 +1,14 @@
+{
+  "owner": "GPT",
+  "version": "1.0.0",
+  "nodes": ["CP-04", "CP-05-P0-SERIES", "CP-05-P1-SERIES", "CP-05-S1", "CP-05-N1", "CP-05-S1-R1", "CP-05-P2", "CP-00-O1", "AG-P2", "N-04", "N-05", "N-06", "CLAUDE-P2-REVIEW", "J-01", "CP-05-P3"],
+  "edges": [
+    ["CP-04", "CP-05-P0-SERIES"], ["CP-05-P0-SERIES", "CP-05-P1-SERIES"], ["CP-05-P1-SERIES", "CP-05-S1"],
+    ["CP-05-S1", "CP-05-N1"], ["CP-05-N1", "CP-05-S1-R1"], ["CP-05-S1-R1", "CP-05-P2"],
+    ["CP-05-P2", "CP-00-O1"], ["CP-05-P2", "AG-P2"], ["CP-00-O1", "AG-P2"],
+    ["CP-05-S1-R1", "N-04"], ["N-04", "N-05"], ["N-05", "N-06"], ["N-05", "J-01"],
+    ["CP-05-P2", "CLAUDE-P2-REVIEW"], ["AG-P2", "J-01"], ["AG-P2", "CP-05-P3"], ["J-01", "CP-05-P3"]
+  ],
+  "join_gates": {"J-01": ["AG-P2", "N-05", "FORM_INITIAL_STATUS_DECISION", "VIEW_DISPLAY_VERIFIED", "PERSON_VERIFIED", "RELATION_OPTIONAL_VERIFIED"]},
+  "cycle_policy": "FORBIDDEN"
+}

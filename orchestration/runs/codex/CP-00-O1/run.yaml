@@ -1,0 +1,22 @@
+{
+  "run_id": "RUN-CP-00-O1-001",
+  "work_order_id": "WO-CP-00-O1-001",
+  "work_item_id": "CP-00-O1",
+  "agent": "CODEX",
+  "base_commit": "482c570d5da6222d609a0e5dfe5c76c726cee807",
+  "run_status": "COMPLETED",
+  "started_at": "2026-07-24",
+  "completed_at": "2026-07-24",
+  "checkpoint_count": 1,
+  "outputs": [
+    "orchestration/plan/master-workmap.yaml",
+    "orchestration/approvals/ag-p2-review.yaml",
+    "orchestration/handoffs/CP-05-P2-to-AG-P2.yaml",
+    "reports/cp-00-o1-orchestration-control-layer.md"
+  ],
+  "validation_result": "PASS",
+  "commit": "SELF_COMMIT_RESOLVE_WITH_GIT_LOG",
+  "push_status": "REQUIRED_BY_WORK_ORDER_AND_VERIFIED_AT_HANDOFF",
+  "handoff": "orchestration/handoffs/CP-05-P2-to-AG-P2.yaml",
+  "notes": "Bootstrap exception used only for initial GPT-owned path creation."
+}

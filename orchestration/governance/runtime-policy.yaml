@@ -1,0 +1,16 @@
+{
+  "owner": "GPT",
+  "version": "1.0.0",
+  "single_work_order_minutes": 90,
+  "checkpoint_interval_minutes": 30,
+  "max_without_checkpoint_minutes": 45,
+  "max_commits_per_work_order": 3,
+  "max_continuous_work_orders_per_session": 3,
+  "max_session_minutes": 240,
+  "split_phases_when_over_limit": ["PLAN", "BUILD", "VALIDATE", "REVIEW_PREP"],
+  "checkpoint_required_fields": [
+    "elapsed_time", "current_step", "completed_outputs", "open_items", "detected_risks",
+    "changed_paths", "estimated_remaining_time", "continue_or_stop", "next_checkpoint"
+  ],
+  "exception_policy": "Submit proposal and stop until approved."
+}

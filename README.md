@@ -275,3 +275,16 @@ S1에서 [지원팀 업무요청](https://app.notion.com/p/c60e9bc03a214735be082
 - [Task Status Model](notion/model/task-status-model.md)
 - [Evidence Model](notion/model/evidence-model.md)
 - [Human Approval Model](notion/model/human-approval-model.md)
+
+## 10. Git-Native Orchestration
+
+계획 상태와 Agent 실행 상태를 분리한다.
+
+- [Master Workmap](orchestration/plan/master-workmap.yaml): GPT 소유 Canonical Plan
+- [Current State](orchestration/generated/current-state.md): 재생성 가능한 사람용 View
+- [Ready Work](orchestration/generated/ready-work.md): 현재 READY 요약
+- [Governance](orchestration/governance/): 실행·승인·소유권·Runtime 정책
+- [AG-P2 Review Packet](orchestration/approvals/ag-p2-review.yaml)
+- [CP-00-O1 Report](reports/cp-00-o1-orchestration-control-layer.md)
+
+Codex·Claude는 GPT Work Order가 있는 작업만 실행하고 자신의 Run·Handoff·Proposal만 기록한다. 현재 다음 실행 단계는 AG-P2 사용자·GPT 검토이며 CP-05-P3는 승인과 Join Gate 전 실행하지 않는다.

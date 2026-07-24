@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Agent Run Capsule",
+  "type": "object",
+  "required": ["run_id", "work_order_id", "work_item_id", "agent", "base_commit", "run_status", "started_at", "outputs", "validation_result"],
+  "properties": {
+    "run_status": {"enum": ["CREATED", "STARTED", "RUNNING", "CHECKPOINTED", "COMPLETED", "COMPLETED_WITH_GAPS", "FAILED", "STOPPED_FOR_APPROVAL", "STOPPED_MISSING_INPUT", "STOPPED_POLICY_VIOLATION", "TIMED_OUT"]},
+    "agent": {"enum": ["CODEX", "CLAUDE"]},
+    "outputs": {"type": "array", "minItems": 1}
+  }
+}

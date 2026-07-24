@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Agent Handoff",
+  "type": "object",
+  "required": ["handoff_id", "source_work_item", "source_run", "from_agent", "to_owner", "status", "result", "outputs", "validation", "approval_gate", "downstream_candidate", "blocking_conditions", "open_gaps", "created_at"],
+  "properties": {
+    "status": {"enum": ["DOWNSTREAM_CANDIDATE", "READY_FOR_REVIEW", "BLOCKED", "ACCEPTED"]},
+    "outputs": {"type": "array", "minItems": 1},
+    "blocking_conditions": {"type": "array"}
+  }
+}

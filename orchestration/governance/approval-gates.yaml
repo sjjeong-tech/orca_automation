@@ -1,0 +1,18 @@
+{
+  "owner": "GPT",
+  "version": "1.0.0",
+  "gates": [
+    {
+      "id": "AG-P2",
+      "title": "Status Evidence and Human Control Model Approval",
+      "owner": "GPT_AND_USER",
+      "plan_status": "READY",
+      "approval_required": true,
+      "packet": "orchestration/approvals/ag-p2-review.yaml",
+      "approved": false,
+      "blocks": ["CP-05-P3", "J-01"],
+      "decision_values": ["APPROVED", "REVISION_REQUIRED", "DEFERRED"]
+    }
+  ],
+  "rule": "Agents cannot set approved=true or change plan status."
+}
