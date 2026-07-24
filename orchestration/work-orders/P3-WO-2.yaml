@@ -1,0 +1,22 @@
+{
+  "work_order_id": "P3-WO-2",
+  "work_item_id": "CP-05-P3",
+  "issued_by": "GPT_AND_USER",
+  "assigned_to": "CODEX",
+  "base_commit": "b3382207c863ef8298690e08b02cc8430c8541de",
+  "objective": "Map Pilot A Process atomic tasks to request, operational task, evidence and approval contracts.",
+  "input_gate": ["P3-WO-1=PASS"],
+  "required_inputs": ["reports/cp-05-p3-source-audit.md", "mappings/p3-source-register.yaml"],
+  "allowed_actions": ["create mapping artifacts"],
+  "forbidden_actions": ["change approved P2 states", "modify Notion", "modify Process, Variation or Source"],
+  "allowed_paths": ["mappings/**", "orchestration/runs/codex/CP-05-P3-LR/**"],
+  "outputs": ["mappings/process-to-notion-map.md", "mappings/process-to-notion-map.yaml", "mappings/request-property-map.md", "mappings/task-property-map.md", "mappings/status-transition-map.md", "mappings/evidence-control-map.md", "mappings/human-approval-map.md"],
+  "validation": ["61 atomic IDs mapped once", "all sources and actors present", "P2 contracts unchanged"],
+  "continuation_policy": "CONTINUE_TO_P3_WO_3_ON_PASS",
+  "stop_conditions": ["unresolved core contract conflict", "validation failure"],
+  "runtime_limit": 90,
+  "checkpoint_interval": 30,
+  "commit_policy": {"max_commits": 2, "message": "Map core processes to Notion"},
+  "push_policy": {"required": true, "force": false},
+  "handoff_required": false
+}

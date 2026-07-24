@@ -1,0 +1,22 @@
+{
+  "work_order_id": "P3-WO-3",
+  "work_item_id": "CP-05-P3",
+  "issued_by": "GPT_AND_USER",
+  "assigned_to": "CODEX",
+  "base_commit": "b3382207c863ef8298690e08b02cc8430c8541de",
+  "objective": "Map fund, GP, account and institution variations plus the Form 1 to Form 2 interface.",
+  "input_gate": ["P3-WO-2=PASS"],
+  "required_inputs": ["variations/**", "mappings/process-to-notion-map.yaml", "notion/schema/intake-form-architecture.md"],
+  "allowed_actions": ["create variation and intake mappings"],
+  "forbidden_actions": ["generalize CASE_ONLY", "promote UNKNOWN", "modify Notion or source models"],
+  "allowed_paths": ["mappings/**", "conflicts/**", "orchestration/runs/codex/CP-05-P3-LR/**"],
+  "outputs": ["mappings/fund-type-notion-map.md", "mappings/intake-to-task-map.md", "mappings/form1-form2-interface-map.md", "mappings/variation-task-generation-map.md", "mappings/exception-routing-map.md"],
+  "validation": ["four variation axes covered", "Form roles not mixed", "UNKNOWN and CASE_ONLY preserved"],
+  "continuation_policy": "CONTINUE_TO_P3_WO_4_ON_PASS",
+  "stop_conditions": ["unsupported rule required", "validation failure"],
+  "runtime_limit": 90,
+  "checkpoint_interval": 30,
+  "commit_policy": {"max_commits": 2, "message": "Map variations and intake interfaces"},
+  "push_policy": {"required": true, "force": false},
+  "handoff_required": false
+}

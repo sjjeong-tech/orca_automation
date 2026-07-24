@@ -1,0 +1,12 @@
+{
+  "owner": "GPT",
+  "version": "1.0.0",
+  "plan_statuses": ["PLANNED", "READY", "BLOCKED", "APPROVAL_REQUIRED", "APPROVED", "CANCELLED", "SUPERSEDED"],
+  "run_statuses": [
+    "CREATED", "STARTED", "RUNNING", "CHECKPOINTED", "COMPLETED", "COMPLETED_WITH_GAPS",
+    "FAILED", "STOPPED_FOR_APPROVAL", "STOPPED_MISSING_INPUT", "STOPPED_POLICY_VIOLATION", "TIMED_OUT"
+  ],
+  "proposal_statuses": ["SUBMITTED", "ACCEPTED", "REJECTED", "DEFERRED", "SUPERSEDED"],
+  "handoff_statuses": ["DOWNSTREAM_CANDIDATE", "READY_FOR_REVIEW", "BLOCKED", "ACCEPTED"],
+  "separation_rule": "Only GPT changes plan status; agents change only their run and handoff status."
+}

@@ -11,7 +11,7 @@
 - `09-account-closure`: `AC-01`~`AC-08`의 계좌 유형별 차이 검증 후보
 - `10-balance-certificate`: `BC-01`~`BC-09`의 계좌 유형별 차이 검증 후보
 
-Process 08·09·10에는 계좌 유형별 적용 차이를 직접 확인할 Source가 없어 기존 Task를 변경하지 않는다.
+Process 08·09에는 계좌 유형별 상세 적용 차이를 직접 확인할 Source가 없다. Process 10에는 일반·안전·수탁·기타 계좌 요청 경로가 `PROVISIONAL`로 보강됐으나 세부 실행 Rule은 `UNKNOWN`이다.
 
 ## 3. 공식 Source 범위
 
@@ -50,6 +50,9 @@ Process 08·09·10에는 계좌 유형별 적용 차이를 직접 확인할 Sour
 | AT-09 | 수탁계좌 해당 가능성 | 07 `AO-04` 후보 | DOCUMENT | 수탁계좌의 필요 서류 확인 필요 | 지정 공식 Source 내 직접 근거 없음 | UNKNOWN |
 | AT-10 | 수탁계좌 해당 가능성 | 07 `AO-03`~`AO-04` 후보 | ACTOR | 계좌개설 수행 주체와 은행·수탁기관 역할 확인 필요 | 지정 공식 Source 내 직접 근거 없음 | UNKNOWN |
 | AT-11 | 수탁계좌의 보완·해지·잔액증명서 수행 | 08 `AS-01`~`AS-09`; 09 `AC-01`~`AC-08`; 10 `BC-01`~`BC-09` 후보 | DECISION | 수탁계좌에 적용되는 후속 Process 차이 확인 필요 | 지정 공식 Source 내 직접 근거 없음 | UNKNOWN |
+| AT-12 | 일반계좌 잔액증명서 요청 | 10 `BC-01`~`BC-06` | DECISION | 일반계좌 요청 경로의 존재만 기록하고 Actor·시스템·선택 기준은 확정하지 않는다. | `N-05-10` Claude Finding Enrichment | PROVISIONAL |
+| AT-13 | 안전계좌 잔액증명서 요청 | 10 `BC-01`~`BC-06` | DECISION | 안전계좌 요청 경로의 존재만 기록하고 Actor·시스템·선택 기준은 확정하지 않는다. | `N-05-10` Claude Finding Enrichment | PROVISIONAL |
+| AT-14 | 수탁·기타 계좌 잔액증명서 요청 | 10 `BC-01`~`BC-06` | DECISION | 수탁·기타 계좌 요청 경로의 존재만 기록하고 대상 범위·Actor·시스템·선택 기준은 확정하지 않는다. | `N-05-10` Claude Finding Enrichment | PROVISIONAL |
 
 ## 6. 계좌 유형 판별 기준
 
@@ -81,6 +84,8 @@ Process 08·09·10에는 계좌 유형별 적용 차이를 직접 확인할 Sour
 - Process 07의 기존 `AO-03`~`AO-04` Actor는 지원팀이다.
 - 계좌 유형별로 담당 관리역, 지원팀 또는 외부 주체의 책임이 달라진다는 직접 근거가 없어 새 Actor를 배정하지 않는다.
 - 수탁계좌의 개설·보완·해지·잔액증명서 처리 주체는 `UNKNOWN`이다.
+- 안전계좌의 오픈플랫폼팀 연계는 `PROVISIONAL` 후보 Actor이며, 지원팀 포함 범위와 표준 책임 주체는 `UNKNOWN`이다. (`N-05-07` Claude Finding Enrichment)
+- Process 09의 지원팀 수행은 단일 확인 사례이므로 계좌 유형별 공통 Actor 근거로 사용하지 않는다.
 
 ## 11. 제출·접수 차이
 
@@ -89,14 +94,14 @@ Process 08·09·10에는 계좌 유형별 적용 차이를 직접 확인할 Sour
 
 ## 12. Output 차이
 
-- 일반·안전계좌별 Output 명칭이나 구성 차이는 확인되지 않아 `UNKNOWN`이다.
+- Process 10의 일반·안전·수탁·기타 계좌 요청 경로 존재는 `PROVISIONAL`이지만 유형별 Output 명칭이나 구성 차이는 `UNKNOWN`이다.
 - 수탁계좌의 Output과 수령 주체도 `UNKNOWN`이다.
 - Process 08·09·10의 공통 Output을 계좌 유형별 Output으로 재분류하지 않는다.
 
 ## 13. 완료조건 차이
 
 - Process 07의 기존 완료조건 외에 일반·안전계좌별 완료조건 차이는 확인되지 않았다.
-- 수탁계좌의 개설 완료, 보완 완료, 해지 완료, 잔액증명서 발급 완료 조건은 모두 `UNKNOWN`이다.
+- 수탁계좌의 개설 완료, 보완 완료, 해지 완료와 유형별 잔액증명서 발급 완료 조건은 모두 `UNKNOWN`이다.
 
 ## 14. 보완·Exception 차이
 
@@ -108,7 +113,8 @@ Process 08·09·10에는 계좌 유형별 적용 차이를 직접 확인할 Sour
 
 - 직접 Source가 계좌 유형별 ADD 또는 EXCLUDE를 명시한 항목은 0건이다.
 - `AO-03`~`AO-04`는 공통 Process의 기존 Task이며 Variation에서 새로 추가하지 않는다.
-- Process 08·09·10의 기존 Task를 특정 계좌 유형에서 임의로 적용하거나 제외하지 않는다.
+- Process 08·09의 기존 Task를 특정 계좌 유형에서 임의로 적용하거나 제외하지 않는다.
+- Process 10의 유형별 요청 경로는 기존 `BC-01`~`BC-06` 안의 `PROVISIONAL` 분기이며 새 Task가 아니다.
 
 ## 16. UNKNOWN
 
@@ -133,8 +139,8 @@ CASE 답변은 Evidence로만 사용하고 추가 공식 Source 확인 전에는
 
 - Draft 상태: `DRAFT`
 - CONFIRMED: 일반·안전계좌 명칭, 계좌 유형 확인과 두 유형 간 서류 차이 확인 지점
-- PROVISIONAL: 일반·안전계좌별 상세 서류 후보
-- UNKNOWN: 상세 판별 기준, 유형별 후속 Process 차이, 수탁계좌 관련 항목 전부
+- PROVISIONAL: 일반·안전계좌별 상세 서류 후보, Process 10의 일반·안전·수탁·기타 요청 경로, 오픈플랫폼팀 후보 Actor
+- UNKNOWN: 상세 판별 기준, Process 08·09 유형별 차이, Process 10 세부 Actor·시스템·선택 Rule, 수탁계좌 공통 실행 Rule
 - CONFLICT: 없음
 - Source 없는 신규 Rule: 0건
 - 새 Process Task: 0건

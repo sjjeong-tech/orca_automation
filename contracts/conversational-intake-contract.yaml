@@ -1,0 +1,87 @@
+{
+  "version": "0.1.0",
+  "purpose": "Natural-language support request intake normalized for approved Notion Request and Task records",
+  "status": "DRAFT_FOR_CI_01_APPROVAL",
+  "supported_interfaces": [
+    {"id": "CLAUDE_CODE_SKILL", "priority": 1, "status": "PLANNED"},
+    {"id": "CODEX_COMMAND", "priority": 1, "status": "PLANNED"},
+    {"id": "GPT_DIRECT", "priority": 2, "status": "PLANNED"},
+    {"id": "SLACK", "priority": 3, "status": "DEFERRED_TO_CI_06"},
+    {"id": "NOTION_FORM", "priority": 4, "status": "OPTIONAL_FALLBACK"}
+  ],
+  "required_fields": [
+    "related_fund",
+    "request_type",
+    "requester",
+    "fund_manager",
+    "target_date",
+    "urgent",
+    "document_status",
+    "notes"
+  ],
+  "optional_fields": [
+    "original_folder",
+    "desired_result",
+    "exception_notes"
+  ],
+  "conditional_fields": {
+    "account_opening_or_supplement": ["account_type", "bank_branch", "custody_type"],
+    "gp_dependent_process": ["gp_type"]
+  },
+  "normalization_rules": [
+    "Preserve source wording alongside normalized values",
+    "Use canonical request_type values only",
+    "Represent unknown values as CONFIRMATION_REQUIRED",
+    "Do not store sensitive identifiers or credentials"
+  ],
+  "missing_information_rules": {
+    "action": "ASK_ONLY_FOR_FIELDS_REQUIRED_BY_SELECTED_REQUEST_TYPE",
+    "max_questions_per_turn": 3,
+    "record_state_before_complete": "WAITING_FOR_INPUT"
+  },
+  "duplicate_detection": {
+    "candidate_keys": ["related_fund", "request_type", "active_status", "target_date_window"],
+    "on_candidate": "REQUIRE_HUMAN_CONFIRMATION",
+    "automatic_merge": false
+  },
+  "record_creation_gate": {
+    "required": ["required_fields_complete", "request_type_supported", "human_preview_approved"],
+    "blocked_by": ["sensitive_data_detected", "unknown_rule_required", "duplicate_unresolved"]
+  },
+  "human_approval_rules": [
+    "Preview approval before Notion write",
+    "Human decision for exceptions, cancellation and duplicate disposition",
+    "Human-only approvals from the P2 model remain human-only"
+  ],
+  "request_type_rules": {
+    "supported_pilot": [
+      "고유번호증 신청",
+      "보안카드·홈택스",
+      "계좌개설",
+      "계좌개설 보완"
+    ],
+    "unsupported_action": "ROUTE_TO_BACKLOG_OR_MANUAL_REVIEW"
+  },
+  "notion_property_mapping": {
+    "source": "mappings/request-property-map.md",
+    "task_source": "mappings/task-property-map.md",
+    "canonical_databases": ["지원팀 업무요청", "지원팀 Task"]
+  },
+  "task_generation_policy": {
+    "source": "mappings/process-to-notion-map.yaml",
+    "automatic_write": false,
+    "requires_confirmed_intake": true,
+    "unknown_or_case_only": "HUMAN_REVIEW_REQUIRED"
+  },
+  "evidence_policy": {
+    "source": "notion/model/evidence-model.md",
+    "files_location": "GOOGLE_DRIVE",
+    "git_storage": "NON_SENSITIVE_PATH_OR_METADATA_ONLY"
+  },
+  "error_handling": {
+    "notion_write_failure": "STOP_RECORD_ERROR_AND_REQUEST_REVIEW",
+    "partial_task_creation": "ROLLBACK_OR_MARK_INCOMPLETE_BY_APPROVED_BUILD_CONTRACT",
+    "missing_permission": "STOP_MISSING_INPUT",
+    "unexpected_schema": "STOP_FOR_SCHEMA_REVIEW"
+  }
+}

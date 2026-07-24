@@ -1,0 +1,25 @@
+{
+  "run_id": "RUN-CP-00-O2-001",
+  "work_order_id": "EXTERNAL-GPT-WO-CP-00-O2",
+  "work_order_source": "User-provided TAP CP-00-O2 approval recording work order",
+  "authorization_type": "GPT_DECISION_RECORDING_EXCEPTION",
+  "work_item_id": "CP-00-O2",
+  "agent": "CODEX",
+  "base_commit": "512c919a293827539a77aba796da629e0c87a8cb",
+  "run_status": "COMPLETED",
+  "started_at": "2026-07-24",
+  "completed_at": "2026-07-24",
+  "checkpoint_count": 1,
+  "outputs": [
+    "orchestration/approvals/ag-p2-review.yaml",
+    "orchestration/plan/master-workmap.yaml",
+    "orchestration/handoffs/AG-P2-to-N-04.yaml",
+    "orchestration/generated/current-state.md",
+    "orchestration/generated/ready-work.md"
+  ],
+  "validation_result": "PASS",
+  "commit": "SELF_COMMIT_RESOLVE_WITH_GIT_LOG",
+  "push_status": "REQUIRED_BY_WORK_ORDER_AND_VERIFIED_AT_HANDOFF",
+  "handoff": "orchestration/handoffs/AG-P2-to-N-04.yaml",
+  "notes": "No Build, Notion, Form, Process, Variation or Source changes."
+}

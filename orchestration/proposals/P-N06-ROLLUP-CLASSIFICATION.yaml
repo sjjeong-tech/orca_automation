@@ -1,0 +1,19 @@
+{
+  "proposal_id": "P-N06-ROLLUP-CLASSIFICATION",
+  "author_agent": "CODEX",
+  "source_run": "CP-00-O1",
+  "proposed_change": "Classify N-06 Relation and Rollup Validation as REQUIRED_BEFORE_BUILD, not a blocker for P3 design.",
+  "affected_work_items": ["N-06", "J-01", "CP-05-P3"],
+  "reason": "P3 can map Process and Operational Task contracts using the existing relation schema, while actual rollup value validation is required before a Pilot-ready Notion Build.",
+  "evidence": [
+    "reports/cp-05-s1-r1-skeleton-stabilization.md",
+    "notion/schema/support-db-relations.md",
+    "reports/cp-05-p2-status-evidence-model.md"
+  ],
+  "risk": "If actual relation behavior differs, P3 field mapping may need revision before Build.",
+  "alternatives": ["REQUIRED_FOR_P3", "NON_BLOCKING_PILOT_VALIDATION"],
+  "urgency": "NORMAL",
+  "blocking": false,
+  "recommended_decision": "REQUIRED_BEFORE_BUILD",
+  "status": "SUBMITTED"
+}

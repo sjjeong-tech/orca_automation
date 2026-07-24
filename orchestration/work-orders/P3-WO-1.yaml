@@ -1,0 +1,22 @@
+{
+  "work_order_id": "P3-WO-1",
+  "work_item_id": "CP-05-P3",
+  "issued_by": "GPT_AND_USER",
+  "assigned_to": "CODEX",
+  "base_commit": "b3382207c863ef8298690e08b02cc8430c8541de",
+  "objective": "Audit the approved Process, Variation, P2 and Notion schema contracts used by P3.",
+  "input_gate": ["AG-P2=APPROVED", "J-01=PASSED"],
+  "required_inputs": ["processes/01-stamp-seal.md", "processes/03-unique-number-application.md", "processes/04-security-card-hometax.md", "processes/07-account-opening.md", "processes/08-account-supplement.md", "notion/model/**", "notion/schema/**"],
+  "allowed_actions": ["read repository", "create audit, source register and conflict log"],
+  "forbidden_actions": ["modify Process, Variation, Source or Notion"],
+  "allowed_paths": ["reports/**", "mappings/**", "conflicts/**", "orchestration/runs/codex/CP-05-P3-LR/**"],
+  "outputs": ["reports/cp-05-p3-source-audit.md", "mappings/p3-source-register.yaml", "conflicts/p3-open-conflicts.md"],
+  "validation": ["sources exist", "scope fixed", "conflicts classified"],
+  "continuation_policy": "CONTINUE_TO_P3_WO_2_ON_PASS",
+  "stop_conditions": ["core source missing", "meaning change required", "validation failure"],
+  "runtime_limit": 90,
+  "checkpoint_interval": 30,
+  "commit_policy": {"max_commits": 2, "message": "Audit P3 sources and contracts"},
+  "push_policy": {"required": true, "force": false},
+  "handoff_required": false
+}

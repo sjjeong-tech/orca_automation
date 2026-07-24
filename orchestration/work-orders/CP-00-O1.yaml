@@ -1,0 +1,22 @@
+{
+  "work_order_id": "WO-CP-00-O1-001",
+  "work_item_id": "CP-00-O1",
+  "issued_by": "GPT_AND_USER_SPEC",
+  "assigned_to": "CODEX",
+  "base_commit": "482c570d5da6222d609a0e5dfe5c76c726cee807",
+  "objective": "Build Git-native orchestration control layer and migrate current CP-05 workmap.",
+  "input_gate": ["BRANCH_MAIN", "WORKTREE_CLEAN", "LOCAL_EQUALS_ORIGIN", "P2_COMMIT_VERIFIED"],
+  "required_inputs": ["User TAP CP-00-O1 specification", "P2 repository outputs"],
+  "allowed_actions": ["CREATE_ORCHESTRATION", "CREATE_SCHEMAS", "CREATE_VALIDATOR_RENDERER", "MIGRATE_WORKMAP", "UPDATE_QUEUE_README_DECISIONS", "COMMIT_PUSH"],
+  "forbidden_actions": ["NOTION_WRITE", "FORM_CHANGE", "PROCESS_CHANGE", "VARIATION_CHANGE", "SOURCE_CHANGE", "AG_P2_APPROVAL", "P3_EXECUTION", "CLAUDE_AUTO_START"],
+  "allowed_paths": ["orchestration/**", "scripts/**", "reports/cp-00-o1-orchestration-control-layer.md", "README.md", "tasks/tap-queue.md", "decisions/decision-log.md"],
+  "outputs": ["Git-native orchestration layer", "AG-P2 packet", "P2 handoff", "run capsule", "validation and generated state"],
+  "validation": ["SCHEMA_VALID", "DEPENDENCY_VALID", "OWNERSHIP_VALID", "NO_FORBIDDEN_CHANGES", "GIT_DIFF_CHECK"],
+  "continuation_policy": "STOP_AFTER_PUSH",
+  "stop_conditions": ["BASE_COMMIT_MISMATCH", "VALIDATION_FAILURE", "SCOPE_EXPANSION", "RUNTIME_LIMIT"],
+  "runtime_limit": 90,
+  "checkpoint_interval": 30,
+  "commit_policy": {"message": "Build Git-native orchestration control layer", "max_commits": 3},
+  "push_policy": {"remote": "origin", "branch": "main", "force": false},
+  "handoff_required": true
+}

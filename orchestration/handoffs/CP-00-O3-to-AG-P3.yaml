@@ -1,0 +1,30 @@
+{
+  "handoff_id": "HO-CP-00-O3-AG-P3",
+  "source_work_item": "CP-00-O3",
+  "source_run": "orchestration/runs/codex/CP-00-O3/run.yaml",
+  "from_agent": "CODEX",
+  "to_owner": "GPT_AND_USER",
+  "status": "READY_FOR_REVIEW",
+  "result": "COMPLETED",
+  "outputs": [
+    "orchestration/approvals/ag-p3-review.yaml",
+    "reports/ag-p3-review-analysis.md",
+    "reports/ag-p3-conflict-summary.md",
+    "reports/ag-p3-gap-summary.md"
+  ],
+  "canonical_state": {
+    "N-05": "VERIFIED",
+    "J-01": "PASSED",
+    "N-06": "PARTIAL",
+    "N-06_requirement_satisfied": false,
+    "N-06_remaining_test": "TASK_RELATED_FUND_ROLLUP_ACTUAL_VALUE",
+    "J-02": "BLOCKED_BY_N06_FUTURE_APPROVALS_AND_BUILD_WORK_ORDER",
+    "AG-P3": "READY_FOR_GPT_USER_REVIEW",
+    "CP-05-P4": "BLOCKED_BY_AG_P3"
+  },
+  "recommendation": "APPROVE_WITH_CONDITIONS",
+  "next_work": "AG-P3",
+  "next_owner": "GPT_AND_USER",
+  "auto_execute": false,
+  "created_at": "2026-07-24"
+}

@@ -1,0 +1,26 @@
+{
+  "run_id": "RUN-CP-00-O3-001",
+  "work_order_id": "EXTERNAL-GPT-WO-CP-00-O3",
+  "work_order_source": "User-provided TAP CP-00-O3 decision recording work order",
+  "authorization_type": "GPT_DECISION_RECORDING_EXCEPTION",
+  "work_item_id": "CP-00-O3",
+  "agent": "CODEX",
+  "base_commit": "95bc183a2aecd7980f67e85ed048f0e36ce5b65d",
+  "run_status": "COMPLETED_WITH_GAPS",
+  "started_at": "2026-07-24",
+  "completed_at": "2026-07-24",
+  "checkpoint_count": 1,
+  "outputs": [
+    "orchestration/approvals/ag-p3-review.yaml",
+    "orchestration/plan/master-workmap.yaml",
+    "reports/cp-00-o3-workmap-reconciliation.md",
+    "reports/ag-p3-review-analysis.md",
+    "reports/ag-p3-conflict-summary.md",
+    "reports/ag-p3-gap-summary.md"
+  ],
+  "validation_result": "NODE_FALLBACK_PASS_PYTHON_RUNTIME_UNAVAILABLE",
+  "commit": "SELF_COMMIT_RESOLVE_WITH_GIT_LOG",
+  "push_status": "REQUIRED_BY_WORK_ORDER_AND_VERIFIED_AT_HANDOFF",
+  "handoff": "orchestration/handoffs/CP-00-O3-to-AG-P3.yaml",
+  "notes": "Latest origin/main narrowed N-06 verification to FUND relation and rollups; Task related-fund rollup remains open. No Notion, Form, Process, Variation, Source, P2 or P3 mapping meaning changes."
+}

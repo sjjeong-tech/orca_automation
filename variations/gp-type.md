@@ -98,12 +98,25 @@
 
 CASE 답변은 Evidence로만 사용하고 추가 공식 Source 확인 전에는 공통 Rule로 확정하지 않는다.
 
+### CASE_ONLY 수량 주석
+
+| 업무 구간 | GP·계좌 조건 | 확인 수량 | Source | 상태 | 적용 제한 |
+|---|---|---:|---|---|---|
+| 고유번호증 | 개인 GP | 12종 | `N-05-03` CASE_ONLY 참고 | CASE_ONLY | 단일 조합의 고유번호증 구간 |
+| 계좌개설 | 개인 GP | 17종 | `N-05-07` CASE_ONLY 참고 | CASE_ONLY | 같은 조합의 다른 Process 구간 |
+| 계좌개설 | 법인 GP | 20종 | `N-05-07` CASE_ONLY 참고 | CASE_ONLY | 단일 조합·특정 지점 |
+| 계좌개설 | 안전계좌 추가 | 2종 | `N-05-07` CASE_ONLY 참고 | CASE_ONLY | GP 공통 서류 수로 해석 금지 |
+
+- 네 수치는 동일한 테일프론티어투자조합3호 사례에서 나온 업무 구간별 값이다.
+- 합산·평균·표준화하지 않으며 개인·법인·공동 GP별 공통 서류 세트는 계속 `UNKNOWN`이다.
+
 ## 15. 상태
 
 - Draft 상태: `DRAFT`
 - CONFIRMED: 개인·법인·공동GP 구분, 유형별 첨부서류 분기 존재, 공동GP 여부 확인
 - PROVISIONAL: 개인·법인·공동GP별 상세 첨부서류 적용 내용
 - UNKNOWN: 유형별 전체 서류 세트, Actor·Trigger·완료조건·Exception 차이
+- CASE_ONLY: 고유번호증 12종, 계좌개설 개인 GP 17종·법인 GP 20종·안전계좌 추가 2종
 - CONFLICT: 없음
 - Source 없는 신규 Rule: 0건
 - 새 Process Task: 0건

@@ -1,0 +1,22 @@
+{
+  "work_order_id": "WO-UI-PLACEHOLDER",
+  "work_item_id": "WORK-ITEM-ID",
+  "issued_by": "GPT",
+  "assigned_to": "USER_AND_NOTION_AI",
+  "base_commit": "FULL_SHA",
+  "objective": "Describe safe Notion UI validation.",
+  "input_gate": [],
+  "required_inputs": [],
+  "allowed_actions": ["UI_DISCOVERY", "FORM_DRAFT", "VALIDATION"],
+  "forbidden_actions": ["MODIFY_CANONICAL_PLAN", "UNAPPROVED_OPERATIONAL_WRITE"],
+  "allowed_paths": ["Notion UI scoped target"],
+  "outputs": [],
+  "validation": [],
+  "continuation_policy": "STOP_FOR_USER_CONFIRMATION",
+  "stop_conditions": [],
+  "runtime_limit": 90,
+  "checkpoint_interval": 30,
+  "commit_policy": {"max_commits": 0, "message": ""},
+  "push_policy": {"required": false, "force": false},
+  "handoff_required": true
+}

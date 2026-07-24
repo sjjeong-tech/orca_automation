@@ -1,0 +1,21 @@
+{
+  "run_id": "RUN-CP-05-FT2-001",
+  "work_item_id": "CP-05-FT2",
+  "agent": "CODEX",
+  "base_commit": "7dec4833a0d08aaa050fe89d5ea77c6f8da61706",
+  "run_status": "COMPLETED_WITH_GAPS",
+  "started_at": "2026-07-24",
+  "completed_at": "2026-07-24",
+  "probe_count": 2,
+  "validation_result": "FORM_READ_PASS_VIEW_NAME_WRITE_PASS_QUESTION_WRITE_NO_EFFECT_SUBMIT_UNSUPPORTED",
+  "outputs": [
+    "reports/codex-form-capability-probe.md",
+    "reports/form-capability-before.md",
+    "reports/form-capability-after.md",
+    "reports/form-structure-diff.md",
+    "reports/form-direct-build-result.md",
+    "handoffs/user-ui/form-finalization.md"
+  ],
+  "next_owner": "USER",
+  "auto_execute": false
+}

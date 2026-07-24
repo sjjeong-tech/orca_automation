@@ -1,0 +1,194 @@
+{
+  "project": "vc-support_team-process-rag",
+  "version": "1.2.2",
+  "plan_owner": "GPT",
+  "last_plan_commit": "SELF_COMMIT_RESOLVE_WITH_GIT_LOG",
+  "current_phase": "CP-05_NOTION_CONTROL_PLANE",
+  "workstreams": [
+    {"id": "WS-PROCESS", "title": "As-Is Process Model", "status": "APPROVED"},
+    {"id": "WS-NOTION", "title": "Notion Operations Control Plane", "status": "APPROVAL_REQUIRED"},
+    {"id": "WS-UI", "title": "Notion UI Validation", "status": "PARTIAL"},
+    {"id": "WS-REVIEW", "title": "Independent Review", "status": "PLANNED"}
+  ],
+  "work_items": [
+    {
+      "id": "CP-04", "title": "As-Is Process Model v1", "owner": "CODEX", "type": "BUILD", "phase": "CP-04", "status": "APPROVED", "priority": 1,
+      "depends_on": [], "input_gate": "NONE", "required_inputs": [], "allowed_paths": ["processes/**", "variations/**", "reports/**"], "forbidden_paths": ["orchestration/plan/**"],
+      "outputs": ["reports/cp-04-completion.md"], "validation": ["CP-04_COMPLETE_WITH_KNOWN_GAPS"], "approval_required": false, "continuation_policy": "STOP_COMPLETE",
+      "downstream": ["CP-05-P0-SERIES"], "blocking_reason": "", "source_of_truth": "reports/cp-04-completion.md", "updated_by": "GPT_BOOTSTRAP_SPEC", "updated_at": "2026-07-24"
+    },
+    {
+      "id": "CP-05-P0-SERIES", "title": "Operating Model and Roadmap Series", "owner": "CODEX", "type": "PLAN_BUILD", "phase": "CP-05-P0", "status": "APPROVED", "priority": 2,
+      "depends_on": ["CP-04"], "input_gate": "CP-04_APPROVED", "required_inputs": ["reports/cp-04-completion.md"], "allowed_paths": ["operating-model/**", "plans/**", "decisions/**"], "forbidden_paths": ["processes/**", "variations/**", "sources/**"],
+      "outputs": ["plans/notion-control-plane-roadmap.md", "operating-model/master-deliverables.md"], "validation": ["ROADMAP_EXISTS"], "approval_required": false, "continuation_policy": "STOP_COMPLETE",
+      "downstream": ["CP-05-P1-SERIES"], "blocking_reason": "", "source_of_truth": "plans/notion-control-plane-roadmap.md", "updated_by": "GPT_BOOTSTRAP_SPEC", "updated_at": "2026-07-24"
+    },
+    {
+      "id": "CP-05-P1-SERIES", "title": "Record Unit and DB Architecture Series", "owner": "CODEX", "type": "BUILD", "phase": "CP-05-P1", "status": "APPROVED", "priority": 3,
+      "depends_on": ["CP-05-P0-SERIES"], "input_gate": "ROADMAP_APPROVED", "required_inputs": ["reports/cp-05-p1-db-architecture.md"], "allowed_paths": ["notion/schema/**", "reports/**"], "forbidden_paths": ["processes/**", "variations/**", "sources/**"],
+      "outputs": ["notion/schema/support-request-db.md", "notion/schema/support-task-db.md"], "validation": ["ARCHITECTURE_REALIGNED"], "approval_required": false, "continuation_policy": "STOP_COMPLETE",
+      "downstream": ["CP-05-S1"], "blocking_reason": "", "source_of_truth": "reports/cp-05-p1-db-architecture.md", "updated_by": "GPT_BOOTSTRAP_SPEC", "updated_at": "2026-07-24"
+    },
+    {
+      "id": "CP-05-S1", "title": "Fast Notion Skeleton Build", "owner": "CODEX", "type": "BUILD", "phase": "CP-05-S1", "status": "APPROVED", "priority": 4,
+      "depends_on": ["CP-05-P1-SERIES"], "input_gate": "AG-S1_APPROVED", "required_inputs": ["notion/schema/support-request-db.md", "notion/schema/support-task-db.md"], "allowed_paths": ["notion/schema/**", "reports/**"], "forbidden_paths": ["processes/**", "variations/**", "sources/**"],
+      "outputs": ["reports/cp-05-s1-skeleton-build.md"], "validation": ["PARTIAL_WITH_SAFE_CONSTRAINTS"], "approval_required": true, "continuation_policy": "STOP_COMPLETE",
+      "downstream": ["CP-05-N1"], "blocking_reason": "", "source_of_truth": "reports/cp-05-s1-skeleton-build.md", "updated_by": "GPT_BOOTSTRAP_SPEC", "updated_at": "2026-07-24"
+    },
+    {
+      "id": "CP-05-N1", "title": "Repository Rename and Reference Alignment", "owner": "CODEX", "type": "MIGRATION", "phase": "CP-05", "status": "APPROVED", "priority": 5,
+      "depends_on": ["CP-05-S1"], "input_gate": "S1_EXECUTED", "required_inputs": ["README.md"], "allowed_paths": ["README.md", "decisions/**", "tasks/**"], "forbidden_paths": ["processes/**", "variations/**", "sources/**"],
+      "outputs": ["Repository renamed to vc-support_team-process-rag"], "validation": ["REMOTE_MATCH"], "approval_required": false, "continuation_policy": "STOP_COMPLETE",
+      "downstream": ["CP-05-S1-R1"], "blocking_reason": "", "source_of_truth": "git remote origin", "updated_by": "GPT_BOOTSTRAP_SPEC", "updated_at": "2026-07-24"
+    },
+    {
+      "id": "CP-05-S1-R1", "title": "Skeleton Stabilization and UI Validation", "owner": "CODEX", "type": "VALIDATE", "phase": "CP-05-S1", "status": "APPROVED", "priority": 6,
+      "depends_on": ["CP-05-N1"], "input_gate": "S1_ASSETS_EXIST", "required_inputs": ["reports/cp-05-s1-r1-skeleton-stabilization.md"], "allowed_paths": ["notion/schema/**", "reports/**"], "forbidden_paths": ["processes/**", "variations/**", "sources/**"],
+      "outputs": ["reports/cp-05-s1-r1-skeleton-stabilization.md"], "validation": ["PARTIAL_WITH_UI_ACTIONS"], "approval_required": false, "continuation_policy": "STOP_COMPLETE",
+      "downstream": ["CP-05-P2", "N-04"], "blocking_reason": "", "source_of_truth": "reports/cp-05-s1-r1-skeleton-stabilization.md", "updated_by": "GPT_BOOTSTRAP_SPEC", "updated_at": "2026-07-24"
+    },
+    {
+      "id": "CP-05-P2", "title": "Status Evidence and Human Control Model", "owner": "CODEX", "type": "BUILD", "phase": "CP-05-P2", "status": "APPROVED", "priority": 7,
+      "depends_on": ["CP-05-S1-R1"], "input_gate": "S1_R1_REVIEWED", "required_inputs": ["reports/cp-05-p2-status-evidence-model.md"], "allowed_paths": ["notion/model/**", "notion/schema/**", "rag/metadata/**", "reports/**"], "forbidden_paths": ["processes/**", "variations/**", "sources/**"],
+      "outputs": ["reports/cp-05-p2-status-evidence-model.md"], "validation": ["EXECUTION_COMPLETED", "COMMIT_482c570_VERIFIED"], "approval_required": true, "continuation_policy": "STOP_FOR_APPROVAL",
+      "downstream": ["AG-P2", "CLAUDE-P2-REVIEW"], "blocking_reason": "", "source_of_truth": "commit:482c570d5da6222d609a0e5dfe5c76c726cee807", "updated_by": "GPT_DECISION_CP-00-O2", "updated_at": "2026-07-24"
+    },
+    {
+      "id": "CP-00-O1", "title": "Git-Native Orchestration Control Layer", "owner": "CODEX", "type": "INFRASTRUCTURE", "phase": "CP-00", "status": "APPROVED", "priority": 0,
+      "depends_on": ["CP-05-P2"], "input_gate": "USER_ISSUED_BOOTSTRAP_WORK_ORDER", "required_inputs": ["TAP CP-00-O1 user specification", "commit:482c570d5da6222d609a0e5dfe5c76c726cee807"], "allowed_paths": ["orchestration/**", "scripts/**", "reports/**", "README.md", "tasks/tap-queue.md", "decisions/decision-log.md"], "forbidden_paths": ["processes/**", "variations/**", "sources/**", "notion/**"],
+      "outputs": ["orchestration/plan/master-workmap.yaml", "reports/cp-00-o1-orchestration-control-layer.md"], "validation": ["ORCHESTRATION_VALIDATION_PASS"], "approval_required": false, "continuation_policy": "STOP_COMPLETE",
+      "downstream": ["AG-P2"], "blocking_reason": "", "source_of_truth": "orchestration/runs/codex/CP-00-O1/run.yaml", "updated_by": "GPT_BOOTSTRAP_SPEC", "updated_at": "2026-07-24"
+    },
+    {
+      "id": "AG-P2", "title": "P2 GPT and User Approval", "owner": "GPT_AND_USER", "type": "APPROVAL", "phase": "CP-05-P2", "status": "APPROVED", "priority": 1,
+      "depends_on": ["CP-05-P2", "CP-00-O1"], "input_gate": "P2_PACKET_COMPLETE", "required_inputs": ["orchestration/approvals/ag-p2-review.yaml"], "allowed_paths": ["orchestration/approvals/**", "orchestration/plan/**"], "forbidden_paths": ["processes/**", "variations/**", "sources/**"],
+      "outputs": ["AG-P2 decision"], "validation": ["GPT_USER_DECISION_RECORDED"], "approval_required": true, "continuation_policy": "STOP_FOR_APPROVAL",
+      "downstream": ["J-01", "CP-05-P3"], "blocking_reason": "", "source_of_truth": "orchestration/approvals/ag-p2-review.yaml", "updated_by": "GPT_DECISION_CP-00-O2", "updated_at": "2026-07-24"
+    },
+    {
+      "id": "N-04", "title": "First Form UI Stabilization", "owner": "USER", "type": "UI", "phase": "CP-05-UI", "status": "APPROVED", "priority": 2,
+      "depends_on": ["CP-05-S1-R1"], "input_gate": "USER_UI_SESSION", "required_inputs": ["User Notion UI access"], "allowed_paths": ["Notion UI only"], "forbidden_paths": ["orchestration/plan/**", "processes/**"],
+      "outputs": ["First Form stabilized"], "validation": ["USER_UI_CONFIRMATION"], "approval_required": true, "continuation_policy": "USER_UI_REQUIRED",
+      "downstream": ["N-05"], "blocking_reason": "", "source_of_truth": "GPT and user validation stated in CP-05-P3-LR", "updated_by": "GPT_DECISION_CP-05-P3-LR", "updated_at": "2026-07-24",
+      "execution_result": "COMPLETED_WITH_FORM_UI_DEFERRED", "form_ui_backlog": true
+    },
+    {
+      "id": "N-05", "title": "First Form Submission Validation", "owner": "USER", "type": "VALIDATE", "phase": "CP-05-UI", "status": "APPROVED", "priority": 3,
+      "depends_on": ["N-04"], "input_gate": "N04_COMPLETED", "required_inputs": ["Safe TEST submission"], "allowed_paths": ["Notion UI only"], "forbidden_paths": ["orchestration/plan/**", "processes/**"],
+      "outputs": ["Form submission verification"], "validation": ["VIEW_PERSON_RELATION_VERIFIED"], "approval_required": true, "continuation_policy": "STOP_MISSING_INPUT",
+      "downstream": ["N-06", "J-01"], "blocking_reason": "", "source_of_truth": "TEST page 3a772a41-d9d7-81d8-9bc8-c79b7718f277 and user view verification", "updated_by": "GPT_DECISION_CP-05-P3-LR", "updated_at": "2026-07-24",
+      "verification_status": "VERIFIED", "validation_results": ["PROPERTY_STORAGE_PASS", "DEFAULT_STATUS_PASS", "VIEW_VISIBILITY_PASS", "PERSON_STORAGE_PASS", "RELATION_OPTIONAL_PASS"]
+    },
+    {
+      "id": "N-06", "title": "Task Related-Fund Rollup Validation", "owner": "USER", "type": "VALIDATE", "phase": "CP-05-UI", "status": "BLOCKED", "priority": 4,
+      "depends_on": ["N-05"], "input_gate": "N05_VERIFIED", "required_inputs": ["Safe TEST FUND", "Safe TEST support request", "Safe TEST task"], "allowed_paths": ["Notion UI only", "orchestration/proposals/**"], "forbidden_paths": ["orchestration/plan/**", "processes/**"],
+      "outputs": ["지원팀 Task.관련 조합 Rollup validation"], "validation": ["TASK_RELATED_FUND_ROLLUP_VERIFIED"], "approval_required": true, "continuation_policy": "STOP_FOR_APPROVAL",
+      "downstream": ["J-02"], "blocking_reason": "TASK_RELATED_FUND_ROLLUP_NOT_VERIFIED", "source_of_truth": "reports/cp-05-p3-validation.md#N-06-Build-Test-Contract", "updated_by": "GPT_N06_SCOPE_CORRECTION", "updated_at": "2026-07-24",
+      "execution_status": "PARTIAL", "classification": "REQUIRED_BEFORE_BUILD", "blocking_for_P3": false, "blocking_for_J02": true, "downstream_gate": "J-02",
+      "verified_subtests": ["TO_DO_LIST_FUND_RELATION_STORAGE_PASS", "TO_DO_LIST_FUND_GP_ROLLUP_PASS", "TO_DO_LIST_FUND_TYPE_ROLLUP_PASS", "TO_DO_LIST_FUND_MANAGER_ROLLUP_PASS"],
+      "remaining_test": "지원팀 Task.상위 요청 → 지원팀 업무요청.관련 조합 → 지원팀 Task.관련 조합 Rollup 실제값"
+    },
+    {
+      "id": "CLAUDE-P2-REVIEW", "title": "P2 Independent Review", "owner": "CLAUDE", "type": "REVIEW", "phase": "CP-05-P2", "status": "PLANNED", "priority": 3,
+      "depends_on": ["CP-05-P2", "CP-00-O1"], "input_gate": "GPT_WORK_ORDER_REQUIRED", "required_inputs": ["Review Work Order"], "allowed_paths": ["orchestration/runs/claude/**", "orchestration/handoffs/**", "reports/reviews/claude/**"], "forbidden_paths": ["orchestration/plan/**", "notion/model/**", "processes/**"],
+      "outputs": ["Independent findings"], "validation": ["REVIEW_CONTRACT_PASS"], "approval_required": false, "continuation_policy": "STOP_NO_WORK_ORDER",
+      "downstream": ["AG-P2"], "blocking_reason": "WORK_ORDER_NOT_ISSUED", "source_of_truth": "future GPT work order", "updated_by": "GPT_BOOTSTRAP_SPEC", "updated_at": "2026-07-24"
+    },
+    {
+      "id": "CP-05-P3", "title": "Process-to-Notion Mapping", "owner": "CODEX", "type": "BUILD", "phase": "CP-05-P3", "status": "APPROVAL_REQUIRED", "priority": 4,
+      "depends_on": ["AG-P2", "J-01"], "input_gate": "AG_P2_APPROVED_AND_J01_PASSED", "required_inputs": ["AG-P2 approval", "J-01 result", "P3-WO-1 through P3-WO-4"], "allowed_paths": ["mappings/**", "reports/**", "conflicts/**", "orchestration/runs/codex/CP-05-P3-LR/**", "orchestration/handoffs/**", "orchestration/approvals/ag-p3-review.yaml"], "forbidden_paths": ["processes/**", "variations/**", "sources/**", "Notion"],
+      "outputs": ["mappings/process-to-notion-map.yaml", "reports/cp-05-p3-completion.md", "orchestration/approvals/ag-p3-review.yaml"], "validation": ["P3_MAPPING_VALIDATION_PASS"], "approval_required": true, "continuation_policy": "STOP_FOR_APPROVAL",
+      "downstream": ["AG-P3", "J-02"], "blocking_reason": "AG-P3 review required", "source_of_truth": "orchestration/runs/codex/CP-05-P3-LR/run.yaml", "updated_by": "CODEX_CP-05-P3-LR", "updated_at": "2026-07-24",
+      "execution_status": "COMPLETED"
+    },
+    {
+      "id": "AG-P3", "title": "P3 GPT and User Approval", "owner": "GPT_AND_USER", "type": "APPROVAL", "phase": "CP-05-P3", "status": "READY", "priority": 1,
+      "depends_on": ["CP-05-P3"], "input_gate": "P3_VALIDATION_PASS", "required_inputs": ["orchestration/approvals/ag-p3-review.yaml"], "allowed_paths": ["orchestration/approvals/**", "orchestration/plan/**"], "forbidden_paths": ["processes/**", "variations/**", "sources/**"],
+      "outputs": ["AG-P3 decision"], "validation": ["GPT_USER_DECISION_REQUIRED"], "approval_required": true, "continuation_policy": "STOP_FOR_APPROVAL",
+      "downstream": ["CP-05-P4"], "blocking_reason": "WAITING_FOR_GPT_USER_REVIEW", "source_of_truth": "orchestration/approvals/ag-p3-review.yaml", "updated_by": "GPT_N06_SCOPE_CORRECTION", "updated_at": "2026-07-24"
+    },
+    {
+      "id": "FT-01", "title": "1차 조합 예정 등록 Form 정리", "owner": "CODEX_TO_USER", "type": "FAST_TRACK_UI", "phase": "CP-05-FT1", "status": "APPROVED", "priority": 1,
+      "depends_on": ["N-05"], "input_gate": "SAFE_TEST_SCOPE", "required_inputs": ["Existing first form"], "allowed_paths": ["Notion TEST assets", "handoffs/**", "reports/**"], "forbidden_paths": ["operational records", "existing filters", "templates"],
+      "outputs": ["handoffs/user-ui/fast-track-FT-01.md"], "validation": ["MINIMUM_USABLE_WITH_USER_UI_BACKLOG"], "approval_required": false, "continuation_policy": "CONTINUE_FAST_TRACK",
+      "downstream": ["FT-02"], "blocking_reason": "", "source_of_truth": "reports/fast-track-form-e2e.md", "updated_by": "CODEX_CP-05-FT1-LR", "updated_at": "2026-07-24",
+      "execution_status": "MINIMUM_USABLE_WITH_USER_UI_BACKLOG"
+    },
+    {
+      "id": "FT-02", "title": "2차 지원팀 업무요청 Form 완성", "owner": "CODEX_TO_USER", "type": "FAST_TRACK_UI", "phase": "CP-05-FT1", "status": "BLOCKED", "priority": 2,
+      "depends_on": ["FT-01"], "input_gate": "FORM_UI_CAPABILITY", "required_inputs": ["Existing second form"], "allowed_paths": ["Notion second form", "handoffs/**", "reports/**"], "forbidden_paths": ["operational records", "existing filters", "templates"],
+      "outputs": ["handoffs/user-ui/form-finalization.md"], "validation": ["FORM_QUESTIONS_CONFIGURED"], "approval_required": false, "continuation_policy": "ESCALATE_TO_USER",
+      "downstream": ["FT-03"], "blocking_reason": "FORM_QUESTION_EDIT_UI_REQUIRED", "source_of_truth": "reports/codex-form-capability-probe.md", "updated_by": "CODEX_CP-05-FT2", "updated_at": "2026-07-24",
+      "execution_status": "PARTIAL_WITH_UI_ACTION"
+    },
+    {
+      "id": "FT-03", "title": "조합 Record와 업무요청 연결", "owner": "CODEX", "type": "FAST_TRACK_VALIDATE", "phase": "CP-05-FT1", "status": "APPROVED", "priority": 3,
+      "depends_on": ["FT-01"], "input_gate": "SAFE_TEST_FUND", "required_inputs": ["TEST FUND", "지원팀 업무요청 DB"], "allowed_paths": ["Notion TEST records", "reports/**"], "forbidden_paths": ["operational records"],
+      "outputs": ["TEST FUND to Request relation"], "validation": ["RELATION_WRITE_READ_PASS"], "approval_required": false, "continuation_policy": "CONTINUE_FAST_TRACK",
+      "downstream": ["FT-04"], "blocking_reason": "", "source_of_truth": "reports/fast-track-form-e2e.md", "updated_by": "CODEX_CP-05-FT1-LR", "updated_at": "2026-07-24",
+      "execution_status": "VERIFIED"
+    },
+    {
+      "id": "FT-04", "title": "업무요청·Task E2E 테스트", "owner": "CODEX_TO_USER", "type": "FAST_TRACK_VALIDATE", "phase": "CP-05-FT1", "status": "BLOCKED", "priority": 4,
+      "depends_on": ["FT-03"], "input_gate": "TEST_RELATION_PASS", "required_inputs": ["TEST Request", "TEST Tasks"], "allowed_paths": ["Notion TEST records", "handoffs/**", "reports/**"], "forbidden_paths": ["operational records"],
+      "outputs": ["Request and Task E2E test"], "validation": ["E2E_PASS", "ROLLUP_UI_CONFIRMATION_PENDING"], "approval_required": false, "continuation_policy": "STOP_FOR_UI_CONFIRMATION",
+      "downstream": ["FT-05", "N-06"], "blocking_reason": "TASK_ROLLUP_UI_CONFIRMATION_REQUIRED", "source_of_truth": "reports/fast-track-form-e2e.md", "updated_by": "CODEX_CP-05-FT1-LR", "updated_at": "2026-07-24",
+      "execution_status": "VERIFIED_EXCEPT_ROLLUP_UI"
+    },
+    {
+      "id": "FT-05", "title": "Pilot 사용 가능 여부 판정", "owner": "GPT_AND_USER", "type": "FAST_TRACK_REVIEW", "phase": "CP-05-FT1", "status": "APPROVAL_REQUIRED", "priority": 5,
+      "depends_on": ["FT-03", "FT-04"], "input_gate": "FAST_TRACK_RESULTS", "required_inputs": ["reports/manual-pilot-readiness.md"], "allowed_paths": ["reports/**", "orchestration/plan/**"], "forbidden_paths": ["Notion operational records"],
+      "outputs": ["Pilot readiness decision"], "validation": ["GPT_USER_PROTOTYPE_REVIEW"], "approval_required": true, "continuation_policy": "STOP_FOR_APPROVAL",
+      "downstream": ["CP-05-P4"], "blocking_reason": "WAITING_FOR_FAST_TRACK_REVIEW", "source_of_truth": "reports/manual-pilot-readiness.md", "updated_by": "CODEX_CP-05-FT1-LR", "updated_at": "2026-07-24",
+      "execution_status": "READY_WITH_USER_UI_FIX"
+    },
+    {
+      "id": "CP-05-P4", "title": "Intake Form and Collaboration Model", "owner": "CODEX", "type": "BUILD", "phase": "CP-05-P4", "status": "BLOCKED", "priority": 5,
+      "depends_on": ["AG-P3"], "input_gate": "AG_P3_APPROVED", "required_inputs": ["AG-P3 approval", "GPT Work Order"], "allowed_paths": ["future work order required"], "forbidden_paths": ["orchestration/plan/**", "Notion"],
+      "outputs": ["P4 outputs"], "validation": ["P4_OUTPUT_CONTRACT_PENDING"], "approval_required": true, "continuation_policy": "STOP_NO_WORK_ORDER",
+      "downstream": ["J-02"], "blocking_reason": "DEFERRED_UNTIL_FAST_TRACK_RESULT_AND_AG_P3", "source_of_truth": "GPT_WORK_ORDER_PENDING", "updated_by": "CODEX_CP-05-FT1-LR", "updated_at": "2026-07-24"
+    }
+  ],
+  "dependencies": [
+    {"from": "CP-04", "to": "CP-05-P0-SERIES"}, {"from": "CP-05-P0-SERIES", "to": "CP-05-P1-SERIES"},
+    {"from": "CP-05-P1-SERIES", "to": "CP-05-S1"}, {"from": "CP-05-S1", "to": "CP-05-N1"},
+    {"from": "CP-05-N1", "to": "CP-05-S1-R1"}, {"from": "CP-05-S1-R1", "to": "CP-05-P2"},
+    {"from": "CP-05-P2", "to": "CP-00-O1"}, {"from": "CP-05-P2", "to": "AG-P2"},
+    {"from": "CP-00-O1", "to": "AG-P2"}, {"from": "CP-05-S1-R1", "to": "N-04"},
+    {"from": "N-04", "to": "N-05"}, {"from": "N-05", "to": "N-06"},
+    {"from": "CP-05-P2", "to": "CLAUDE-P2-REVIEW"}, {"from": "AG-P2", "to": "CP-05-P3"},
+    {"from": "J-01", "to": "CP-05-P3"}, {"from": "CP-05-P3", "to": "AG-P3"}, {"from": "AG-P3", "to": "CP-05-P4"},
+    {"from": "N-05", "to": "FT-01"}, {"from": "FT-01", "to": "FT-02"}, {"from": "FT-01", "to": "FT-03"},
+    {"from": "FT-03", "to": "FT-04"}, {"from": "FT-03", "to": "FT-05"}, {"from": "FT-04", "to": "FT-05"},
+    {"from": "N-06", "to": "J-02"}, {"from": "CP-05-P3", "to": "J-02"}, {"from": "CP-05-P4", "to": "J-02"}
+  ],
+  "join_gates": [
+    {
+      "id": "J-01", "title": "Pilot Input Readiness", "status": "PASSED", "required_inputs": [
+        "AG-P2=APPROVED", "N-05=VERIFIED", "First Form initial status handling decided",
+        "결성(진행) View display verified", "Person storage verified", "Relation-optional submission verified"
+      ],
+      "optional_inputs": ["N-06 rollup validation classification"], "owner": "GPT_AND_USER",
+      "blocking_reason": "", "decision_by": "GPT_AND_USER",
+      "evidence": ["AG-P2 APPROVED", "GPT-created TEST Record", "User screenshot of 결성(진행)", "Person storage verified", "Default status verified", "Relation-optional creation verified"]
+    },
+    {
+      "id": "J-02", "title": "Notion Build Readiness", "status": "BLOCKED", "required_inputs": [
+        "CP-05-P3=APPROVED", "CP-05-P4=APPROVED", "N-05=VERIFIED", "N-06=VERIFIED",
+        "지원팀 Task 관련 조합 Rollup confirmed", "Notion Build Work Order issued"
+      ],
+      "satisfied_inputs": ["N-05=VERIFIED"],
+      "optional_inputs": [], "owner": "GPT_AND_USER",
+      "blocking_reason": "P3 approval, P4 approval, N-06 Task Rollup validation and Notion Build Work Order pending"
+    }
+  ],
+  "approval_gates": [
+    {"id": "AG-P2", "owner": "GPT_AND_USER", "status": "APPROVED", "approval_required": true, "packet": "orchestration/approvals/ag-p2-review.yaml"},
+    {"id": "AG-P3", "owner": "GPT_AND_USER", "status": "READY", "approval_required": true, "packet": "orchestration/approvals/ag-p3-review.yaml"}
+  ],
+  "execution_policy_reference": "orchestration/governance/execution-policy.yaml",
+  "status": "APPROVAL_REQUIRED",
+  "fast_track_status": "ACTIVE_FAST_TRACK",
+  "ag_p3_mode": "PARALLEL_NON_BLOCKING_REVIEW",
+  "next_review": "FAST_TRACK_PROTOTYPE_REVIEW_AND_AG_P3_REVIEW"
+}

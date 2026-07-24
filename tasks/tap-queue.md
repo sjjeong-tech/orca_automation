@@ -1,10 +1,14 @@
 # Conditional TAP Queue
 
+> Canonical planning state is maintained in `orchestration/plan/master-workmap.yaml` by GPT. Agent execution state is recorded only in `orchestration/runs` and `orchestration/handoffs`.
+>
+> 이 파일은 사람용 요약 View와 Historical Queue다. 현재 상태는 [Generated Current State](../orchestration/generated/current-state.md), 실행 가능 후보는 [Generated Ready Work](../orchestration/generated/ready-work.md)를 참고한다.
+
 Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될 때만 이 파일을 갱신하며, 선행 Gate를 통과하지 않은 TAP은 실행하지 않는다.
 
-**Queue 전체 상태:** `PAUSED_FOR_EXTERNAL_REVIEW`
+**Queue 전체 상태:** `PAUSED_FOR_AG_P3_REVIEW`
 
-**현재 Checkpoint:** `CP-04 — 전체 Process 생성·QA·배포 완료 / 외부 검토`
+**현재 Checkpoint:** `CP-00-O3 — COMPLETED`
 
 **최근 Revision:** `TAP P1-R2 — COMPLETED (PASS WITH NON-BLOCKING GAPS)`
 
@@ -12,9 +16,9 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 
 **최근 계획:** `TAP V0 — COMPLETED`
 
-**최근 실행:** `TAP V1-C — COMPLETED (DRAFT PASS)`
+**최근 실행:** `TAP CP-00-O3 — COMPLETED`
 
-**다음 READY 후보:** `TAP A-V1`
+**다음 READY 후보:** `AG-P3 — GPT_AND_USER`
 
 ## 자동 실행 Checkpoint
 
@@ -69,9 +73,84 @@ Queue Controller는 아래 표를 순서대로 평가한다. 상태가 변경될
 | V1 | TAP V1-A | 조합 유형·GP 유형 | TAP V0 | COMPLETED | `variations/fund-type.md`, `variations/gp-type.md` | 초안 보존·A-V1 대기 |
 | V2 | TAP V1-B | 계좌 유형 | TAP V1-A | COMPLETED | `variations/account-type.md` | 초안 보존·A-V1 대기 |
 | V3 | TAP V1-C | 기관·지점·처리 방식 | TAP V1-B | COMPLETED | `variations/institution.md` | 초안 보존·A-V1 대기 |
-| V4 | TAP A-V1 | Claude 독립 Source Review | TAP V1-A, V1-B, V1-C | READY | `reports/variation-source-review.md` | A1-VERIFY·Reviewer 설정 Gate 확인 후 실행 |
-| V5 | TAP V1-R | Claude Findings 반영 | TAP A-V1 | WAITING | 지적된 Variation·처리 기록 | Review 대기 |
-| V6 | TAP V1-I | 통합 Variation QA | TAP V1-R | WAITING | `reports/variation-integration-qa.md` | Revision 대기 |
+| V4 | TAP A-V1 | Claude 독립 Source Review | TAP V1-A, V1-B, V1-C | COMPLETED_WITH_PARTIAL_COVERAGE | Claude Review Commit 2개 | 승인 Finding 반영 완료 |
+| V5 | TAP V1-R1 | Claude Findings Source Enrichment | TAP A-V1 | COMPLETED | Source 7개·Disposition·Queue | Source Enrichment 보존 |
+| V6 | TAP V1-R2 | Variation·Process Revision | TAP V1-R1 | COMPLETED | Variation 4개·Process 3개·Mapping·Disposition | Revision 보존 |
+| V7 | TAP V1-I | 통합 Variation QA | TAP V1-R2 | COMPLETED | `reports/variation-integration-qa.md`, `reports/cp-04-completion.md` | CP-04 COMPLETE_WITH_KNOWN_GAPS |
+| V8 | CP-05-PLAN | Gap Resolution & Interview Execution 계획 | TAP V1-I | CROSS_CUTTING_WORKSTREAM | 단계별 필요한 Gap만 해소 | 독립 선행 실행 금지 |
+
+## Notion Operations Control Plane Queue
+
+기존 `CP-05-PLAN` Gap Resolution은 독립 선행 TAP이 아니라 아래 전 단계의 `CROSS_CUTTING_WORKSTREAM`으로 재배치한다. 이 표의 후속 TAP은 자동 실행하지 않는다.
+
+| 순서 | TAP ID | 역할 | 선행 Gate | 상태 | Master Deliverable | 다음 조치 |
+|---:|---|---|---|---|---|---|
+| C0 | CP-04 | As-Is Process Model v1 | V1-I | COMPLETE_WITH_KNOWN_GAPS | 선행 기반 | 결과 보존 |
+| C1 | CP-05-P0 | Master Roadmap·Operating Model | CP-04 | COMPLETED | MD-01~10 | Revision 보존 |
+| C2 | CP-05-P0-R | Skeleton·Pilot A·TI Targeted Revision | P0 | COMPLETED | MD-01~11 | 결과 보존 |
+| C3 | A-CP05-P0-REVIEW | Revised Roadmap 독립 검토 | P0-R | COMPLETED_PASS_WITH_REVISIONS | MD-01~11 | Finding 처분 완료 |
+| C4 | CP-05-P0-R2 | Claude Finding 처분·문서 정합성 | Claude Review | COMPLETED | MD-01~10,CM-01 | 결과 보존 |
+| C4A | CP-05-P0-R3 | Intermediate Reporting Ownership 정정 | P0-R2 | COMPLETED | CM-01 | GPT 검증 |
+| C5 | CP-05-P1 | Record Unit·DB Architecture | Revised Roadmap APPROVED_FOR_P1 | COMPLETED | MD-01,02 | Architecture·AG-S1 판단자료 완료 |
+| C5D | CP-05-D1 | README Notion 운영구조 안내 | CP-05-P1 Architecture | COMPLETED | 문서 안내 | README 현행화 완료 |
+| C5R | CP-05-P1-R1 | Existing Notion Architecture Realignment | CP-05-D1 | COMPLETED | MD-01,02,03 | AG-S1 자료 교체 완료 |
+| C5A | AG-S1 | Realigned Fast Skeleton Build 승인 검토 | CP-05-P1-R1 완료 | APPROVED_AND_EXECUTED | MD-01,02,03,06 | 실행 제약 준수 |
+| C6 | CP-05-S1 | Fast Notion Skeleton Build | P1·AG-S1 승인 | PARTIAL_WITH_SAFE_CONSTRAINTS | MD-01,02,06 | 기존 FUND 무변경; Form·Rollup 일부 유예 |
+| C6N | CP-05-N1 | Repository Rename·Reference Alignment | CP-05-S1 | COMPLETED | Repository Governance | 새 Remote·현행 참조 정렬 |
+| C6R | CP-05-S1-R1 | 사용자 UI Form·Skeleton 안정화 검토 | CP-05-N1 | PARTIAL_WITH_UI_ACTIONS | MD-01,02,03,06 | Form 질문·Filter·Rollup UI 검증 필요 |
+| C6A | GPT_UI_REVIEW | S1-R1 결과 검토 | CP-05-S1-R1 | COMPLETED_P2_AUTHORIZED | MD-01,02,03,06 | UI Gap은 비차단 Workstream |
+| C6U | N-04 UI_WORKSTREAM | First Form UI 안정화 | AG-P2 승인 | READY_FOR_USER_UI | MD-03,06 | Notion AI·사용자 UI 담당 |
+| C7 | CP-05-R1 | 이전 Codex TI TAP | DEC-CP05-08 | REMOVE_AS_CODEX_TAP | 없음 | 실행 금지 |
+| C7A | GPT-USER-COMMUNICATION-MILESTONE | Skeleton Intermediate Reporting | S1 완료 후 사용자 판단 | OPTIONAL_AFTER_S1 | CM-01 | P2 비차단 |
+| C8 | CP-05-P2 | Status & Evidence·Human Control Model | S1 Stabilization·GPT UI Review | COMPLETED_WITH_OPEN_UI_GAPS | MD-04 | 실제 Notion 변경 0 |
+| C8A | AG-P2 | P2 Contract GPT·사용자 승인 | CP-05-P2 | APPROVED | MD-04,05 | Q1~Q10 APPROVE |
+| C9 | CP-05-P3 | Process-to-Notion Mapping | AG-P2 승인·J-01 | BLOCKED_UNTIL_J01 | MD-02,05 | N-05 등 J-01 입력 대기 |
+| C10 | CP-05-P4 | Intake·Collaboration Model | P3 승인 | BLOCKED_BY_PREVIOUS_APPROVAL | MD-03,06 | P3 승인 대기 |
+| C11 | CP-05-P5 | Pilot-ready MVP Build Spec | P4 승인 | BLOCKED_BY_PREVIOUS_APPROVAL | MD-01~07 | Build 승인 명세 대기 |
+| C12 | CP-05-B1 | Pilot-ready Notion MVP Revision | P5 Build 승인 | BLOCKED_UNTIL_BUILD_APPROVAL | MD-01~07 | Build 승인 대기 |
+| C13 | CP-05-B2 | Manual Pilot A | B1 QA·실제 조합 승인 | PILOT_A_SCOPE_DECIDED_BUT_TARGET_PENDING | MD-07 | AG-20B~22 대기 |
+| C14 | CP-05-B3 | Pilot Review·Schema Revision | B2 완료 | BLOCKED_BY_PREVIOUS_APPROVAL | MD-01~08 | Pilot 완료 대기 |
+| C15 | CP-06-P1~B2 | Assisted Automation | Pilot A 승인 | BLOCKED_UNTIL_PILOT_A | MD-08 | AG-24·25 대기 |
+| C16 | CP-07-P1~B1 | Agent Write Governance·Execution | Write Governance 승인 | BLOCKED_UNTIL_WRITE_GOVERNANCE | MD-09 | AG-26~31·34 대기 |
+| C17 | CP-08-P1 | Operations-team Expansion | 지원팀 MVP 안정화 | FUTURE | MD-10 | AG-32~35 대기 |
+| X1 | Gap Resolution | 단계별 필요한 Known Gap 해소 | 각 TAP Gate | CROSS_CUTTING_WORKSTREAM | MD-01~11 | 독립 선행 실행 금지 |
+
+## Git-Native Orchestration Migration
+
+| Work Item | 계획·실행 요약 | 다음 조치 |
+|---|---|---|
+| CP-00-O1 | Run `COMPLETED`; Bootstrap 이후 Canonical Plan은 GPT 소유 | 결과 보존 |
+| CP-00-O2 | Run `COMPLETED`; AG-P2 승인 기록 | N-04 Handoff |
+| CP-05-P2 | Execution `COMPLETED`; Plan `APPROVED` | 결과 보존 |
+| AG-P2 | `APPROVED`; Q1~Q10 APPROVE | J-01 입력 |
+| N-04 | `COMPLETED_WITH_FORM_UI_DEFERRED` | UI 최종 구성 Backlog |
+| N-05 | `VERIFIED` | J-01 근거 |
+| N-06 | `PARTIAL`; `REQUIRED_BEFORE_BUILD`; FUND Rollup 검증 완료, Task 관련 조합 Rollup 대기 | J-02 선행조건 미충족 |
+| CP-05-FT1-LR | `COMPLETED_WITH_UI_GAPS`; FT-03 Relation과 FT-04 E2E PASS | `PAUSED_FOR_FAST_TRACK_REVIEW` |
+| FT-01 (1차 조합 예정 등록 Form 정리) | `MINIMUM_USABLE_WITH_USER_UI_BACKLOG` | 사용자 UI |
+| FT-02 (2차 지원팀 업무요청 Form 완성) | `PARTIAL_WITH_UI_ACTION` | Notion AI → 사용자 UI |
+| FT-03 (조합 Record와 업무요청 연결) | `VERIFIED` | 완료 |
+| FT-04 (업무요청·Task E2E 테스트) | `VERIFIED_EXCEPT_ROLLUP_UI` | Rollup UI 확인 필요 |
+| FT-05 (Pilot 사용 가능 여부 판정) | `READY_WITH_USER_UI_FIX` | GPT·정상준 검토 |
+| J-01 | `PASSED` | P3 Input Gate 완료 |
+| CP-05-P3 | Execution `COMPLETED_WITH_GAPS`; Plan `APPROVAL_REQUIRED` | AG-P3 검토 |
+| CP-00-O3 | `COMPLETED` | N-06·Conflict·Gap·AG-P3 Packet 정합화 |
+| AG-P3 | `READY_FOR_GPT_USER_REVIEW` | 통합 질문 7개 승인 필요 |
+| CP-05-P4 | `BLOCKED_BY_AG_P3` | 자동 실행 금지 |
+| J-02 | `BLOCKED`; Build Readiness | AG-P3·후속 P4/P5 설계 승인·Build WO 대기; N-06 충족 |
+
+### CP-05-P0 Claude Finding 상태
+
+| Finding | 상태 |
+|---|---|
+| RM-01 | DISPOSED_NO_BLOCKING_GATE |
+| RM-02 | APPLIED |
+| RM-03 | APPLIED |
+| RM-04 | APPLIED |
+| RM-05 | DEFER_NO_CHANGE |
+| RM-06 | REFERENCE_LINKED |
+| RM-07 | APPLIED |
+| Revised Master Roadmap | APPROVED_FOR_P1 |
 
 ## Stage별 범위 및 산출물
 

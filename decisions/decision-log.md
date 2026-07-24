@@ -1,0 +1,24 @@
+# Decision Log
+
+승인 완료된 결정만 기록한다. 제안·미결 항목은 `pending-approvals.md`에 둔다.
+
+| Decision ID | 제안 | 영향 | 상태 | 승인자 | 관련 TAP | 결정일 |
+|---|---|---|---|---|---|---|
+| DEC-CP05-01 | CP-05는 Notion Operations Control Plane 구축이며 Gap Resolution은 Cross-cutting Workstream | 전체 Roadmap·AG-01 | DECIDED | 사용자·정상준 | P0-R | 2026-07-23 |
+| DEC-CP05-02 | 상위 Record는 조합별 업무 건 | 업무 DB·Relation·AG-02 | DECIDED | 사용자·정상준 | P1 | 2026-07-23 |
+| DEC-CP05-03 | 독립 완료조건을 가진 업무는 동일 조합이어도 별도 Record | Record 분리·AG-03 | DECIDED | 사용자·정상준 | P1 | 2026-07-23 |
+| DEC-CP05-04 | 지원팀 업무 DB와 Task DB의 2개 DB MVP | Architecture·Skeleton·AG-04 | DECIDED | 사용자·정상준 | P1,S1 | 2026-07-23 |
+| DEC-CP05-05 | Pilot A는 Process 03·04·07·08 | Pilot Mapping·AG-20A | DECIDED | 사용자·정상준 | B2 | 2026-07-23 |
+| DEC-CP05-06 | P1 직후 Fast Notion Skeleton Build | Roadmap 순서·AG-S1 | DECIDED | 사용자·정상준 | S1 | 2026-07-23 |
+| DEC-CP05-07 | Skeleton 후 필요 시 중간보고 수행 | Communication 필요 시점; Owner는 DEC-CP05-08에서 정정 | DECIDED | 사용자·정상준 | CM-01 | 2026-07-23 |
+| DEC-CP05-08 | 대표님 중간보고와 Notion AI TI는 GPT·사용자 전담이며 Codex·Claude TAP이 아니고 P2를 차단하지 않음 | MD-11을 CM-01로 분리, CP-05-R1 제거, Roadmap·Queue 단순화 | DECIDED | 사용자·정상준 | P0-R3,CM-01 | 2026-07-23 |
+| DEC-CP05-09 | Pilot A 상위 Record는 기존 `TO DO LIST (FUND)`의 `조합(결성)` Record를 사용하고, 신규 DB는 지원팀 업무요청 DB와 Task DB로 구성하며 1차 Form은 기존 DB, 2차 Form은 요청 DB를 원본으로 사용 | DEC-CP05-04의 Pilot A 구현을 기존 Notion 구조에 맞게 구체화; 별도 지원팀 업무 DB는 Post-Pilot 재검토 | DECIDED | 사용자·정상준 | P1-R1,S1 | 2026-07-23 |
+| DEC-CP05-S1-01 | S1에서는 기존 FUND DB를 변경하지 않고 요청 DB의 단방향 Relation을 사용하며, 상세 Status·View Filter·Form 질문과 실제 FUND 기반 Rollup 검증은 P2·P4 또는 승인된 TEST Record 검증으로 유예 | 기존 운영 자산 보호와 Fast Skeleton 검증을 동시에 충족; S1 판정은 `PARTIAL_WITH_SAFE_CONSTRAINTS`. `DEC-CP05-10` ID 충돌 해소를 위해 의미를 유지하고 재키잉 | DECIDED | 사용자 승인 제약·Codex 실행 결과 | S1,P2,P4 | 2026-07-23 |
+| DEC-CP05-10 | Repository 이름을 `orca_automation`에서 `vc-support_team-process-rag`로 변경 | 지원팀 업무 범위, Process Modeling, RAG 지식검색, Notion 운영 및 Agent 확장 범위를 명확히 표시 | DECIDED | 사용자·정상준 | CP-05-N1 | 2026-07-23 |
+| DEC-CP05-S1-02 | 사용자 UI에서 생성한 1차 Form을 Pilot A 기준 후보로 유지하고 기존 FUND 자산은 변경하지 않으며, 2차 Form은 지원팀 업무요청 DB를 원본으로 사용한다. 상세 상태·증빙은 P2에서 확정한다. | Form 질문·기본값·제출 결과가 미검증이므로 Pilot 기준의 최종 승인은 GPT UI Review 후 결정 | PROPOSED | GPT·사용자 검토 필요 | S1-R1,P2 | 2026-07-23 |
+| DEC-CP05-11 | Notion AI는 Form·UI, Codex는 Git 기반 Model Builder, GPT는 Roadmap·Gate Orchestrator, 사용자·정상준은 Process Owner·UI 최종 승인자를 담당 | 병렬 결과의 소유권과 Main Roadmap 반영 책임을 분리 | DECIDED | 사용자·정상준 | P2 이후 | 2026-07-23 |
+| DEC-CP05-12 | Form UI 수정·실제 제출 검증은 별도 UI Workstream으로 관리하고 P2 설계를 차단하지 않으며, 실제 Notion Status·Property 적용은 AG-P2 승인 후 별도 Build TAP에서 수행 | UI 제약과 Canonical Contract 설계를 분리 | DECIDED | 사용자·정상준 | P2,P4,Build | 2026-07-23 |
+| DEC-ORCH-01 | GPT가 Canonical Master Workmap을 소유하고 Codex·Claude는 Run Capsule·Handoff·Proposal만 기록 | 계획 소유권과 동시 수정 충돌 방지 | DECIDED | 사용자·정상준 | CP-00-O1 이후 | 2026-07-24 |
+| DEC-ORCH-02 | 계획 상태는 GPT Workmap, 실행 상태는 Agent Run Capsule로 분리 | Agent 완료와 계획 승인 오인 방지 | DECIDED | 사용자·정상준 | CP-00-O1 이후 | 2026-07-24 |
+| DEC-ORCH-03 | 승인 불필요·Input 충족·동일 Agent READY 작업만 제한적으로 연속 실행하고 승인·위험·누락·검증 실패 시 정지 | 안전한 무인 연속 실행 경계 설정 | DECIDED | 사용자·정상준 | CP-00-O1 이후 | 2026-07-24 |
+| DEC-ORCH-04 | Work Order 90분, Checkpoint 30분, 세션당 최대 3개 Work Order·4시간으로 제한하고 예외는 사전 승인 | 장기 단일 실행 재발 방지 | DECIDED | 사용자·정상준 | CP-00-O1 이후 | 2026-07-24 |

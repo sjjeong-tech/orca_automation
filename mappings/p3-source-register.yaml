@@ -1,0 +1,51 @@
+{
+  "register_id": "P3-SOURCE-REGISTER",
+  "generated_at": "2026-07-24",
+  "source_priority": [
+    "approved_process_model",
+    "approved_p2_model",
+    "observed_notion_schema",
+    "user_verified_result",
+    "interview_source",
+    "legacy_operating_document"
+  ],
+  "process_scope": [
+    {"process_id": "P01", "file": "processes/01-stamp-seal.md", "atomic_prefix": "SS", "atomic_count": 11},
+    {"process_id": "P03", "file": "processes/03-unique-number-application.md", "atomic_prefix": "UN", "atomic_count": 16},
+    {"process_id": "P04", "file": "processes/04-security-card-hometax.md", "atomic_prefix": "SC", "atomic_count": 11},
+    {"process_id": "P07", "file": "processes/07-account-opening.md", "atomic_prefix": "AO", "atomic_count": 14},
+    {"process_id": "P08", "file": "processes/08-account-supplement.md", "atomic_prefix": "AS", "atomic_count": 9}
+  ],
+  "p2_contracts": [
+    "notion/model/request-status-model.md",
+    "notion/model/task-status-model.md",
+    "notion/model/status-transition-matrix.md",
+    "notion/model/evidence-model.md",
+    "notion/model/human-approval-model.md",
+    "notion/model/request-completion-rules.md"
+  ],
+  "notion_contracts": [
+    "notion/schema/support-request-db.md",
+    "notion/schema/support-task-db.md",
+    "notion/schema/support-db-relations.md",
+    "notion/schema/intake-form-architecture.md",
+    "notion/schema/operational-task-catalog.md"
+  ],
+  "variation_contracts": [
+    "variations/fund-type.md",
+    "variations/gp-type.md",
+    "variations/account-type.md",
+    "variations/institution.md"
+  ],
+  "user_verified_evidence": {
+    "record": "[TEST] GPT DB 직접 생성 검증",
+    "page_id": "3a772a41-d9d7-81d8-9bc8-c79b7718f277",
+    "result": ["PERSON_STORAGE_PASS", "DEFAULT_STATUS_PASS", "VIEW_VISIBILITY_PASS", "RELATION_OPTIONAL_PASS", "RELATION_PROPERTY_STORAGE_PASS"]
+  },
+  "excluded_as_canonical": [
+    "notion/schema/operational-task-candidates.md",
+    "notion/schema/property-deferment-matrix.md",
+    "past TAP completion prose where newer approved contracts exist",
+    "inference without repository evidence"
+  ]
+}
