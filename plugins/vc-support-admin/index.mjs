@@ -23,6 +23,7 @@ import { createDriveProvider } from "./providers/drive.mjs";
 import { createSlackProvider } from "./providers/slack.mjs";
 import { assertProviderShape, RESULT } from "./providers/base.mjs";
 import { evaluateEvidenceState, parseEvidenceText } from "./kernel/evidence-state.mjs";
+export { buildEvidencePreview, normalizeEvidenceInput } from "./kernel/evidence-adapter.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "..", "..");
