@@ -632,6 +632,105 @@ E2E-03 실행·상태관리 기준을 **`P03-T01~T06`(6개)** 로 통일(사용�
 
 **RESULT=PASS_E2E03_TRANSITION_VIEW_AND_MAPPING**(단, View 필터는 status TOOL_LIMITATION 우회 적용)
 
+---
+
+# 26. A-CP17 실행 결과 (상태 전이·View 규격 정렬·Mapping 분류)
+
+## 26-1. Bootstrap 실측과 재실행 판정
+
+A-CP17 착수 시점에 상태 전이·View 2개는 **직전 승인분으로 이미 반영된 상태**였다. Phase 3 재실행 규칙("이미 목표 상태이면 추가 Write 불필요")에 따라 **상태값 Write는 0건**으로 처리하고, A-CP17이 명시한 **문구 4곳만 정렬**했다.
+
+| 항목 | Before | After(A-CP17 규격) |
+|---|---|---|
+| T01 `다음 Action` | `P03-T02 제출서류 수령·누락 검수로 이관` | `P03-T02에서 수령 서류와 누락 항목을 확인한다` |
+| T01 `완료증빙` | 서술형 장문 | `[TEST] E2E-03 상태 전이 Prototype 검증용. 실제 업무 완료증빙이 아님.` |
+| T02 `다음 Action` | `수령 서류와 누락 항목을 확인한다` | `실제 제출서류를 연결하고 누락·적합성을 확인한다` |
+| T02 `Blocker` | `실제 제출서류·날인본 Evidence 미연결` | `실제 제출서류와 날인본 Evidence가 TEST Instance에 연결되지 않음` |
+
+상태값(T01 완료 / T02 진행 중 / T03~T06 시작 전 / Request 진행 중)·Actor·완료조건은 **변경 없음**. 추가 Record 0, OTID 중복 0, Relation 6건 유지.
+
+## 26-2. View 규격 정렬 결과
+
+| View | A-CP17 규격 | 실제 적용 | 판정 |
+|---|---|---|---|
+| A `[TEST] 매니저 공유 — 현재 Action` | Filter `Task 상태 = 진행 중` / Sort `목표일 ASC` / 표시 10종 | Sort·표시 10종 **적용**, **Filter 미적용** | **UI 확인 필요** |
+| B `[TEST] 조합별 행정업무 트래킹` | Filter `요청명 contains [TEST][E2E03-PROTOTYPE]` / Sort `요청일 DESC` / 표시 9종 / Grouping 없음 | **전부 적용**, Grouping 제거 완료 | PASS — 실행 결과 Request **정확히 1건** |
+
+### status 필터 TOOL_LIMITATION 최종 확정
+
+View DSL의 status 타입 필터는 **연산자 3종 모두 무시**된다(빈 filter group). text·select는 정상 동작한다.
+
+| 연산자 | 결과 |
+|---|---|
+| `Task 상태 = "진행 중"` | 무시 |
+| `Task 상태 != "완료"` | 무시 |
+| `Task 상태 IN ("시작 전","진행 중")` | 무시 |
+| (대조) `비고 CONTAINS`, `완료증빙 IS EMPTY` — text | 적용 |
+| (대조) `현재 Actor != "외부기관"` — select | 적용 |
+
+View A는 A-CP17 규격을 임의 대체하지 않고 **필터 미설정 상태로 두었다.** Notion UI에서 `Task 상태 = 진행 중`을 직접 추가해야 한다 `[확인 필요]`. (대안: 이전에 실증된 `완료증빙 IS EMPTY` 프록시 — 사용자 선택 대기)
+
+## 26-3. Live Acceptance
+
+| Phase | 자연어 | 결과 |
+|---|---|---|
+| 6 매니저 공유 | "현재 매니저나 지원팀이 확인해야 할 고유번호증 업무를 공유해줘" | **PASS** — 동일 조건 DB 조회에서 `진행 중` = **P03-T02 1건만** 반환, T03~T06 미노출. Blocker와 다음 Action 구분 표시. 실제 발송 0 |
+| 7 조합별 트래킹 | "TEST 가상조합1호의 진행 중인 행정업무와 다음 단계를 보여줘" | **PASS** — Request 1건(고유번호증 신청, 진행 중), T01 완료 / T02 진행 중 / T03~T06 시작 전, Evidence Blocker 안내. 신규 Record 0 |
+
+## 26-4. Legacy Mapping 위치 분류 (28곳)
+
+| 분류 | 위치 | 건수 | 처리 |
+|---|---|---|---|
+| **CURRENT_MAPPING** | `process-to-notion-map.yaml` | 16 | 6-Task 기준 `current_operational_task_id` 병기, Legacy 값 보존 |
+| **CURRENT_MAPPING** | `process-to-notion-map.md` | 6→(주석 포함 19) | Legacy 표기 + 현행 6-Task 표·Bridge 신설 |
+| **CURRENT_MAPPING** | `fund-type-notion-map.md` | 3 | `P03-T02(Legacy OT-P03-02)` |
+| **CURRENT_MAPPING** | `variation-task-generation-map.md` | 2 | `P03-T01·T02` / `P03-T02` |
+| **CURRENT_MAPPING** | `human-approval-map.md` | 1 | `P03-T01/T02(Legacy OT-P03-01/02)` |
+
+승인 범위 밖(치환 금지, 원문 보존):
+
+| 분류 | 위치 | 건수 |
+|---|---|---|
+| **SUPERSEDED** | `notion/schema/operational-task-candidates.md` — 제3의 `OT-P03-01~06` 후보안, 자칭 "확정 Template 아님" | 7 |
+| **HISTORICAL_EVIDENCE** | `notion/schema/skeleton-test-records.md` | 4 |
+| **HISTORICAL_EVIDENCE** | `reports/**`(reconciliation preview·본 문서 Bridge 설명) | 5 |
+| **CURRENT_MAPPING(범위 밖)** | `rag/metadata/status-evidence-metadata.md` 예시값 `OT-P03-03` | 1 |
+
+`TEST_EXPECTED` 분류에 해당하는 회귀 테스트 Expected는 **없다** — `scripts/conversational-intake.test.mjs`는 Contract(`P03-T01~T06`) 기준이며 Legacy ID를 참조하지 않는다(회귀 PASS로 확인).
+
+## 26-5. 전역 ID Naming 충돌 (변경하지 않음, 보고만)
+
+E2E-03만 `P03-T0n`을 쓰고 다른 Process는 전부 `OT-P0n-nn` 규약을 유지한다.
+
+| Process | mappings 내 `OT-*` 참조 |
+|---|---|
+| P01 명판·인감 | 15 |
+| P04 보안카드·홈택스 | 18 |
+| P07 계좌개설 | 23 |
+| P08 계좌개설 보완 | 15 |
+| **합계(P03 제외)** | **71** |
+
+| 대안 | 내용 | 평가 |
+|---|---|---|
+| **A1(권장)** | E2E-03은 `P03-T01~T06` 유지, 타 Process는 현행 유지 | Notion TEST Record 66건과 일치, 변경 0. Process별 규약 혼재는 감수 |
+| A2 | E2E-03을 `OT-P03-01~06`으로 재명명 | **비권장** — 기존 TEST Instance 66건 재명명 필요(금지 사항) + Contract 변경 |
+| A3 | 전 Process를 `Pnn-Tnn`으로 전역 이관 | 71곳 + 향후 Notion Record 영향, **별도 승인·별도 TAP 필요** |
+
+## 26-6. 검증 결과
+
+| 구분 | 결과 |
+|---|---|
+| Unit | Task 6개·ID 중복 0·T01~T06 누락 0·Trigger/Output/Evidence 연결 확인 — PASS |
+| Integration | SOP→Contract→Mapping→TEST Task→View→Evidence Type 연결 확인 — PASS |
+| Regression | Intake 테스트 3개 스위트 PASS / JSON·YAML 17개 파싱 PASS / `git diff --check` OK / Historical Evidence 무변경 — PASS |
+| Expected–Actual | 불일치 0 |
+
+## 26-7. A-CP17 판정
+
+**RESULT=PASS_WITH_VIEW_UI_CONFIRMATION_GAP**
+
+View A의 `Task 상태 = 진행 중` 필터만 API로 설정 불가하여 UI 확인이 필요하고, 그 외 상태 전이·View B·Mapping 정합화·Live Acceptance는 전부 PASS다.
+
 ## 최종 판정
 
 **Gate A RESULT=PASS_E2E03_LOGICAL_SOP**
