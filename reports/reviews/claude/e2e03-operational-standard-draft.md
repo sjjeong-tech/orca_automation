@@ -408,6 +408,163 @@ FUND 마스터 `조합구분` 실측 옵션: `전체·신투·벤투·개투·�
 - 5↔6 Task Mapping 수정: 하지 않음(LG-1)
 - 신규 Rule 확정: 없음. 모든 신규 관찰은 사례 1건 기준 잠정 표기
 
+---
+
+# Gate C·D — Notion Physical Prototype과 Live 검증 (TAP A-CP16-R2)
+
+## 19. 실제 Record Chain과 Physical 결과
+
+### 19-1. TEST Asset 정체성 (Write 전 확인)
+
+| 항목 | 실측 | 판정 |
+|---|---|---|
+| Master Record | `[TEST] 가상조합1호`(전체관리조합) | 정확 1건 |
+| FUND Work Record | `[TEST][CI1-PILOT] 가상조합1호`(TO DO LIST) — 구분=결성, 상태=확인전, 업무분류=조합결성 | 정확 1건 |
+| Relation | TO DO LIST `조합명 또는 제목` → Master | 일치 확인 |
+| 운영 조합 여부 | `검토/결과`에 "사용자 Pilot 검증용 가상 조합 Record — 운영 조합 아님" 명시 | 운영 아님 |
+| 명칭 차이 | 사용자 표현 `TEST CI1 PILOT 1` ↔ 실제 `[TEST][CI1-PILOT] 가상조합1호` | **표시명 차이로 기록, 동일 자산** |
+
+중복 검사(Write 직전): Prefix `[TEST][E2E03-PROTOTYPE]` Request 0건·Task 0건 → 신규 생성 경로. 동일 FUND Work Record에 연결된 기존 Request 8건은 Prefix가 달라 중복 Instance로 판정하지 않음(TAP 규정).
+
+### 19-2. 실제 Relation Chain (재조회 확인)
+
+```
+[전체관리조합] [TEST] 가상조합1호
+      ▲ 조합명 또는 제목 (단방향 — 역Relation 없음)
+[TO DO LIST (FUND)] [TEST][CI1-PILOT] 가상조합1호
+      ▲ 관련 조합
+[Request] [TEST][E2E03-PROTOTYPE] 가상조합1호 — 고유번호증 신청
+      ▲ 상위 요청 (6) / ▼ 관련 Task (6)
+[Task] P03-T01 … P03-T06
+```
+
+### 19-3. Expected–Actual
+
+| Requirement | Expected | Actual | Evidence | Result |
+|---|---|---|---|---|
+| Request 생성 | 1건 | 1건 | 재조회 | PASS |
+| Request→TO DO LIST Relation | 1건 | 1건 | 재조회 | PASS |
+| Request Property | 유형·상태·서류상태·요청일·Prefix 일치 | 전부 일치 | 재조회 | PASS |
+| 비움 지정 Property | 원본 폴더·목표일·담당 관리역 = 빈 값 | 전부 null | 재조회 | PASS |
+| Task 생성 | 6건 | 6건 | 재조회 | PASS |
+| Operational Task ID | 6종(P03-T01~T06) | 6종, 중복 0 | `COUNT DISTINCT`=6 | PASS |
+| Process ID | 6건 모두 P03 | 일치 | 재조회 | PASS |
+| Task→Request Relation | 6건 | 6건 | 재조회 | PASS |
+| Request→Task 역Relation | 6건 | 6건 | 재조회 | PASS |
+| 초기 상태 | T01 진행 중 / T02~T06 시작 전 | 일치 | 재조회 | PASS |
+| Actor | T05만 외부기관, 나머지 지원팀 | 일치 | 재조회 | PASS |
+| Blocker | T01 Evidence 미연결, T02~T06 선행 Task 미완료 | 일치 | 재조회 | PASS |
+| 완료증빙 초기값 | 6건 모두 빈 값 | 전부 null | 재조회 | PASS |
+| Task `관련 조합` Rollup | 값 관측 | `<omitted />` | Page fetch | **TOOL_LIMITATION** |
+
+Rollup 항목은 `RELATION_CHAIN_CONFIRMED_BUT_ROLLUP_NOT_OBSERVABLE`로 분리한다. Relation 체인(Task→Request→TO DO LIST→Master)은 전부 확인됐으므로 **기능 결함이 아니라 API 관측 한계**이며, Property Write로 보완하지 않았다.
+
+Physical 불일치: **0건**.
+
+### 19-4. Write 집계
+
+| 항목 | 수 |
+|---|---|
+| Notion Record 생성 | **7**(Request 1 + Task 6) |
+| Notion Record 수정 | 0 |
+| Schema 변경 | 0 |
+| Database 생성 | 0 |
+| View 생성 | 0 |
+| 운영 Record 변경 | 0(전체관리조합·TO DO LIST·기존 Request 8건 전부 무변경) |
+| Drive Write | 0 |
+
+## 20. Live Prototype 결과 (AC-01~AC-05)
+
+| AC | 시나리오 | 결과 | 근거 |
+|---|---|---|---|
+| **AC-01** | "TEST CI1 PILOT 1의 고유번호증 신청 업무 상태와 다음 업무를 확인해줘" | **PASS** | 명칭→TO DO LIST Record 정확 1건 해석 → Master 확인 → Prototype Request 조회 → 활성 Task = P03-T01(진행 중, Actor 지원팀), 다음 Action·Blocker 안내 |
+| **AC-02** | `네`·`진행해주세요`처럼 대상이 모호한 승인 | **PASS** | 어떤 Task를 어떤 상태로 바꾸는지 특정 불가 → **API 호출 0건**, 확인 질문으로 전환(Contract 6절 fail-safe) |
+| **AC-03** | 동일 요청 재처리 | **PASS** | 재조회 결과 Request 1 / Task 6 / distinct OTID 6 — **신규 생성 0건** |
+| **AC-04** | Evidence 누락 | **PASS** | TEST Asset에 Drive Evidence 미연결 → T01 자동 완료하지 않음, 완료증빙 빈 값 유지, Blocker "실제 Evidence·실물서류 미연결" 표시, 필요한 Evidence 목록 안내(20-1) |
+| **AC-05** | "요청정보 확인이 끝났다고 처리해줘" | **PASS(Preview only)** | 예상 변경값을 표로 제시하고 **실제 상태 Write 0건**. 필요한 사람 확인 항목 함께 제시(20-2) |
+
+### 20-1. AC-04에서 안내한 필요 Evidence (T01 기준)
+
+조합 기본정보·투자유형·GP유형 판단자료, 그리고 착수 근거가 되는 실물 날인본 인계 사실. TEST 자산에는 실제 Drive Root가 없으므로 Blocker 유지가 정상이다.
+
+### 20-2. AC-05 상태변경 Preview (미실행)
+
+| 대상 | 현재 | 변경 예정 | 필요한 사람 확인 |
+|---|---|---|---|
+| P03-T01 | 진행 중 / Blocker 있음 / 완료증빙 빈 값 | 완료 / Blocker 해제 / 완료증빙 기록 | GP 유형 확정, 실물 날인본 인계 사실 |
+| P03-T02 | 시작 전 / Blocker "P03-T01 미완료" | 진행 중 / Blocker 해제 | 없음(T01 완료 시 자동 해소) |
+| Request | 진행 중 | 변경 없음 | — |
+
+예상 Write 2건. **별도 명시 승인 전 실행하지 않는다.**
+
+## 21. 외근 Evidence 연결 후보 (Logical만, Write 0)
+
+Git Inventory는 참고 Evidence이며 운영 Source of Truth가 아니다.
+
+| Evidence Type | Process | Task 후보 | 필요한 사람 확인 | 완료증빙 후보 | 자동 완료 |
+|---|---|---|---|---|---|
+| `SUBMISSION_PACKAGE` | E2E-03 | T03·T04 | 날인 실물·양식 최신성 | 합본 파일 확인 텍스트 | **금지** |
+| `RECEIPT` | E2E-03 | T04 | 실제 접수 사실 | 접수증 확인 + 저장 위치 | **금지** |
+| `RESULT_DOCUMENT` | E2E-03 | T05 | 실물 수령·수령자 자격 | 발급본 확인 | **금지** |
+| `SUPPLEMENT` | E2E-03 | 해당 Task Blocker | 보완 요구 내용 해석 | 보완 수령 재검수 텍스트 | **금지** |
+| `SECURITY_CARD` | P04(후속) | T06 이후 후속 판단 | 발급·수령·전달 주체 | 후속 Process 인계 상태 | **금지** |
+| `BANKBOOK_COPY` | P07(은행) | 범위 외 | — | — | **금지** |
+
+## 22. 매니저 공유 Prototype (신규 Property·View 0)
+
+### 22-1. 현재 Prototype 요약(기존 Property만으로 생성)
+
+진행 중 업무 = P03-T01 / 다음 담당 주체 = 지원팀 / Blocker = 실제 Evidence·실물서류 미연결 / 필요한 Evidence = 20-1 / 후속 Action = 요청정보와 착수조건 확인.
+
+### 22-2. 검증된 설계 발견
+
+`Blocker IS NOT NULL` 단독 필터는 **6건 전부**를 반환한다(T02~T06의 "선행 Task 미완료"가 모두 Blocker이기 때문). 실제 조치 대상만 뽑으려면 **`Task 상태 = 진행 중` 조건을 결합**해야 하며, 이 조건으로 재조회한 결과 정확히 **1건(P03-T01)** 만 반환됐다. **[OBSERVED — 이번 실측]**
+
+시사점: 선행 의존성은 Blocker가 아니라 `다음 Action`으로 표현하는 편이 공유 뷰 노이즈를 줄인다. **[PROPOSED — 확정하지 않음]**
+
+### 22-3. View A 후보 (생성하지 않음)
+
+- 이름: `[TEST] 매니저 공유 — 진행·Blocker`
+- 기준 DB: `[TEST]지원팀 Task`
+- Filter: `Task 상태 ≠ 완료` AND (`현재 Actor = 관리역 확인` OR (`Task 상태 = 진행 중` AND `Blocker` 비어있지 않음))
+- Sort: `목표일` 오름차순 → `Operational Task ID` 오름차순
+- 표시 Property: 관련 조합(Rollup), Task명, Task 상태, 담당자, 현재 Actor, 다음 Action, Blocker, 목표일
+- 기대 사용자: 담당 관리역·지원팀 리드
+- 기존 View 대비 차이: 조합 단위가 아닌 **조치 필요 항목 중심** 집계
+- 실제 발송: 없음. `마지막 공유일` Property 생성하지 않음
+
+## 23. 조합별 트래킹 Prototype (신규 DB 0)
+
+### 23-1. 체인으로 구성 가능 여부
+
+TO DO LIST Record → Request → Task 체인이 실제 Relation으로 확인됐으므로(19-2) 조합별 집계는 **기존 Relation만으로 구성 가능**하다. 신규 DB 없이 Linked View로 충족된다.
+
+| 조합 | 진행 중 Request | Task 상태 | 현재 Actor | 다음 Action | Blocker | 완료증빙 |
+|---|---|---|---|---|---|---|
+| [TEST] 가상조합1호 | [TEST][E2E03-PROTOTYPE] 1건 | T01 진행 중 / T02~T06 시작 전 | 지원팀(T05 외부기관) | T01 요청정보·착수조건 확인 | T01 Evidence 미연결 | 전 Task 빈 값 |
+
+### 23-2. View B 후보 (생성하지 않음)
+
+- 이름: `[TEST] 조합별 행정업무 트래킹`
+- 기준 DB: `[TEST]지원팀 Task`(Task 단위가 상태 SoT이므로 Request보다 적합)
+- Filter: `Process ID` 지정(예: P03) — 조합 필터는 `관련 조합` Rollup 기준
+- Group by: `관련 조합`(Rollup)
+- Sort: `Operational Task ID` 오름차순
+- 표시 Property: 관련 조합, Operational Task ID, Task명, Task 상태, 현재 Actor, 다음 Action, Blocker, 완료조건, 완료증빙
+- 기대 사용자: 조합 담당 관리역
+- 기존 View 대비 차이: 조합 축 그룹핑 제공
+- **제약**: `관련 조합`이 Rollup이라 API로 값이 관측되지 않는다(19-3). Group by 동작은 **UI 육안 확인 필요** `[확인 필요]`
+- **신규 트래킹 DB 비권장 결론 유지**: 체인이 이미 존재하므로 Projection DB는 동기화 부채만 추가
+
+## 24. Gate C·D 판정
+
+**RESULT=PASS_WITH_ROLLUP_TOOL_LIMITATION**
+
+Physical Expected–Actual 불일치 0건, Live AC-01~AC-05 전부 PASS. 유일한 미관측 항목은 Rollup 값의 API 노출 한계이며 Relation 체인 자체는 확인됐다.
+
+STATUS=E2E03_PHYSICAL_AND_LIVE_PROTOTYPE_VERIFIED
+NEXT_OWNER=GPT_AND_USER
+
 ## 최종 판정
 
 **Gate A RESULT=PASS_E2E03_LOGICAL_SOP**
