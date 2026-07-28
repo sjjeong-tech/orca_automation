@@ -12,9 +12,9 @@
 | Process | E2E-03 고유번호증 신청·수령 / `P03-T01`~`P03-T06` |
 | Active Branch | `agent/claude/e2e03-natural-language-contract` |
 | Main Head | `f25161c` |
-| Branch Head | `ffebdaa` |
-| Last Completed Commit | A-CP22 보안 수정(아래 11절) |
-| Current Gate | P0 수정 완료 → Codex 재검증 대기 |
+| Branch Head | A-CP23 (아래 12절) |
+| Last Completed Commit | A-CP23 실사용 MVP |
+| Current Gate | 실사용 MVP 완료(preview_only) → Codex 보안 재검증 + `test_write` 승인 대기 |
 | Current Mode | **preview_only / 운영 Write 0** |
 
 ## 2. 완료된 단계 (Commit·판정만)
@@ -146,6 +146,9 @@ Layer 2의 "자동화 보류"를 다음 4가지 금지로 해석할 것을 제�
 6. 보안카드 자격증명 평문 — 본문 미독 정책 확정 필요
 7. View A의 status 필터가 API로 설정 불가 → UI 적용 필요
 8. Request `관련 조합` 값 혼재(일부가 FUND 마스터 Page 지시)
+9. Task ID 체계 3종 혼재 — 정합화 여부는 사용자 결정 (A-CP23 D2)
+10. FUND `조합 Root 폴더` 값이 있는 조합이 1건뿐 — 대부분 Evidence 조회 불가
+11. Drive 커서 페이지네이션 미구현(폴더당 100건 상한)
 
 ## 11. A-CP22 보안 수정 (Codex 재감사 4c0cf88 대응)
 
@@ -162,3 +165,31 @@ Layer 2의 "자동화 보류"를 다음 4가지 금지로 해석할 것을 제�
 | P1 Bridge | `providers/bridge.mjs` — Bridge Request/Response 계약, 논리 동작→Connector 도구 매핑, Write Bridge 기본 비활성, Raw 미보관 |
 
 여전히 `preview_only`이며 실제 Write Bridge는 비활성이다. `test_write` 승격은 Codex 재검증과 사용자 승인 이후에만 가능하다.
+
+## 12. A-CP23 실사용 MVP
+
+사용자가 자연어로 요청하고 결과를 받는 4개 기능을 완성했다. 실제 Notion·Drive Read 수행, Write 0.
+
+| 구성 | 경로 |
+|---|---|
+| Intent Router | `plugins/vc-support-admin/kernel/intent.mjs` |
+| Result Formatter | `plugins/vc-support-admin/kernel/format.mjs` |
+| 사용자 Entry Point | `index.mjs` → `runUserRequest()` |
+| Session Runner | `plugins/vc-support-admin/session-runner.mjs` (`runSessionWorkflow`) |
+| Smoke Test | `plugins/vc-support-admin/tests/smoke.test.mjs` (17건) |
+
+Intent 4종: `get_fund_process_status` `inspect_fieldwork_evidence` `build_notion_preview` `build_manager_update`.
+사용자는 Intent 이름을 입력하지 않는다. 모호하면 확인 질문 1회.
+
+**Session 실행 루프**: Runner가 `pending`(결정적 Key + tool + params)을 반환 → 세션이 실제 Tool 호출 → 응답을 같은 Key로 주입 → 재실행. 2~4 라운드에 완료. Write Tool은 Runner에서 영구 차단.
+
+**Live 검증**: 그로스브릿지-바이오투자조합(Notion 3 / Drive 6 Read) + 재사용 3건(NOT_FOUND / MULTIPLE / Root 미등록 EXACT_1). Write 0.
+
+**실측에서만 드러난 결함 8건 수정** — 상세는 실행표준 §29-5.
+
+- Task는 제목이 아니라 `상위 요청` **Relation**으로 Request에 붙는다
+- Task ID 체계가 Instance마다 다르다(`P03-T01`/`OT-P03-01`/`CI1-P03-01`) → 순번 대응 후 **사용자에게 보고**, 자동 정합화 금지
+- 발급 결과물이 Canonical Source가 아니라 **Fund Root 최상위**에 있는 사례
+- 외근 폴더는 당월 `MMDD`와 월 아카이브 `YYYY.MM`이 **같은 계층**에 공존
+- 체크리스트·증권거래세 문서가 P03 증빙으로 오분류 → 제외 신호 추가
+- 서로 다른 조합의 동일 type 중복 오탐 → 중복 단위를 `조합 + type`으로 변경

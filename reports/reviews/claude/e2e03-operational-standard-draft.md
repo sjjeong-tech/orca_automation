@@ -891,6 +891,75 @@ Fund Resolver / Fund Work Resolver / Request Resolver / Task State Engine / Evid
 
 **RESULT=PASS_REUSABLE_E2E03_SKILL / PASS_NOTION_DRIVE_SLACK_PLUGIN_PROTOTYPE / PASS_REUSE_ACCEPTANCE / PASS_WITH_SLACK_PREVIEW_ONLY / PASS_WITH_HUMAN_CONFIRMATION_GAPS**
 
+# 29. A-CP23 — 실사용 MVP (사용자 대면 명령 + 실제 Read)
+
+## 29-1. 산출물
+
+| 구성 | 경로 | 역할 |
+|---|---|---|
+| Intent Router | `plugins/vc-support-admin/kernel/intent.mjs` | 발화 → 4개 Intent 판정, 조합명·날짜 추출, 모호 시 확인 질문 1회 |
+| Result Formatter | `plugins/vc-support-admin/kernel/format.mjs` | 업무자용 한국어 결과문. 최종 문자열은 마스킹을 통과한다 |
+| 사용자 Entry Point | `plugins/vc-support-admin/index.mjs` → `runUserRequest()` | U1~U4 단일 파이프라인 |
+| Session Runner | `plugins/vc-support-admin/session-runner.mjs` | Tool 호출 산출 → 세션 실행 → 응답 주입 → 결과. Write Tool 영구 차단 |
+| Smoke Test | `plugins/vc-support-admin/tests/smoke.test.mjs` | 17건 |
+
+Intent: `get_fund_process_status` / `inspect_fieldwork_evidence` / `build_notion_preview` / `build_manager_update`. 사용자는 Intent 이름을 입력하지 않는다.
+
+## 29-2. Session 실행 방식
+
+Node는 MCP를 직접 호출할 수 없다. Runner는 미해결 Tool 호출을 결정적 Key(`<tool>::<sha1 12자>`)와 함께 `pending`으로 반환하고, 세션이 실행한 원본 응답을 같은 Key로 주입받아 이어서 계산한다. 실제 사례에서 `STATUS=COMPLETE`까지 2~4 라운드가 걸렸다. 개발자가 호출을 손으로 조립하지 않는다.
+
+## 29-3. Live Case 1 — 그로스브릿지-바이오투자조합 (실제 Read)
+
+Notion Read 3 / Drive Read 6 / **Write 0**
+
+| 항목 | 결과 |
+|---|---|
+| FUND | EXACT_1, 조합구분 민법, 고유번호 미등록, Root 폴더 등록됨 |
+| Request | `[TEST][E2E03-EVIDENCE-SHADOW] … 고유번호증 신청` (진행 중) |
+| Task | `상위 요청` Relation으로 6건 조회. 전 Task `진행 중` |
+| Evidence 위치 | `조합 Root > 1. 결성 > 1. 고유번호증 신청` + `조합 Root 최상위` |
+| 인정 | RECEIPT 1 / SUBMISSION_PACKAGE 1 / SUPPLEMENT 2 / RESULT_DOCUMENT 1(Fund Root) |
+| 범위 밖 | 보안카드신청서(P04) / 통장사본(P07) |
+| 불인정 | 0byte 2건 + 미분류 다수 |
+| 자동 완료 | **0건** |
+
+## 29-4. Live Case 2 — 재사용 (신규 코드 0)
+
+| 케이스 | 입력 | 결과 |
+|---|---|---|
+| 2a | 존재하지 않는 조합명 | `NOT_FOUND` → 정식명칭 요청, Write 0 |
+| 2b | 부분어 1개 | `MULTIPLE` 5건 후보 제시, 자동 선택 없음, Write 0 |
+| 2c | 다른 실제 조합(EXACT_1) | Root 미등록 → Evidence 조회 불가를 명시하고 Notion 기록만으로 판단. 동일 출력 Contract |
+
+## 29-5. 실사용에서 드러난 실측 결함 (전부 수정)
+
+| # | 결함 | 영향 | 수정 |
+|---|---|---|---|
+| D1 | Task를 제목으로 검색 | 정상 Instance가 0건으로 보임 | `상위 요청` Relation 조회를 기본 경로로 (`find_tasks_by_request`) |
+| D2 | Task ID 체계가 Instance마다 다름 (`P03-T01`/`OT-P03-01`/`CI1-P03-01`) | 6건 존재해도 전부 "기록 없음" | `reconcileTaskIds` — 순번 대응 + **사용자에게 보고**, 자동 정합화 금지 |
+| D3 | 발급 결과물이 Canonical Source가 아닌 Fund Root 최상위에 저장 | 발급본 미확인으로 오판 | 두 계층을 모두 읽고 `source_layer`로 구분 |
+| D4 | `## 고유번호증, 계좌개설 체크리스트`가 발급본으로 분류 | 발급 완료 오판 | RESULT_DOCUMENT `exclude_signals`에 체크리스트·양식·안내·서식·(안) 추가 |
+| D5 | 증권거래세 접수증이 P03 접수증으로 분류 | 접수 완료 오판 | `scope_exclusion_signals` 신설 → `OUT_OF_SCOPE` |
+| D6 | 서로 다른 조합의 동일 type을 중복으로 판정 | 외근 폴더 전건 오탐 | 중복 판정 단위를 `조합 + type`으로 변경 |
+| D7 | 외근 날짜 폴더가 월 폴더 아래에 있다고 가정 | 당월 폴더 미해소 | 당월 `MMDD`는 Root 직하, 지난 달은 `YYYY.MM` 아래 — 두 계층 모두 탐색 |
+| D8 | 후속 발화에 업무명이 없으면 미지원 처리 | "매니저에게 공유해줘"가 인계로 종료 | 다른 Process 신호가 없으면 이어서 처리, 있으면 인계 |
+
+D1~D7은 Fixture만으로는 관측되지 않았고 **실제 데이터에서만** 드러났다.
+
+## 29-6. 테스트
+
+Smoke 17/17 PASS. 기존 회귀 harness·provider·live·security 전부 PASS (보안 10/10 + 34/34 재사용, 재확장 없음).
+
+## 29-7. 실사용 준비 판정
+
+**READY_NOW**: 조합별 상태 조회 · Evidence 검토 · 다음 Action · Blocker · Notion Preview · 매니저 공유문 · 다른 Agent 재사용
+**NOT_READY**: 운영 Notion 자동 Write · 실제 Slack 발송 · 자동 Task 완료 · P04 실행
+
+## 29-8. A-CP23 판정
+
+**RESULT=PASS_USABLE_E2E03_SKILL / PASS_USER_FACING_PLUGIN_MVP / PASS_LIVE_READ_AND_PREVIEW / PASS_MANAGER_UPDATE_GENERATION / PASS_REUSE_CASE / PASS_WITH_MCP_SESSION_RUNNER**
+
 ## 최종 판정
 
 **Gate A RESULT=PASS_E2E03_LOGICAL_SOP**
