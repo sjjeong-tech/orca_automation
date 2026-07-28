@@ -12,6 +12,7 @@ function base(event) {
     process_id: event.process_id ?? "P03",
     operational_task_id: task,
     evidence_judgment: "UNCLASSIFIED",
+    // 완료는 실제 Notion 상태 변경이 아니라 사람 확인용 후보 상태다.
     proposed_task_status: event.current_task_status ?? "진행 중",
     proposed_actor: event.current_actor ?? "지원팀",
     proposed_next_action: event.current_next_action ?? "Evidence와 Task 상태 확인",

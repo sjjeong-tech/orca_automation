@@ -36,12 +36,23 @@ for (const validity of ["ZERO_BYTE", "INVALID_SHORTCUT"]) {
 
 const verified = evaluateEvidenceState(event({ evidence_type: "STAMPED_DOCUMENT", human_confirmation: false }));
 assert.equal(verified.evidence_judgment, "확인됨");
+// proposed_task_status=완료 is only a preview candidate; no Notion write is planned.
 assert.equal(verified.proposed_task_status, "완료");
 assert.equal(verified.completion_candidate, true);
 
 const preview = evaluateEvidenceState(event());
 assert.equal(preview.change_preview.planned_write_count, 0);
 assert.equal(preview.change_preview.actual_write_count, 0);
+
+const unsupported = evaluateEvidenceState(event({ evidence_type: "UNKNOWN_TYPE" }));
+assert.equal(unsupported.evidence_judgment, "UNCLASSIFIED");
+assert.ok(unsupported.reason_codes.includes("UNSUPPORTED_EVIDENCE_TYPE"));
+assert.equal(unsupported.change_preview.planned_write_count, 0);
+
+const malformed = evaluateEvidenceState({ evidence_type: "UNKNOWN_TYPE", evidence_validity: "UNKNOWN" });
+assert.ok(malformed.reason_codes.includes("UNSUPPORTED_EVIDENCE_TYPE"));
+assert.equal(malformed.request_completion_allowed, false);
+assert.equal(malformed.change_preview.actual_write_count, 0);
 assert.equal(parseEvidenceText("P03-004 접수증은 있는데 조합명과 접수일을 아직 확인하지 않았어.").proposed_next_action, "접수증 본문 대조");
 assert.equal(parseEvidenceText("P03-005 고유번호증 PDF는 있지만 최신본인지 모르겠고 실물도 아직 못 받았어.").proposed_next_action, "최신본·실물 수령 확인");
 assert.equal(parseEvidenceText("P03-T06 파일은 저장했지만 관리역에게 전달했는지 확인이 안 돼.").proposed_next_action, "관리역 전달 여부 확인");
