@@ -1,0 +1,19 @@
+{
+  "registry_version": "0.1.0",
+  "skills": [
+    {
+      "skill_id": "e2e03-tax-id-application",
+      "skill_path": "skills/e2e03-tax-id-application",
+      "process_id": "P03",
+      "trigger_phrases": ["고유번호증 신청", "고유번호증 진행상태", "세무서 고유번호", "외근 산출물 확인", "고유번호증 다음 업무"],
+      "enabled": true,
+      "required_connectors": ["notion"],
+      "optional_connectors": ["drive", "slack"],
+      "write_mode": "preview_only",
+      "approval_policy": "EXPLICIT_TARGET_AND_VALUE_REQUIRED"
+    }
+  ],
+  "planned_not_implemented": [
+    {"skill_id": "p04-security-card-hometax", "reason": "E2E-03 Plugin Prototype PASS 이후 별도 TAP"}
+  ]
+}

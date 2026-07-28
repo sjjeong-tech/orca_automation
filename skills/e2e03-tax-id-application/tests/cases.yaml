@@ -1,0 +1,53 @@
+{
+  "fixture_policy": "실제 Page·Drive ID를 사용하지 않는다. 조합명은 A-CP18 검증 사례와 임의 대체 사례를 함께 사용해 재사용성을 확인한다.",
+  "cases": [
+    {
+      "id": "REUSE-01",
+      "purpose": "기존 Shadow Instance 재사용 조회",
+      "input": {"user_message": "외근 폴더의 고유번호증 관련 산출물을 확인해서 현재 상태와 필요한 후속 업무를 알려줘.", "fund_hint": "그로스브릿지-바이오투자조합"},
+      "fixture": {"funds": ["그로스브릿지-바이오투자조합"], "existing_request": true, "evidence": "full"}
+    },
+    {
+      "id": "NOWRITE-01",
+      "purpose": "모호한 승인 발화 Write 0",
+      "input": {"user_message": "그로스브릿지 고유번호증 업무 진행해주세요.", "fund_hint": "그로스브릿지-바이오투자조합", "approval_context": "진행해주세요"},
+      "fixture": {"funds": ["그로스브릿지-바이오투자조합"], "existing_request": true, "evidence": "full"}
+    },
+    {
+      "id": "DUP-01",
+      "purpose": "동일 입력 재실행 시 중복 생성 0",
+      "input": {"user_message": "고유번호증 진행상태 확인", "fund_hint": "그로스브릿지-바이오투자조합"},
+      "fixture": {"funds": ["그로스브릿지-바이오투자조합"], "existing_request": true, "evidence": "full"}
+    },
+    {
+      "id": "FUND-NOTFOUND",
+      "purpose": "FUND 0건 Write 0",
+      "input": {"user_message": "존재하지않는조합 고유번호증 신청", "fund_hint": "존재하지않는조합"},
+      "fixture": {"funds": [], "existing_request": false, "evidence": "none"}
+    },
+    {
+      "id": "FUND-MULTIPLE",
+      "purpose": "FUND 복수 Write 0",
+      "input": {"user_message": "아타카마 고유번호증 신청", "fund_hint": "아타카마"},
+      "fixture": {"funds": ["아타카마 1호 개인투자조합", "아타카마 2호 개인투자조합"], "existing_request": false, "evidence": "none"}
+    },
+    {
+      "id": "REUSE-OTHER-FUND",
+      "purpose": "다른 조합·다른 Evidence로 동일 Skill 재사용",
+      "input": {"user_message": "고유번호증 신청 진행상태 확인", "fund_hint": "샘플 벤처투자조합"},
+      "fixture": {"funds": ["샘플 벤처투자조합"], "existing_request": false, "evidence": "receipt_only"}
+    },
+    {
+      "id": "EVIDENCE-SAFETY",
+      "purpose": ".lnk·0byte 불인정과 자동 완료 금지",
+      "input": {"user_message": "고유번호증 산출물 확인", "fund_hint": "샘플 벤처투자조합"},
+      "fixture": {"funds": ["샘플 벤처투자조합"], "existing_request": false, "evidence": "unsafe"}
+    },
+    {
+      "id": "APPROVAL-EXPLICIT",
+      "purpose": "대상·값이 명시된 승인은 통과",
+      "input": {"user_message": "고유번호증 상태 변경", "fund_hint": "샘플 벤처투자조합", "approval_context": "P03-T01을 완료로 변경해주세요"},
+      "fixture": {"funds": ["샘플 벤처투자조합"], "existing_request": true, "evidence": "receipt_only"}
+    }
+  ]
+}

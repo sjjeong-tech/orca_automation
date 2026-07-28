@@ -1,0 +1,40 @@
+{
+  "suite": "e2e03-live",
+  "mode": "READ_ONLY_AGAINST_EXISTING_SHADOW",
+  "note": "A-CP18에서 생성한 Shadow Instance를 재사용한다. 신규 Shadow를 만들지 않는다. 실제 Page·Drive ID는 이 파일에 기록하지 않는다.",
+  "preconditions": {
+    "shadow_request_prefix": "[TEST][E2E03-EVIDENCE-SHADOW]",
+    "expected_shadow_request_count": 1,
+    "expected_shadow_task_count": 6,
+    "expected_completed_task_count": 0,
+    "expected_human_confirmation_count": 6
+  },
+  "scenarios": [
+    {
+      "id": "LIVE-01",
+      "input": "외근 폴더의 고유번호증 관련 산출물을 확인해서 현재 상태와 필요한 후속 업무를 알려줘.",
+      "expected": {"reuse_existing": true, "new_request": 0, "new_task": 0, "operating_write": 0, "slack_send": 0, "slack_preview": true}
+    },
+    {
+      "id": "LIVE-02",
+      "input": "그로스브릿지 고유번호증 업무 진행해주세요.",
+      "expected": {"approval_required": true, "error_code": "APPROVAL_AMBIGUOUS", "write": 0, "clarifying_question": true}
+    },
+    {
+      "id": "LIVE-03",
+      "input": "동일 요청 재실행",
+      "expected": {"duplicate_key_stable": true, "new_request": 0, "new_task": 0}
+    },
+    {
+      "id": "LIVE-04",
+      "input": "고유번호증 발급본이 있으니 완료 처리해줘.",
+      "expected": {"auto_complete": false, "reason": "EVIDENCE_ONLY_CANNOT_COMPLETE", "write": 0, "human_confirmation_required": true}
+    },
+    {
+      "id": "LIVE-05",
+      "input": "FUND 고유번호가 비어 있는데 발급본이 있어. 채워줘.",
+      "expected": {"operating_write": 0, "gap_preview": true, "reason": "OPERATING_VALUE_NO_AUTOFILL"}
+    }
+  ],
+  "verification": ["expected_actual_table", "duplicate_zero", "operating_change_zero", "drive_change_zero", "slack_send_zero"]
+}

@@ -835,6 +835,62 @@ View 필터에 의존하지 않고 Task DB를 직접 조회해 생성.
 
 Evidence Intake·Shadow Physical·Live Acceptance·매니저 공유·조합별 트래킹 전부 PASS이며, 남은 Gap은 전부 **사람 확인 필요** 항목이다.
 
+---
+
+# 28. A-CP19 재사용 Skill·Plugin Prototype
+
+검증된 E2E-03 흐름을 **다른 조합·세션·Interface에서 재사용 가능한 실행 단위**로 구현했다. A-CP18의 Evidence 전수조사와 Shadow 생성은 반복하지 않고 재사용했다(최소 재조회만 수행 — Shadow Task 6 / OTID 6 / 완료 0 / 사람확인 6 무변경 확인).
+
+## 28-1. 산출물
+
+| 경로 | 역할 |
+|---|---|
+| `skills/e2e03-tax-id-application/SKILL.md` | Skill 정의(Rule 본문 복제 없이 Canonical 경로 참조) |
+| `skills/e2e03-tax-id-application/contract.yaml` | Skill Contract — 상태·Evidence·승인·중복·재개 규약 |
+| `skills/e2e03-tax-id-application/tests/{cases,expected}.yaml` | 8개 재사용 Test Case와 기대값 |
+| `plugins/vc-support-admin/plugin.yaml` | Manifest — 권한·승인 대상·Evidence·중복 정책 |
+| `plugins/vc-support-admin/skills.yaml` | Skill Registry (E2E-03 1개 등록, P04는 미구현 명시) |
+| `plugins/vc-support-admin/index.mjs` | Entry Point `processRequest()` + 순수 판정 로직 |
+| `plugins/vc-support-admin/adapters/{notion,drive,slack}.yaml` | Adapter Mapping·유효성·메시지 Contract |
+| `plugins/vc-support-admin/prompts/{intake,preview,result}.md` | 단계별 Prompt |
+| `plugins/vc-support-admin/tests/harness.test.mjs` | 실행 가능한 Test Harness |
+| `plugins/vc-support-admin/config.example.yaml` | 주입 Config 예시(실제 ID 없음) |
+
+기존 Runtime(zero-dependency Node ESM)만 사용했고 신규 Framework·Package Manager를 도입하지 않았다. 기존 `scripts/conversational-intake.mjs`의 **adapter 주입 패턴을 그대로 재사용**했다.
+
+## 28-2. 재사용 설계
+
+- 실제 Database·Page·Drive ID가 소스에 **0개** — `runtime_config`·`providers` 주입, Harness의 ID Scan이 이를 강제
+- 데이터 접근은 전부 `providers.notion`/`providers.drive` 인터페이스 경유 → 테스트는 fixture, 실사용은 MCP 구현 주입
+- Task 상태 계산이 순수 함수 → **Interface가 달라도 결과 동일**, 표현만 Adapter가 변경
+
+## 28-3. 테스트 결과 (`node plugins/vc-support-admin/tests/harness.test.mjs`)
+
+| 구분 | 결과 |
+|---|---|
+| Unit | PASS — Evidence 분류(.lnk·0byte 불인정), Task 상태 6종, Duplicate Key |
+| Approval Guard | PASS — `네`·`진행해주세요`·`그렇게 해주세요`·`확인했습니다` 전부 차단, 대상+행동 명시만 통과 |
+| Case (8건) | PASS — 재사용·No-write·중복·FUND 0/1/복수·Evidence Safety·명시 승인 |
+| Invariant | PASS — 전 케이스 Write 0 / 자동완료 0 / 운영변경 0 / Slack 발송 0 |
+| Interface Reuse | PASS — CLI와 Slack Preview의 Task 상태 계산 결과 동일 |
+| Hardcoded ID Scan | PASS — **0건** |
+| Registry | PASS — Manifest·Registry·Skill 경로 정합 |
+| 기존 회귀 | PASS — `conversational-intake.test.mjs` 3개 스위트 무영향 |
+
+## 28-4. 실사용 준비 수준
+
+| READY | HUMAN_CONFIRMATION_REQUIRED | NOT_READY |
+|---|---|---|
+| Skill 실행, Fund Resolve, Evidence 분류, 상태 후보 계산, Preview, TEST Write, 재조회, Slack Preview | 접수증 본문, 발급본 최신성, 날인 여부, 실물 확인, 관리역 전달 | 운영 Record 자동 Write, 실제 Slack 발송, Evidence 자동 완료, P04 자동 실행 |
+
+## 28-5. 다음 Process 확장 시 재사용 가능한 공통 요소
+
+Fund Resolver / Fund Work Resolver / Request Resolver / Task State Engine / Evidence Classifier / Human Confirmation Guard / Approval Guard / Notion·Drive·Slack Adapter / Duplicate Guard / Expected–Actual Verifier — 전부 Process 비의존으로 분리돼 있어 P04 Skill 추가 시 Contract와 Evidence 규칙만 교체하면 된다. **이번 TAP에서 P04는 만들지 않았다.**
+
+## 28-6. A-CP19 판정
+
+**RESULT=PASS_REUSABLE_E2E03_SKILL / PASS_NOTION_DRIVE_SLACK_PLUGIN_PROTOTYPE / PASS_REUSE_ACCEPTANCE / PASS_WITH_SLACK_PREVIEW_ONLY / PASS_WITH_HUMAN_CONFIRMATION_GAPS**
+
 ## 최종 판정
 
 **Gate A RESULT=PASS_E2E03_LOGICAL_SOP**

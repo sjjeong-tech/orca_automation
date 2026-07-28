@@ -1,0 +1,19 @@
+{
+  "expected": {
+    "REUSE-01": {"fund_match_result": "EXACT_1", "reuse_existing": true, "planned_write_count": 0, "committed_write_count": 0, "auto_completed_tasks": 0, "human_confirmation_count": 6},
+    "NOWRITE-01": {"fund_match_result": "EXACT_1", "approval_required": true, "approval_error": "APPROVAL_AMBIGUOUS", "committed_write_count": 0},
+    "DUP-01": {"fund_match_result": "EXACT_1", "reuse_existing": true, "planned_write_count": 0, "committed_write_count": 0, "duplicate_key_stable": true},
+    "FUND-NOTFOUND": {"fund_match_result": "NOT_FOUND", "committed_write_count": 0, "error_code": "FUND_NOT_FOUND"},
+    "FUND-MULTIPLE": {"fund_match_result": "MULTIPLE", "committed_write_count": 0, "error_code": "FUND_MULTIPLE"},
+    "REUSE-OTHER-FUND": {"fund_match_result": "EXACT_1", "reuse_existing": false, "planned_write_count": 7, "committed_write_count": 0, "auto_completed_tasks": 0},
+    "EVIDENCE-SAFETY": {"rejected_evidence_min": 2, "counted_types_exclude": ["SECURITY_CARD"], "auto_completed_tasks": 0},
+    "APPROVAL-EXPLICIT": {"approval_required": false, "target_task": "P03-T01", "committed_write_count": 0, "reason": "preview_only 기본값이므로 승인돼도 Write 0"}
+  },
+  "global_invariants": {
+    "auto_completed_tasks_total": 0,
+    "operating_record_change": 0,
+    "drive_write": 0,
+    "slack_send": 0,
+    "hardcoded_ids": 0
+  }
+}

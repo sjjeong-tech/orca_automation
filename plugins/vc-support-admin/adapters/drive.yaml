@@ -1,0 +1,36 @@
+{
+  "adapter_id": "drive",
+  "version": "0.1.0",
+  "id_policy": "실제 Folder·File ID·URL을 이 파일에 저장하지 않는다. fund_root는 Notion fund_root_folder Property에서 읽고, 공통 폴더는 runtime_config.shared_functional_folders로 주입한다.",
+  "source_layers": [
+    {"layer": "fund_root", "definition": "조합 1건의 장기 기준 폴더", "resolution": "notion.fund_master.조합 Root 폴더", "priority": 1},
+    {"layer": "canonical_source", "definition": "업무별 Canonical Source Folder", "resolution": "fund_root 하위 경로 규약", "priority": 2, "status": "PROVISIONAL"},
+    {"layer": "request_source", "definition": "외근 날짜별 작업 폴더(조합별 아님)", "resolution": "runtime_config.fieldwork_root 하위 날짜 폴더", "priority": 3},
+    {"layer": "shared_functional", "definition": "업무유형 결과물을 여러 조합에 걸쳐 일괄 보관", "resolution": "runtime_config.shared_functional_folders", "priority": 4}
+  ],
+  "traversal_policy": {"prefer": "parent_id", "broad_search": "FALLBACK_ONLY", "broad_search_risk": "무관한 실제 조합의 민감 서류 노출"},
+  "evidence_classification": [
+    {"type": "SUBMISSION_PACKAGE", "signals": ["신청서류", "합본"], "task_candidates": ["P03-T03", "P03-T04"]},
+    {"type": "RECEIPT", "signals": ["접수증"], "task_candidates": ["P03-T04"]},
+    {"type": "RESULT_DOCUMENT", "signals": ["고유번호증"], "task_candidates": ["P03-T05", "P03-T06"], "exclude_signals": ["신청", "접수", "정정"]},
+    {"type": "SUPPLEMENT", "signals": ["보완"], "task_candidates": ["P03-T02", "P03-T04"]},
+    {"type": "SECURITY_CARD", "signals": ["보안카드"], "task_candidates": [], "downstream_process": "P04"},
+    {"type": "BANKBOOK_COPY", "signals": ["통장사본"], "task_candidates": [], "downstream_process": "P07"}
+  ],
+  "validity_rules": [
+    {"verdict": "UNVERIFIED_SHORTCUT", "when": "extension == lnk", "counts_as_evidence": false},
+    {"verdict": "ZERO_BYTE", "when": "size == 0", "counts_as_evidence": false},
+    {"verdict": "STALE_OR_DUPLICATE", "when": "동일 type이 복수 위치에 존재", "counts_as_evidence": true, "note": "오류 아님. 최신본 판단은 사람 확인"},
+    {"verdict": "VERIFIED", "when": "size > 0 이고 type 신호가 파일명에서 확인됨", "counts_as_evidence": true, "note": "본문 사실은 확정하지 않음"},
+    {"verdict": "CANDIDATE", "when": "type 신호가 불명확하거나 작성본·날인본 구분 불가", "counts_as_evidence": false},
+    {"verdict": "MISSING", "when": "해당 type 파일 없음", "counts_as_evidence": false},
+    {"verdict": "ACCESS_BLOCKED", "when": "폴더·파일 접근 실패", "counts_as_evidence": false, "on_detect": "STOP_AND_REPORT"}
+  ],
+  "operations": [
+    "resolve_fund_root", "list_children_by_parent", "classify_evidence", "validate_file_candidate",
+    "reject_shortcut", "reject_zero_byte", "detect_duplicate", "detect_stale_candidate",
+    "return_human_confirmation", "build_evidence_summary"
+  ],
+  "content_read": {"enabled": false, "reason": "본문 열람은 사람 확인 범위. 파일명·메타데이터만 사용"},
+  "write": false
+}

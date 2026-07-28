@@ -1,0 +1,16 @@
+{
+  "_comment": "예시 전용. 실제 ID·Token을 이 파일에 채워 Commit하지 않는다. 런타임에서 별도 주입한다.",
+  "data_sources": {
+    "fund_master": "<FUND_MASTER_DATA_SOURCE_ID>",
+    "fund_work": "<FUND_WORK_DATA_SOURCE_ID>",
+    "request": "<REQUEST_DATA_SOURCE_ID>",
+    "task": "<TASK_DATA_SOURCE_ID>"
+  },
+  "drive": {
+    "fieldwork_root": "<FIELDWORK_ROOT_FOLDER_ID>",
+    "shared_functional_folders": {"SECURITY_CARD": "<SHARED_SECURITY_CARD_FOLDER_ID>"}
+  },
+  "record_prefix": "[TEST][E2E03-PROTOTYPE]",
+  "write_mode": "preview_only",
+  "interface": "cli"
+}

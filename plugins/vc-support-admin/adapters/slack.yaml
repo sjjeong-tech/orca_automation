@@ -1,0 +1,27 @@
+{
+  "adapter_id": "slack",
+  "version": "0.1.0",
+  "send_enabled": false,
+  "mode": "PREVIEW_ONLY",
+  "message_contract": ["Input", "State", "Preview", "Approval", "Commit Result", "Evidence", "Error", "Handoff"],
+  "operations": [
+    "parse_request", "build_missing_question", "build_preview_message", "parse_approval",
+    "build_commit_result", "build_blocker_message", "build_handoff_message",
+    "calculate_thread_key", "calculate_idempotency_key"
+  ],
+  "approval_parsing": {
+    "required_identifiers": ["target_request", "target_task", "change_action", "change_value"],
+    "ambiguous_phrases": ["네", "예", "넵", "진행해주세요", "그렇게 해주세요", "확인했습니다", "확인 완료", "ok", "OK"],
+    "on_ambiguous": {"write_count": 0, "action": "ASK_CLARIFYING_QUESTION"},
+    "note": "긍정 표현 자체는 승인이 아니다. 대상과 변경값이 함께 식별돼야 한다."
+  },
+  "thread_key": ["fund_key", "process_id", "request_type"],
+  "idempotency_key": ["thread_key", "duplicate_key", "commit_intent_hash"],
+  "sensitive_output_policy": {
+    "include_page_ids": false,
+    "include_drive_urls": false,
+    "include_document_body": false,
+    "include_tax_id_or_account": false
+  },
+  "interface_neutrality": "동일 Process 입력에 대해 Task 상태 계산 결과는 Interface와 무관하게 동일해야 하며 표현만 달라진다."
+}

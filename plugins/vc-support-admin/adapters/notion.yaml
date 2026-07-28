@@ -1,0 +1,49 @@
+{
+  "adapter_id": "notion",
+  "version": "0.1.0",
+  "id_policy": "실제 Database·Data Source·Page ID를 이 파일에 저장하지 않는다. runtime_config.data_sources로 주입한다.",
+  "field_map": [
+    {"logical": "fund_name", "source": "fund_master", "property": "조합명", "type": "title", "read": true, "write": false, "validation": "non_empty"},
+    {"logical": "fund_type", "source": "fund_master", "property": "조합구분", "type": "select", "read": true, "write": false, "validation": "enum"},
+    {"logical": "fund_tax_id", "source": "fund_master", "property": "고유번호", "type": "text", "read": true, "write": false, "validation": "operating_value_no_autofill"},
+    {"logical": "fund_root_folder", "source": "fund_master", "property": "조합 Root 폴더", "type": "url", "read": true, "write": false, "validation": "url_or_null"},
+    {"logical": "fund_work_title", "source": "fund_work", "property": "요청사항", "type": "title", "read": true, "write": false, "validation": "non_empty"},
+    {"logical": "fund_work_to_master", "source": "fund_work", "property": "조합명 또는 제목", "type": "relation", "read": true, "write": false, "validation": "one_way_to_fund_master"},
+
+    {"logical": "request_title", "source": "request", "property": "요청명", "type": "title", "read": true, "write": "test_only", "validation": "must_start_with_test_prefix"},
+    {"logical": "request_fund_link", "source": "request", "property": "관련 조합", "type": "relation", "read": true, "write": "test_only", "validation": "target_is_fund_work_not_fund_master"},
+    {"logical": "request_type", "source": "request", "property": "요청 업무 유형", "type": "select", "read": true, "write": "test_only", "validation": "enum"},
+    {"logical": "request_status", "source": "request", "property": "요청 상태", "type": "status", "read": true, "write": "test_only", "validation": "complete_only_when_all_tasks_complete"},
+    {"logical": "document_status", "source": "request", "property": "서류 상태", "type": "select", "read": true, "write": "test_only", "validation": "enum"},
+    {"logical": "request_date", "source": "request", "property": "요청일", "type": "date", "read": true, "write": "test_only", "validation": "iso_date"},
+    {"logical": "request_body", "source": "request", "property": "요청 내용", "type": "text", "read": true, "write": "test_only", "validation": "no_sensitive_value"},
+    {"logical": "request_note", "source": "request", "property": "특이사항", "type": "text", "read": true, "write": "test_only", "validation": "no_sensitive_value"},
+    {"logical": "request_source_folder", "source": "request", "property": "원본 폴더", "type": "url", "read": true, "write": "test_only", "validation": "url_or_empty"},
+    {"logical": "request_tasks", "source": "request", "property": "관련 Task", "type": "relation", "read": true, "write": false, "validation": "reverse_of_task_parent"},
+
+    {"logical": "task_title", "source": "task", "property": "Task명", "type": "title", "read": true, "write": "test_only", "validation": "must_start_with_test_prefix"},
+    {"logical": "operational_task_id", "source": "task", "property": "Operational Task ID", "type": "text", "read": true, "write": "test_only", "validation": "in_p03_t01_t06"},
+    {"logical": "process_id", "source": "task", "property": "Process ID", "type": "select", "read": true, "write": "test_only", "validation": "enum"},
+    {"logical": "task_parent", "source": "task", "property": "상위 요청", "type": "relation", "read": true, "write": "test_only", "validation": "exactly_one_request"},
+    {"logical": "task_status", "source": "task", "property": "Task 상태", "type": "status", "read": true, "write": "test_only", "validation": "no_auto_complete_from_evidence"},
+    {"logical": "task_actor", "source": "task", "property": "현재 Actor", "type": "select", "read": true, "write": "test_only", "validation": "enum"},
+    {"logical": "task_next_action", "source": "task", "property": "다음 Action", "type": "text", "read": true, "write": "test_only", "validation": "non_empty_when_not_complete"},
+    {"logical": "task_blocker", "source": "task", "property": "Blocker", "type": "text", "read": true, "write": "test_only", "validation": "structured_or_empty"},
+    {"logical": "task_completion_condition", "source": "task", "property": "완료조건", "type": "text", "read": true, "write": "test_only", "validation": "non_empty"},
+    {"logical": "task_completion_evidence", "source": "task", "property": "완료증빙", "type": "text", "read": true, "write": "test_only", "validation": "required_before_complete"},
+    {"logical": "task_note", "source": "task", "property": "비고", "type": "text", "read": true, "write": "test_only", "validation": "no_sensitive_value"},
+    {"logical": "task_fund_rollup", "source": "task", "property": "관련 조합", "type": "rollup", "read": "limited", "write": false, "validation": "api_may_return_omitted"}
+  ],
+  "operations": [
+    "fetch_schema", "resolve_fund", "resolve_fund_work_record", "find_existing_request", "find_tasks",
+    "calculate_duplicate_key", "build_request_preview", "build_task_preview",
+    "create_test_request", "create_test_tasks", "preview_updates", "commit_approved_test_updates",
+    "requery_and_verify", "generate_manager_share_data", "generate_fund_tracking_data"
+  ],
+  "known_limitations": [
+    {"id": "ROLLUP_NOT_OBSERVABLE", "detail": "Task 관련 조합 Rollup 값이 API에서 <omitted />로 반환된다. Relation 체인으로 대체 확인한다."},
+    {"id": "VIEW_STATUS_FILTER_DROPPED", "detail": "View DSL 필터가 status 타입에서 무시된다(=, !=, IN 전부). Agent는 View 필터에 의존하지 않고 직접 조회한다."},
+    {"id": "REQUEST_FUND_RELATION_MIXED", "detail": "기존 Request의 관련 조합 값에 FUND 마스터 Page를 가리키는 사례가 혼재한다. 자동 정리하지 않는다."}
+  ],
+  "operating_write_default": false
+}
