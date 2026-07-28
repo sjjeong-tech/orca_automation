@@ -1,0 +1,106 @@
+{
+  "profile_id": "tax_id_application_package",
+  "document_type_ko": "고유번호증 신청서류 합본",
+  "process_ids": [
+    "P03"
+  ],
+  "evidence_type": "SUBMISSION_PACKAGE",
+  "file_extensions": [
+    "pdf"
+  ],
+  "page_range": "30-40",
+  "visual_markers": [
+    "1p 좌상단 법령 별지서식 근거 띠",
+    "번호 붙은 섹션 박스(인적사항/사업장 현황/유의사항)",
+    "페이지 하단 절반의 체크박스 격자",
+    "중반부 관공서 발급물 스캔 삽입으로 서체·해상도 급변",
+    "후반부 목차→사업계획서→규약(조문 번호 세로 나열)"
+  ],
+  "text_markers": [
+    "사업자등록 신청서",
+    "법인이 아닌 단체의 고유번호 신청서",
+    "별지 제4호서식",
+    "투자조합 세부명세",
+    "부표",
+    "무상사용승낙서",
+    "사용인감계",
+    "사업계획서",
+    "세무서장 귀하"
+  ],
+  "exclude_markers": [
+    "접수증"
+  ],
+  "field_candidates": [
+    {
+      "field": "단체명",
+      "position": "1p 인적사항 상호(단체명) 칸",
+      "machine_extractable": "yes"
+    },
+    {
+      "field": "사업장 소재지",
+      "position": "1p 인적사항 하단 전폭 행",
+      "machine_extractable": "yes"
+    },
+    {
+      "field": "투자조합 구분",
+      "position": "1p 중단 체크박스군",
+      "machine_extractable": "partial",
+      "note": "스캔 품질에 따라 오검출"
+    },
+    {
+      "field": "총 출자금·출자좌수·1좌당 금액",
+      "position": "부표 조합 설립 사항 3열 표",
+      "machine_extractable": "yes"
+    },
+    {
+      "field": "조합원 수",
+      "position": "부표 조합원 표 행 수",
+      "machine_extractable": "partial",
+      "note": "표 행 병합으로 카운트 오류"
+    },
+    {
+      "field": "사무실 사용 근거 유형",
+      "position": "임대차 명세 + 무상사용승낙서 유무 교차",
+      "machine_extractable": "partial"
+    },
+    {
+      "field": "규약 시행일",
+      "position": "규약 말미 부칙 제1조",
+      "machine_extractable": "yes"
+    },
+    {
+      "field": "대표자 성명",
+      "position": "1p 인적사항 우측",
+      "machine_extractable": "no",
+      "note": "개인정보 — 추출·보고 금지"
+    }
+  ],
+  "human_checks": [
+    "날인·서명 실물 존재 여부",
+    "신청서·규약·사업계획서·사용인감계 간 조합명 표기 일치",
+    "부표 조합원 합계와 규약 별표 합계 일치",
+    "첨부 필수서류 누락 및 인감증명서 유효기간",
+    "개인식별정보 페이지 취급 적정성"
+  ],
+  "invalid_conditions": [
+    "날인 누락",
+    "별지 부표 미첨부",
+    "규약·사업계획서 미포함",
+    "스캔 페이지 누락·역순",
+    "조합명 불일치",
+    "인감증명서 발급 3개월 초과"
+  ],
+  "duplicate_key_fields": [
+    "단체명",
+    "사업장 소재지",
+    "규약 시행일",
+    "총 출자금"
+  ],
+  "completion_candidate_tasks": [
+    "P03-T02",
+    "P03-T03"
+  ],
+  "alone_completes_task": false,
+  "confidence": "HIGH",
+  "confidence_reason": "법령 별지 서식이라 레이아웃이 전국 공통, 텍스트 레이어 존재"
+}

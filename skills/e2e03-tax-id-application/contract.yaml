@@ -3,10 +3,33 @@
   "version": "0.1.0",
   "process_id": "P03",
   "e2e_process_id": "E2E-03",
-  "operational_task_ids": ["P03-T01", "P03-T02", "P03-T03", "P03-T04", "P03-T05", "P03-T06"],
-  "trigger_phrases": ["고유번호증 신청", "고유번호증 진행상태", "세무서 고유번호", "외근 산출물 확인", "고유번호증 다음 업무"],
-  "required_inputs": ["user_message"],
-  "optional_inputs": ["fund_hint", "process_hint", "evidence_context", "target_date", "actor_hint", "approval_context", "interface"],
+  "operational_task_ids": [
+    "P03-T01",
+    "P03-T02",
+    "P03-T03",
+    "P03-T04",
+    "P03-T05",
+    "P03-T06"
+  ],
+  "trigger_phrases": [
+    "고유번호증 신청",
+    "고유번호증 진행상태",
+    "세무서 고유번호",
+    "외근 산출물 확인",
+    "고유번호증 다음 업무"
+  ],
+  "required_inputs": [
+    "user_message"
+  ],
+  "optional_inputs": [
+    "fund_hint",
+    "process_hint",
+    "evidence_context",
+    "target_date",
+    "actor_hint",
+    "approval_context",
+    "interface"
+  ],
   "fund_resolution": {
     "exact_one": "PROCEED",
     "zero_matches": "BLOCK_AND_ASK",
@@ -14,25 +37,104 @@
     "similar_name_auto_select": false
   },
   "state_schema": {
-    "task_status": ["시작 전", "진행 중", "완료"],
-    "request_status": ["시작 전", "진행 중", "완료"],
-    "actor": ["운영팀", "지원팀", "관리역 확인", "외부기관", "GP"],
+    "task_status": [
+      "시작 전",
+      "진행 중",
+      "완료"
+    ],
+    "request_status": [
+      "시작 전",
+      "진행 중",
+      "완료"
+    ],
+    "actor": [
+      "운영팀",
+      "지원팀",
+      "관리역 확인",
+      "외부기관",
+      "GP"
+    ],
     "request_completion_rule": "ALL_SIX_TASKS_COMPLETE",
     "receipt_is_not_process_completion": true
   },
-  "evidence_types": ["SUBMISSION_PACKAGE", "RECEIPT", "RESULT_DOCUMENT", "SUPPLEMENT", "SECURITY_CARD", "BANKBOOK_COPY"],
-  "evidence_validity": ["VERIFIED", "CANDIDATE", "UNVERIFIED_SHORTCUT", "ZERO_BYTE", "STALE_OR_DUPLICATE", "MISSING", "ACCESS_BLOCKED"],
+  "evidence_types": [
+    "SUBMISSION_PACKAGE",
+    "RECEIPT",
+    "RESULT_DOCUMENT",
+    "SUPPLEMENT",
+    "SECURITY_CARD",
+    "BANKBOOK_COPY"
+  ],
+  "evidence_validity": [
+    "VERIFIED",
+    "CANDIDATE",
+    "UNVERIFIED_SHORTCUT",
+    "ZERO_BYTE",
+    "STALE_OR_DUPLICATE",
+    "MISSING",
+    "ACCESS_BLOCKED"
+  ],
   "evidence_to_task_rules": [
-    {"task": "P03-T01", "supporting_evidence": [], "auto_complete": false, "human_confirmation": "착수조건 확인 기록은 Evidence로 대체 불가"},
-    {"task": "P03-T02", "supporting_evidence": ["SUBMISSION_PACKAGE", "SUPPLEMENT"], "auto_complete": false, "human_confirmation": "서류 적합성·누락·최신본"},
-    {"task": "P03-T03", "supporting_evidence": ["SUBMISSION_PACKAGE"], "auto_complete": false, "human_confirmation": "날인 실물 확인"},
-    {"task": "P03-T04", "supporting_evidence": ["RECEIPT", "SUPPLEMENT"], "auto_complete": false, "human_confirmation": "접수증 본문의 조합명·접수일"},
-    {"task": "P03-T05", "supporting_evidence": ["RESULT_DOCUMENT"], "auto_complete": false, "human_confirmation": "발급본 최신성·정정본 여부·실물 수령"},
-    {"task": "P03-T06", "supporting_evidence": ["RESULT_DOCUMENT"], "auto_complete": false, "human_confirmation": "저장과 관리역 전달이 모두 확인되어야 완료"}
+    {
+      "task": "P03-T01",
+      "supporting_evidence": [],
+      "auto_complete": false,
+      "human_confirmation": "착수조건 확인 기록은 Evidence로 대체 불가"
+    },
+    {
+      "task": "P03-T02",
+      "supporting_evidence": [
+        "SUBMISSION_PACKAGE",
+        "SUPPLEMENT"
+      ],
+      "auto_complete": false,
+      "human_confirmation": "서류 적합성·누락·최신본"
+    },
+    {
+      "task": "P03-T03",
+      "supporting_evidence": [
+        "SUBMISSION_PACKAGE"
+      ],
+      "auto_complete": false,
+      "human_confirmation": "날인 실물 확인"
+    },
+    {
+      "task": "P03-T04",
+      "supporting_evidence": [
+        "RECEIPT",
+        "SUPPLEMENT"
+      ],
+      "auto_complete": false,
+      "human_confirmation": "접수증 본문의 조합명·접수일"
+    },
+    {
+      "task": "P03-T05",
+      "supporting_evidence": [
+        "RESULT_DOCUMENT"
+      ],
+      "auto_complete": false,
+      "human_confirmation": "발급본 최신성·정정본 여부·실물 수령"
+    },
+    {
+      "task": "P03-T06",
+      "supporting_evidence": [
+        "RESULT_DOCUMENT"
+      ],
+      "auto_complete": false,
+      "human_confirmation": "저장과 관리역 전달이 모두 확인되어야 완료"
+    }
   ],
   "evidence_rejection_rules": [
-    {"condition": "file_extension == lnk", "verdict": "UNVERIFIED_SHORTCUT", "counts_as_evidence": false},
-    {"condition": "file_size == 0", "verdict": "ZERO_BYTE", "counts_as_evidence": false}
+    {
+      "condition": "file_extension == lnk",
+      "verdict": "UNVERIFIED_SHORTCUT",
+      "counts_as_evidence": false
+    },
+    {
+      "condition": "file_size == 0",
+      "verdict": "ZERO_BYTE",
+      "counts_as_evidence": false
+    }
   ],
   "human_confirmation_rules": {
     "auto_complete_any_task": false,
@@ -40,30 +142,104 @@
     "max_auto_state": "진행 중"
   },
   "approval_actions": {
-    "required_identifiers": ["target_request", "target_task", "change_action", "change_value"],
-    "ambiguous_phrases": ["네", "진행해주세요", "그렇게 해주세요", "확인했습니다"],
+    "required_identifiers": [
+      "target_request",
+      "target_task",
+      "change_action",
+      "change_value"
+    ],
+    "ambiguous_phrases": [
+      "네",
+      "진행해주세요",
+      "그렇게 해주세요",
+      "확인했습니다"
+    ],
     "on_ambiguous": "NO_WRITE_AND_ASK"
   },
-  "allowed_reads": ["notion.fund_master", "notion.fund_work", "notion.request", "notion.task", "drive.folder_metadata", "drive.file_metadata"],
-  "allowed_writes": ["notion.test_request.create", "notion.test_task.create", "notion.test_task.update"],
-  "forbidden_writes": ["notion.operating_record", "notion.schema", "notion.database", "notion.view", "drive.file", "slack.send", "credential.store"],
+  "allowed_reads": [
+    "notion.fund_master",
+    "notion.fund_work",
+    "notion.request",
+    "notion.task",
+    "drive.folder_metadata",
+    "drive.file_metadata"
+  ],
+  "allowed_writes": [
+    "notion.test_request.create",
+    "notion.test_task.create",
+    "notion.test_task.update"
+  ],
+  "forbidden_writes": [
+    "notion.operating_record",
+    "notion.schema",
+    "notion.database",
+    "notion.view",
+    "drive.file",
+    "slack.send",
+    "credential.store"
+  ],
   "default_write_mode": "preview_only",
-  "duplicate_key": ["fund_key", "process_id", "request_type", "record_prefix"],
+  "duplicate_key": [
+    "fund_key",
+    "process_id",
+    "request_type",
+    "record_prefix"
+  ],
   "retry_policy": {
-    "resume_identifier": ["record_title_prefix", "parent_relation"],
+    "resume_identifier": [
+      "record_title_prefix",
+      "parent_relation"
+    ],
     "transaction_id_property_required": false,
     "on_partial_write": "STOP_AND_REPORT",
     "delete_and_recreate": false
   },
-  "output_schema": ["resolved_fund", "fund_match_result", "process_id", "existing_request", "task_states", "evidence_summary", "missing_information", "human_confirmation", "blockers", "preview", "approval_required", "allowed_changes", "committed_changes", "verification", "manager_share_preview", "next_action", "handoff", "errors"],
+  "output_schema": [
+    "resolved_fund",
+    "fund_match_result",
+    "process_id",
+    "existing_request",
+    "task_states",
+    "evidence_summary",
+    "missing_information",
+    "human_confirmation",
+    "blockers",
+    "preview",
+    "approval_required",
+    "allowed_changes",
+    "committed_changes",
+    "verification",
+    "manager_share_preview",
+    "next_action",
+    "handoff",
+    "errors"
+  ],
   "canonical_refs": [
     "reports/reviews/claude/e2e03-operational-standard-draft.md",
     "contracts/process-execution-mapping.yaml",
     "contracts/conversational-intake-contract.yaml",
     "docs/process-execution-layering.md",
     "processes/03-unique-number-application.md",
-    "mappings/process-to-notion-map.md"
+    "mappings/process-to-notion-map.md",
+    "skills/e2e03-tax-id-application/canonical-reference.yaml",
+    "skills/e2e03-tax-id-application/evidence-taxonomy.yaml"
   ],
-  "test_refs": ["skills/e2e03-tax-id-application/tests/cases.yaml", "skills/e2e03-tax-id-application/tests/expected.yaml", "plugins/vc-support-admin/tests/harness.test.mjs"],
-  "not_supported": ["P04", "P07", "P08", "operating_record_write", "real_slack_send", "auto_task_completion"]
+  "test_refs": [
+    "skills/e2e03-tax-id-application/tests/cases.yaml",
+    "skills/e2e03-tax-id-application/tests/expected.yaml",
+    "plugins/vc-support-admin/tests/harness.test.mjs",
+    "plugins/vc-support-admin/tests/provider.test.mjs",
+    "plugins/vc-support-admin/tests/live.test.mjs"
+  ],
+  "not_supported": [
+    "P04",
+    "P07",
+    "P08",
+    "operating_record_write",
+    "real_slack_send",
+    "auto_task_completion"
+  ],
+  "document_profiles_dir": "skills/e2e03-tax-id-application/document_profiles",
+  "kernel_path": "plugins/vc-support-admin/kernel",
+  "providers_path": "plugins/vc-support-admin/providers"
 }

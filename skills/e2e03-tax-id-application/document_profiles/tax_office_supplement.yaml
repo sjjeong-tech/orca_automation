@@ -1,0 +1,92 @@
+{
+  "profile_id": "tax_office_supplement",
+  "document_type_ko": "세무서 보완 제출용 서류",
+  "process_ids": [
+    "P03"
+  ],
+  "evidence_type": "SUPPLEMENT",
+  "file_extensions": [
+    "pdf"
+  ],
+  "page_range": "1-20",
+  "visual_markers": [
+    "파일명 접미 '세무서 보완 제출용'이 가장 강한 식별자",
+    "꺾쇠 제목 동의서 형태",
+    "구분·투자자명·출자약정액·생년월일·기명날인 단일 표",
+    "기명날인 열에 도장 이미지 셀",
+    "표 최하단 합계 행",
+    "합본에서 발췌된 쪽번호 잔존"
+  ],
+  "text_markers": [
+    "세무서 보완 제출용",
+    "업무집행조합원 선임 동의서",
+    "출자약정액",
+    "기명날인",
+    "합계"
+  ],
+  "field_candidates": [
+    {
+      "field": "보완 문서 종류",
+      "position": "파일명 접미사 + 본문 제목",
+      "machine_extractable": "partial",
+      "note": "본문에 보완 문구 없음 — 파일명 의존"
+    },
+    {
+      "field": "조합원 구분",
+      "position": "표 1열",
+      "machine_extractable": "partial",
+      "note": "세로 병합 셀로 행 매핑 깨짐"
+    },
+    {
+      "field": "출자약정액·합계",
+      "position": "표 3열 및 합계 행",
+      "machine_extractable": "partial",
+      "note": "열 정렬 붕괴로 값-행 매칭 오류"
+    },
+    {
+      "field": "투자자명·생년월일",
+      "position": "표 2·4열",
+      "machine_extractable": "no",
+      "note": "개인정보"
+    },
+    {
+      "field": "기명날인 유무",
+      "position": "표 5열",
+      "machine_extractable": "no",
+      "note": "이미지 셀"
+    },
+    {
+      "field": "대상 조합",
+      "position": "본문에 미기재 가능",
+      "machine_extractable": "no",
+      "note": "폴더 경로로만 귀속 판정"
+    }
+  ],
+  "human_checks": [
+    "어떤 보완 요구에 대한 응답인지 — 문서 내부에 단서 없음",
+    "조합원 전원 날인 완비 여부",
+    "합계액이 신청서 부표·규약 별표와 일치",
+    "문서가 대상 조합의 것인지",
+    "재제출본인지 최초본인지"
+  ],
+  "invalid_conditions": [
+    "날인 누락 행 존재",
+    "합계 불일치",
+    "세무서 요구항목과 다른 서류",
+    "조합 귀속 불명",
+    "보완 기한 경과"
+  ],
+  "duplicate_key_fields": [
+    "폴더 경로",
+    "문서 제목",
+    "합계액",
+    "파일 수정일"
+  ],
+  "completion_candidate_tasks": [
+    "P03-T02",
+    "P03-T04"
+  ],
+  "alone_completes_task": false,
+  "confidence": "MEDIUM",
+  "confidence_reason": "정형 서식이 아니라 매 건 다른 문서가 등장. 파일명 규칙 의존도 높음"
+}

@@ -1,0 +1,98 @@
+{
+  "profile_id": "tax_office_receipt",
+  "document_type_ko": "고유번호증 접수증",
+  "process_ids": [
+    "P03"
+  ],
+  "evidence_type": "RECEIPT",
+  "file_extensions": [
+    "pdf"
+  ],
+  "page_range": "1",
+  "visual_markers": [
+    "상단 중앙 대형 세로 확장 글자 접수증",
+    "좌상단 접수번호·접수일시 2행 라벨 스택",
+    "중단 라벨-값 2열 테이블",
+    "하단 좌측 안내사항 고정 장문 블록",
+    "최하단 우측 민원접수자와 세무서명"
+  ],
+  "text_markers": [
+    "접수증",
+    "접수번호",
+    "접수일시",
+    "민원명",
+    "민원인",
+    "처리 예정 기한",
+    "처리주무부서",
+    "안내사항",
+    "민원접수자"
+  ],
+  "exclude_markers": [
+    "정정",
+    "폐업"
+  ],
+  "field_candidates": [
+    {
+      "field": "접수번호",
+      "position": "좌상단 라벨 우측",
+      "machine_extractable": "yes",
+      "note": "고정 포맷 정규식 추출 가능. 단독 유일키"
+    },
+    {
+      "field": "접수일시",
+      "position": "접수번호 아래",
+      "machine_extractable": "yes"
+    },
+    {
+      "field": "민원명",
+      "position": "중단 첫 행",
+      "machine_extractable": "yes",
+      "note": "신규·정정·폐업 판별 키"
+    },
+    {
+      "field": "민원인",
+      "position": "민원인 행",
+      "machine_extractable": "partial",
+      "note": "조합명 없이 GP 법인명만 기재된 사례 관측"
+    },
+    {
+      "field": "처리 예정 기한",
+      "position": "중단 3행",
+      "machine_extractable": "yes"
+    },
+    {
+      "field": "처리주무부서",
+      "position": "중단 4행",
+      "machine_extractable": "partial",
+      "note": "담당자명 포함 시 마스킹"
+    },
+    {
+      "field": "발행 세무서명",
+      "position": "우측 최하단",
+      "machine_extractable": "yes"
+    }
+  ],
+  "human_checks": [
+    "처리주무부서 세무서 약칭과 하단 세무서명 불일치 사례가 재사용 검증에서 재현됨 — 관할 확정은 사람",
+    "민원명이 신규 신청인지 정정·폐업인지 확인",
+    "조합명이 대상 펀드와 동일한지(약칭·띄어쓰기 변형)",
+    "텍스트 레이어 없는 순수 스캔본은 육안 확인"
+  ],
+  "invalid_conditions": [
+    "민원명이 대상 건과 불일치",
+    "접수번호·접수일시 미표시",
+    "다른 조합 접수증",
+    "정정·폐업 접수증을 신규 발급 근거로 사용",
+    "판독 불가"
+  ],
+  "duplicate_key_fields": [
+    "접수번호"
+  ],
+  "completion_candidate_tasks": [
+    "P03-T04"
+  ],
+  "alone_completes_task": false,
+  "confidence": "HIGH",
+  "confidence_reason": "국세청 표준 출력물. 재사용 검증에서 text marker 100% 일치",
+  "fallback": "text_markers 실패 시 visual_markers 기반 이미지 분류로 폴백 필수(순수 스캔본 존재)"
+}

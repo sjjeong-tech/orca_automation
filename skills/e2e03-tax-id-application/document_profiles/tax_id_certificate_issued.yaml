@@ -1,0 +1,102 @@
+{
+  "profile_id": "tax_id_certificate_issued",
+  "document_type_ko": "발급 고유번호증",
+  "process_ids": [
+    "P03"
+  ],
+  "evidence_type": "RESULT_DOCUMENT",
+  "file_extensions": [
+    "pdf"
+  ],
+  "page_range": "1",
+  "visual_markers": [
+    "상단 중앙 굵은 제목 고유번호증",
+    "배경 워터마크",
+    "좌측 라벨 넓은 자간(단 체 명·소 재 지)",
+    "중하단 유의사항 박스 2개 항",
+    "하단 중앙 발급일자와 세무서장 직인",
+    "우하단 국세청 엠블럼"
+  ],
+  "text_markers": [
+    "고유번호증",
+    "단체명",
+    "소재지",
+    "발급사유",
+    "유의사항",
+    "세무서장"
+  ],
+  "exclude_markers": [
+    "신청서",
+    "접수증"
+  ],
+  "field_candidates": [
+    {
+      "field": "발급사유",
+      "position": "대표자 행 아래",
+      "machine_extractable": "yes",
+      "note": "신규·정정 분기 키"
+    },
+    {
+      "field": "발급일자",
+      "position": "하단 중앙",
+      "machine_extractable": "yes"
+    },
+    {
+      "field": "발급 세무서명",
+      "position": "발급일자 아래",
+      "machine_extractable": "yes"
+    },
+    {
+      "field": "소재지",
+      "position": "단체명 아래",
+      "machine_extractable": "yes"
+    },
+    {
+      "field": "단체명",
+      "position": "라벨 우측",
+      "machine_extractable": "partial",
+      "note": "장문 조합명 줄바꿈으로 절단 발생"
+    },
+    {
+      "field": "고유번호",
+      "position": "제목 아래",
+      "machine_extractable": "no",
+      "note": "민감식별자 — 추출 가능하나 보고·저장 금지"
+    },
+    {
+      "field": "대표자 성명·생년월일",
+      "position": "같은 행 좌우",
+      "machine_extractable": "no",
+      "note": "개인정보"
+    },
+    {
+      "field": "직인 존재",
+      "position": "세무서명 우측",
+      "machine_extractable": "no",
+      "note": "이미지"
+    }
+  ],
+  "human_checks": [
+    "직인·엠블럼 실물 날인 여부",
+    "단체명 표기가 규약·신청서와 정확히 일치하는지",
+    "발급사유가 신규인지 정정인지",
+    "발급 세무서가 접수 세무서와 다른 경우 사유"
+  ],
+  "invalid_conditions": [
+    "직인 미표시",
+    "화질로 판독 불가",
+    "발급사유 불일치(정정본을 최초 발급 증빙으로 사용)",
+    "폐업·말소 이후 문서"
+  ],
+  "duplicate_key_fields": [
+    "발급일자",
+    "발급사유"
+  ],
+  "completion_candidate_tasks": [
+    "P03-T05",
+    "P03-T06"
+  ],
+  "alone_completes_task": false,
+  "confidence": "HIGH",
+  "confidence_reason": "국세청 표준 발급물"
+}

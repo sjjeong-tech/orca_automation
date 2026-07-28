@@ -1,0 +1,78 @@
+{
+  "_policy": "실측(외근 Root 샘플 34건 + Fund Root 사례)에서 반복 확인된 규칙만 기록한다. 파일 1개만을 위한 Evidence Type을 만들지 않는다. 실제 File ID·URL·조합 실명은 기록하지 않는다.",
+  "version": "0.1.0",
+  "basis": {"fieldwork_root_sample": 34, "sampled_folders": ["최근 날짜 폴더 4", "월 아카이브 1(+하위 2)", "계좌개설 작업 폴더", "공통 기타 폴더", "루트 직치"], "fund_root_case": 1},
+
+  "folder_taxonomy": [
+    {"type": "DAILY_FIELDWORK_FOLDER", "pattern": "^\\d{4}$", "meaning": "MMDD 외근 수행일 폴더", "observed": 18},
+    {"type": "MONTHLY_ARCHIVE", "pattern": "^\\d{4}\\.\\d{2}$", "meaning": "월 마감 시 MMDD 폴더를 이관", "observed": 2},
+    {"type": "PROCESS_WORKING_FOLDER", "meaning": "업무유형 전용 작업 폴더(중간 산출물)", "observed": 1},
+    {"type": "COMMON_ASSET_FOLDER", "pattern": "^00", "meaning": "정렬 최상단 고정 공통 자산", "observed": 1},
+    {"type": "INDIVIDUAL_OUTPUT", "meaning": "루트 직치 개별 산출물(날짜 폴더 미귀속)", "observed": 1}
+  ],
+  "archiving_rule": {"rule": "월 마감 시 루트의 MMDD 폴더를 YYYY.MM 하위로 이동", "evidence": "당월 YYYY.MM이 비어 있고 해당 월 MMDD가 루트에 잔류", "incomplete_signal": "YYYY.MM이 비었는데 해당 월 MMDD가 루트에 있으면 아카이빙 미완"},
+
+  "filename_grammar": {
+    "regex": "^(?<flag>##합본_|##|#|\\[[^\\]]+\\]★?|\\(x\\))?(?<fund>[^_]+)_(?<task>.+?)(?:\\((?<qual>[^)]+)\\))?\\.(?<ext>[A-Za-z0-9.]+)$",
+    "prefix_semantics": [
+      {"prefix": "##합본_", "meaning": "여러 서류를 1 PDF로 병합한 제출 본체", "reliability": "MEDIUM", "caveat": "접수증에 오용된 사례 관측"},
+      {"prefix": "##", "meaning": "접두 규칙 불안정 구간", "reliability": "LOW", "caveat": "접수증에 붙은 사례 관측"},
+      {"prefix": "#", "meaning": "단일 문서 산출물(신청서류 또는 접수증)", "reliability": "MEDIUM"},
+      {"prefix": "", "meaning": "관공서·은행에서 수령한 결과물", "reliability": "HIGH", "caveat": "가장 신뢰도 높은 구분자"},
+      {"prefix": "[보완서류_{프로세스}]", "meaning": "보완 요청 대응 서류", "reliability": "MEDIUM"},
+      {"prefix": "[GP서류]★", "meaning": "GP 측 준비분", "reliability": "MEDIUM"},
+      {"prefix": "(x)", "meaning": "폐기·미사용 명시", "reliability": "HIGH", "verdict": "INVALID"}
+    ],
+    "qualifiers": [
+      {"value": "취하 후 재접수", "supersedes_prior": true, "prior_verdict": "STALE_OR_DUPLICATE"},
+      {"value": "오타 정정", "supersedes_prior": true, "prior_verdict": "STALE_OR_DUPLICATE"},
+      {"value": "규약 미포함", "supersedes_prior": false, "note": "구성 변형"},
+      {"value": "은행전달 견본용", "supersedes_prior": false, "note": "견본"}
+    ],
+    "notes": ["날짜는 파일명이 아니라 폴더에만 존재(YYMMDD 파일 접두 미관측)", "신청서류↔접수증이 동일 {fund}_{task} 어간을 공유 → 제출-접수 자동 매칭 가능", ".hwp.pdf 이중 확장자는 변환본"]
+  },
+
+  "evidence_types": [
+    {"evidence_type": "SUBMISSION_PACKAGE", "supported_processes": ["P03", "P07", "고유번호증 정정", "폐업·청산", "기타 세무"], "filename_signals": ["신청서류", "합본"], "task_candidates": ["P03-T03", "P03-T04"], "completion_strength": "SUPPORTING", "human_confirmation": "구성 적합성·날인 실물", "source_priority": ["fund_root_canonical", "daily_fieldwork", "process_working"]},
+    {"evidence_type": "RECEIPT", "supported_processes": ["P03", "고유번호증 정정", "폐업·청산", "기타 세무"], "filename_signals": ["접수증"], "task_candidates": ["P03-T04"], "completion_strength": "STRONG_CANDIDATE", "human_confirmation": "본문 조합명·접수일 대조", "duplicate_key": "접수번호", "source_priority": ["fund_root_canonical", "daily_fieldwork"]},
+    {"evidence_type": "RESULT_DOCUMENT", "supported_processes": ["P03"], "filename_signals": ["고유번호증"], "exclude_signals": ["신청", "접수", "정정"], "task_candidates": ["P03-T05", "P03-T06"], "completion_strength": "STRONG_CANDIDATE", "human_confirmation": "최신본·정정본 여부·실물 수령", "source_priority": ["fund_root_top", "daily_fieldwork"]},
+    {"evidence_type": "SUPPLEMENT", "supported_processes": ["P03", "P08"], "filename_signals": ["보완"], "task_candidates": ["P03-T02", "P03-T04"], "completion_strength": "SUPPORTING", "human_confirmation": "어떤 보완 요구에 대한 응답인지 — 문서 내부에 단서 없음", "source_priority": ["fund_root_canonical", "daily_fieldwork"]},
+    {"evidence_type": "SECURITY_CARD", "supported_processes": ["P04"], "filename_signals": ["보안카드"], "exclude_signals": ["신청서류"], "task_candidates": [], "downstream_process": "P04", "completion_strength": "NONE_FOR_P03", "human_confirmation": "유효본 판별", "source_priority": ["shared_functional"], "sensitive_fields": ["로그인 자격증명(평문 관측)"], "content_read_policy": "FORBIDDEN"},
+    {"evidence_type": "BANKBOOK_COPY", "supported_processes": ["P07"], "filename_signals": ["통장사본"], "task_candidates": [], "downstream_process": "P07", "completion_strength": "NONE_FOR_P03", "human_confirmation": "제출용 사본 여부"}
+  ],
+
+  "new_type_candidates": [
+    {"proposed": "ACCOUNT_RESULT", "recurrence": "4개 조합 / 2개 일자", "process": "P07", "rationale": "무접두 수령 결과물이며 크기 대역이 통장사본과 상이. BANKBOOK_COPY(제출용 사본)·RESULT_DOCUMENT(고유번호증) 어디에도 정확히 맞지 않음", "status": "CANDIDATE_NOT_ADOPTED", "blocker": "본문 미확인 — 통장사본/계좌개설확인서/잔액증명서 구분 불가. 1건 구조분석 후 확정"}
+  ],
+  "rejected_type_candidates": [
+    {"candidate": "접수증 세분화", "reason": "RECEIPT로 8건 전부 수용"},
+    {"candidate": "정정·재접수 전용 type", "reason": "SUPPLEMENT + 상태 한정어로 표현 가능, 1~2건뿐"},
+    {"candidate": "GP서류 전용 type", "reason": "1건 관측 — 일회성 type 금지 규칙"}
+  ],
+
+  "validity_rules": [
+    {"verdict": "VERIFIED", "when": "size > 0 이고 type 신호가 파일명에서 확인됨", "counts_as_evidence": true, "note": "본문 사실은 확정하지 않음"},
+    {"verdict": "CANDIDATE", "when": "type 신호 불명확 또는 작성본·날인본 구분 불가", "counts_as_evidence": false},
+    {"verdict": "UNVERIFIED_SHORTCUT", "when": "확장자 lnk", "counts_as_evidence": false},
+    {"verdict": "ZERO_BYTE", "when": "size == 0", "counts_as_evidence": false},
+    {"verdict": "STALE_OR_DUPLICATE", "when": "동일 type·동일 파일명이 복수 위치 또는 후속 한정어본 존재", "counts_as_evidence": true, "human_check_required": true},
+    {"verdict": "MISSING", "when": "해당 type 파일 없음", "counts_as_evidence": false, "note": "업무 미수행으로 확정하지 않는다"},
+    {"verdict": "ACCESS_BLOCKED", "when": "폴더·파일 접근 실패", "counts_as_evidence": false, "on_detect": "STOP_AND_REPORT"}
+  ],
+
+  "invalid_conditions": [
+    {"id": "IE-1", "rule": "(x) 선두 파일명 — 작성자 폐기 표기", "verdict": "INVALID"},
+    {"id": "IE-2", "rule": "동일 파일명이 2개 이상 폴더에 존재하고 크기 상이 — modifiedTime 최신본이 정본", "verdict": "STALE_OR_DUPLICATE", "human_check_required": true},
+    {"id": "IE-3", "rule": "후행 한정어(취하 후 재접수 등) 존재 시 동일 fund+task의 한정어 없는 선행본은 무효", "verdict": "STALE_OR_DUPLICATE"},
+    {"id": "IE-4", "rule": "PROCESS_WORKING_FOLDER 내 파일은 중간 산출물 — 날짜 폴더본이 정본", "verdict": "INTERMEDIATE"},
+    {"id": "IE-5", "rule": ".hwp.pdf 이중 확장자 — 변환본·서식 가능성", "verdict": "NOT_EVIDENCE"},
+    {"id": "IE-6", "rule": "YYYY.MM이 비었는데 해당 월 MMDD가 루트에 존재 — 아카이빙 미완", "verdict": "STRUCTURE_WARNING"},
+    {"id": "IE-7", "rule": "마스터 대장 스프레드시트 — 증빙 아님, 계정정보 포함 가능", "verdict": "OUT_OF_SCOPE", "access": "RESTRICT"},
+    {"id": "IE-8", "rule": ".lnk 바로가기 / 0byte", "verdict": "INVALID", "note": "외근 샘플 34건에서는 0건이었으나 Fund Root 사례에서 관측됨 — 두 소스 모두 검사"}
+  ],
+
+  "source_priority": ["fund_root_canonical", "fund_root_top", "daily_fieldwork", "monthly_archive", "process_working", "shared_functional", "git_inventory_reference_only"],
+  "traversal_policy": {"prefer": "parent_id", "broad_search": "FALLBACK_ONLY", "risk": "무관한 실제 조합의 민감 서류 노출"},
+  "sensitive_fields_global": ["개인 성명", "주민등록번호", "사업자등록번호", "고유번호", "계좌번호", "로그인 자격증명", "인감·서명 이미지", "문서 본문"],
+  "global_rule": {"auto_complete_task_from_evidence": false, "reason": "실측 결과 E2E-03 6개 Task 전부 사람 확인 필요"}
+}

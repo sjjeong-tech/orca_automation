@@ -1,0 +1,96 @@
+{
+  "profile_id": "bank_account_opening_package",
+  "document_type_ko": "계좌개설 신청서류 합본",
+  "process_ids": [
+    "P07"
+  ],
+  "evidence_type": "SUBMISSION_PACKAGE",
+  "file_extensions": [
+    "pdf"
+  ],
+  "page_range": "10-20",
+  "visual_markers": [
+    "초고밀도 체크박스 격자",
+    "각 서식 블록 우측 끝 검인·사후확인·팀원·팀장 결재 스탬프 칸",
+    "페이지 하단 우측 서식번호와 개정일자",
+    "각 블록 말미 신청인 날인란 반복(10개 이상)",
+    "좌우 대칭 2단 인쇄로 동일 내용 중복 출현",
+    "뒷부분 약관·안내문 전문"
+  ],
+  "text_markers": [
+    "실제소유자확인",
+    "전자금융서비스",
+    "보안매체",
+    "이체한도",
+    "위임장",
+    "은행보관용"
+  ],
+  "field_candidates": [
+    {
+      "field": "신청인(조합명)",
+      "position": "각 서식 말미 신청인 우측",
+      "machine_extractable": "yes",
+      "note": "합본 전반 반복으로 교차 검증 가능"
+    },
+    {
+      "field": "대표자(GP 법인명)",
+      "position": "신청인 아래 행",
+      "machine_extractable": "yes"
+    },
+    {
+      "field": "은행명·지점명",
+      "position": "위임장 상단",
+      "machine_extractable": "yes"
+    },
+    {
+      "field": "서식 구성 목록",
+      "position": "페이지 하단 서식번호와 개정일자",
+      "machine_extractable": "yes",
+      "note": "서식 종류 판정의 강력한 신호"
+    },
+    {
+      "field": "전자금융서비스 종류·보안매체·위임 항목",
+      "position": "체크박스군",
+      "machine_extractable": "no",
+      "note": "체크 마크 미검출 — 전 항목 공란으로 읽힘"
+    },
+    {
+      "field": "이체한도",
+      "position": "이체한도 표",
+      "machine_extractable": "no",
+      "note": "한글 금액 수기 기입"
+    },
+    {
+      "field": "날인 완료 여부",
+      "position": "각 인(서명) 칸",
+      "machine_extractable": "no"
+    }
+  ],
+  "human_checks": [
+    "체크박스 상태 전량 — 실질 내용 대부분이 체크박스인데 기계 판독 실패",
+    "한글 기입 이체한도 금액",
+    "날인란 누락 여부(10개 이상 중 한 곳이라도 누락 시 반려)",
+    "고객보관용·은행보관용 중 제출본 식별",
+    "첨부서류 유효기간 3개월 준수",
+    "조합명·GP 명의가 고유번호증·규약과 일치"
+  ],
+  "invalid_conditions": [
+    "필수 날인란 공란",
+    "은행 검인란 미기입",
+    "첨부서류 유효기간 초과",
+    "고유번호증 발급 전 작성본",
+    "지점명 상이",
+    "조합명·GP 표기 불일치"
+  ],
+  "duplicate_key_fields": [
+    "조합명",
+    "은행·지점명",
+    "서식 개정번호 세트",
+    "작성일자"
+  ],
+  "completion_candidate_tasks": [],
+  "alone_completes_task": false,
+  "confidence": "MEDIUM",
+  "confidence_reason": "2단 인쇄로 라벨 2회 중복 출력되어 파싱 난이도 높음. 은행별 서식 편차 미검증",
+  "out_of_scope_note": "P07 Skill 미구현 — 확장 준비용 Profile"
+}

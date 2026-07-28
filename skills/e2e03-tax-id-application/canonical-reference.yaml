@@ -1,0 +1,90 @@
+{
+  "_policy": "Notion Layer 1 본문을 복제하지 않는다. Skill이 필요로 하는 Reference Index와 정합성 판정만 기록한다. Raw UUID·URL은 기록하지 않고 Source Alias를 사용한다.",
+  "source": {
+    "alias": "NOTION_PROCESS_MODEL",
+    "system": "notion",
+    "page_title": "세무서·은행 업무 Process Model",
+    "config_key": "notion.process_model_page",
+    "layer": "Layer 1 업무 기준서 (Layer 2는 상태·검증 보조 확인)",
+    "reviewed_at": "2026-07-28",
+    "sections_reviewed": ["§2 업무 단위 정의 기준", "§3 업무 범위", "§4 외부기관", "§5.0 업무지도", "§5.3/§6.3 고유번호증", "§5.4/§6.4 보안카드·홈택스", "§5.7/§6.7 계좌개설", "§5.8/§6.8 계좌개설 보완", "Layer 2 A·D"]
+  },
+
+  "layer1_unit_schema": ["업무 단위 ID", "업무 단위명", "시작 조건", "필요 자료", "결과물", "주요 예외", "담당자", "사용 시스템", "근거 문서", "확인 필요 사항", "검증 상태"],
+
+  "reference_index": [
+    {"section": "§2", "rule_category": "ID 체계", "canonical_field": "업무 단위 ID 병행 표기(신규+기존)", "skill_field": "operational_task_ids", "notion_field": "업무 단위 ID", "evidence_field": null, "authority": "CONFIRMED_CANONICAL", "verification": "원문 명문화"},
+    {"section": "§4", "rule_category": "외부기관", "canonical_field": "세무서·홈택스·은행", "skill_field": "actor(외부기관)", "notion_field": "외부기관", "evidence_field": "RECEIPT/RESULT_DOCUMENT 발행처", "authority": "CONFIRMED_CANONICAL", "verification": "내부 모순 없음"},
+    {"section": "§5.3/§6.3", "rule_category": "업무 흐름", "canonical_field": "고유번호증 16단계 순서·결과물", "skill_field": "P03-T01~T06(그룹핑)", "notion_field": "세무서_고유번호증_01~16", "evidence_field": "SUBMISSION_PACKAGE→RECEIPT→RESULT_DOCUMENT", "authority": "CONFIRMED_CANONICAL", "verification": "§5.3·§6.3 동일 ID 일관"},
+    {"section": "§5.3 _14", "rule_category": "예외", "canonical_field": "제3자 수령 추가서류 요건", "skill_field": "human_confirmation_rules(T05)", "notion_field": "확인 필요 사항", "evidence_field": null, "authority": "HUMAN_CONFIRMATION_REQUIRED", "verification": "미확정", "open_gap": "GAP-01"},
+    {"section": "§5.3 _08", "rule_category": "예외", "canonical_field": "구양식 판단·서류 순서 기준", "skill_field": "human_confirmation_rules(T03)", "notion_field": "확인 필요 사항", "evidence_field": null, "authority": "HUMAN_CONFIRMATION_REQUIRED", "verification": "미확정", "open_gap": "GAP-02"},
+    {"section": "§5.3 _03", "rule_category": "폴더 탐색", "canonical_field": "조합 폴더 목록 표준 여부·갱신 주기", "skill_field": "drive.resolve_fund_root", "notion_field": "확인 필요 사항", "evidence_field": "Fund Root", "authority": "HUMAN_CONFIRMATION_REQUIRED", "verification": "개인 추출 자산 의존", "open_gap": "GAP-04"},
+    {"section": "§5.3 _04/_05", "rule_category": "유형 분기", "canonical_field": "GP유형별 첨부서류 매트릭스", "skill_field": "fund_type 분기", "notion_field": "확인 필요 사항", "evidence_field": null, "authority": "HUMAN_CONFIRMATION_REQUIRED", "verification": "미확정"},
+    {"section": "§5.7", "rule_category": "확장", "canonical_field": "계좌개설 45단계 세부 기준", "skill_field": null, "notion_field": "은행_계좌개설_01~45", "evidence_field": "bank_account_opening_package", "authority": "PROVISIONAL_CANONICAL", "verification": "원문이 '추후 상세 검토 후 수정 예정' 명시"},
+    {"section": "§5.4", "rule_category": "확장", "canonical_field": "보안카드·홈택스", "skill_field": null, "notion_field": "세무서_보안카드_01~12 / 세무서_홈택스_01~14", "evidence_field": "SECURITY_CARD", "authority": "PROVISIONAL_CANONICAL", "verification": "업무군 분리 여부 검토 대상"},
+    {"section": "§3", "rule_category": "검증 상태", "canonical_field": "고유번호증 현재 상태 '초안'", "skill_field": null, "notion_field": "현재 상태", "evidence_field": null, "authority": "PROVISIONAL_CANONICAL", "verification": "Layer 2 업무 검증 '준비 중'", "conflict": "C1"}
+  ],
+
+  "id_generations": {
+    "gen1_historical": {"pattern": "A-01 / B-01 / C-05", "authority": "HISTORICAL_REFERENCE"},
+    "gen2_numeric": {"pattern": "세무서_1_NN / 세무서_4_NN / 은행_1_NN", "authority": "HISTORICAL_REFERENCE", "note": "Layer 1 실제 표에서 '(기존: …)'로 격하"},
+    "gen3_named_current": {"pattern": "세무서_고유번호증_NN / 세무서_보안카드_NN / 세무서_홈택스_NN / 은행_계좌개설_NN / 은행_계좌보완_NN", "authority": "CURRENT_IN_NOTION"},
+    "repo_runtime": {"pattern": "P03-T01~T06", "authority": "CURRENT_IN_REPO", "note": "Layer 1 원문에 P03·UN·E2E-03 표기 0회 — repo 고유 ID"}
+  },
+
+  "alias_mapping": {
+    "_basis": "순번·행위·결과물 16행 전건 대조에 의한 추론. Layer 1 원문에 대응 선언이 없으므로 전체 CONFIRMATION_REQUIRED.",
+    "runtime_authority": "P03-T01~T06",
+    "rows": [
+      {"canonical_task_id": "P03-T01", "layer1_step_id": ["세무서_고유번호증_01", "세무서_고유번호증_03", "세무서_고유번호증_04"], "historical_id": ["세무서_1_01", "세무서_1_03", "세무서_1_04"], "aliases": ["UN-01", "UN-03", "UN-04"], "verification": "CONFIRMATION_REQUIRED"},
+      {"canonical_task_id": "P03-T02", "layer1_step_id": ["세무서_고유번호증_02", "세무서_고유번호증_05", "세무서_고유번호증_06", "세무서_고유번호증_07"], "historical_id": ["세무서_1_02", "세무서_1_05", "세무서_1_06", "세무서_1_07"], "aliases": ["UN-02", "UN-05", "UN-06", "UN-07", "C-05"], "verification": "CONFIRMATION_REQUIRED"},
+      {"canonical_task_id": "P03-T03", "layer1_step_id": ["세무서_고유번호증_02", "세무서_고유번호증_08"], "historical_id": ["세무서_1_02", "세무서_1_08"], "aliases": ["UN-02", "UN-08"], "note": "UN-02는 T02·T03 허용 중복", "verification": "CONFIRMATION_REQUIRED"},
+      {"canonical_task_id": "P03-T04", "layer1_step_id": ["세무서_고유번호증_09", "세무서_고유번호증_10", "세무서_고유번호증_11", "세무서_고유번호증_12"], "historical_id": ["세무서_1_09", "세무서_1_10", "세무서_1_11", "세무서_1_12"], "aliases": ["UN-09", "UN-10", "UN-11", "UN-12"], "verification": "CONFIRMATION_REQUIRED"},
+      {"canonical_task_id": "P03-T05", "layer1_step_id": ["세무서_고유번호증_13", "세무서_고유번호증_14", "세무서_고유번호증_15"], "historical_id": ["세무서_1_13", "세무서_1_14", "세무서_1_15"], "aliases": ["UN-13", "UN-14", "UN-15"], "verification": "CONFIRMATION_REQUIRED"},
+      {"canonical_task_id": "P03-T06", "layer1_step_id": ["세무서_고유번호증_16"], "historical_id": ["세무서_1_16"], "aliases": ["UN-16"], "verification": "CONFIRMATION_REQUIRED"}
+    ],
+    "unmapped": [
+      {"item": "P03-T01~T06 6단위 그룹핑", "detail": "Layer 1의 어떤 구간 정의(§5.0 업무지도 9구간 포함)와도 경계가 일치하지 않는다. repo 고유 설계.", "status": "CONFIRMATION_REQUIRED"},
+      {"item": "E2E-03", "detail": "Layer 1 §5.0 업무지도 3~4행에 대응하는 것으로 보이나 명시 없음", "status": "CONFIRMATION_REQUIRED"}
+    ]
+  },
+
+  "conflicts": {
+    "_policy": "임의로 한쪽을 선택하지 않는다. GPT·사용자 Process 결정 대상.",
+    "items": [
+      {"id": "C1", "topic": "검증 상태", "layer1": "고유번호증 현재 상태 '초안', 16행 검증상태 '인터뷰 반영', Layer 2 업무 검증 '준비 중'", "repo": "processes/03 Atomic Main Flow 16행 Status 전건 CONFIRMED, '차단 Conflict 없음'", "severity": "HIGH", "resolution": "PENDING"},
+      {"id": "C2", "topic": "자동화 착수 시점", "layer1": "Layer 2 A: 자동화·Agent 설계는 보류. 업무 검증 전에는 진행하지 않는다", "repo": "process-execution-mapping.yaml = CANONICAL_FOR_NEW_EXECUTION_INSTANCES, 실행 Skill·Plugin 이미 존재", "severity": "HIGH", "resolution": "PENDING", "note": "거버넌스 수준 충돌 — 자동화 진행의 승인 근거를 재확인해야 한다. 현재 Skill은 preview_only·운영 Write 0으로 운영 영향 없음"},
+      {"id": "C3", "topic": "Process Model ID 현행성", "layer1": "현행 = 세무서_고유번호증_NN, 세무서_1_NN은 legacy", "repo": "docs/process-execution-layering.md와 mapping.yaml이 '세무서_1'을 현행 Canonical로 선언", "severity": "MEDIUM", "resolution": "PENDING"},
+      {"id": "C4", "topic": "Actor 어휘", "layer1": "담당매니저(개인)·담당 관리역·기관 담당자. '지원팀'은 To-Be 이관 메모에서 1회만 등장", "repo": "전 16행 Actor = 지원팀, RACI도 지원팀 기준", "severity": "MEDIUM", "resolution": "PENDING"},
+      {"id": "C5", "topic": "접수 구간 완료조건", "layer1": "업무지도: 접수증 수령 + 관리역 공유 + 스캔본 저장이 해당 구간 완료조건", "repo": "skill contract receipt_is_not_process_completion = true", "severity": "LOW", "resolution": "PENDING", "note": "구간 완료 vs 전체 완료 층위 차이 가능 [확인 필요]"},
+      {"id": "C6", "topic": "보안카드 연계", "layer1": "고유번호증 수령과 보안카드 발급은 '항상 연계'가 아니라 연계 가능성이 높은 흐름", "repo": "IF-03-04 PROVISIONAL — '같은 방문 연속 수행' 사실 미반영", "severity": "LOW", "resolution": "PENDING"},
+      {"id": "C7", "topic": "계좌개설 보완 ID", "layer1": "§2 규범은 은행_2_NN(B-08), 실제 §5.8/§6.8은 은행_계좌보완_NN — Layer 1 내부 불일치", "repo": "해당 Process 미구현", "severity": "LOW", "resolution": "PENDING"}
+    ]
+  },
+
+  "extension_points": {
+    "P04": {
+      "trigger": "고유번호증 수령 후 또는 동일 세무서 방문 중 발급 연계 판단(항상 연계 아님)",
+      "inputs": ["보안카드 신청서 날인본", "공동GP 여부", "GP유형별 첨부", "사전 스캔본"],
+      "outputs": ["보안카드 실물(조합 식별표시)", "홈택스 가입", "2차인증 해제", "보안카드 PDF", "관리역 전달"],
+      "external": ["세무서", "홈택스"],
+      "layer1_steps": "세무서_보안카드_01~12, 세무서_홈택스_01~14",
+      "sensitive_warning": "홈택스 단계 원문에 계정 비밀번호·연락처·주민번호 앞자리 등이 평문 기재. Skill 계약에 값 자체를 복제 금지."
+    },
+    "P07_P08": {
+      "trigger": "관리역이 GP 계좌개설 날인본 실물서류 전달. 고유번호증 미발급이면 수기기입 단계로 이월",
+      "outputs": ["합본 PDF", "은행 제출", "계좌번호·계좌사본", "관리역 공유"],
+      "external": ["은행(특정 지점)"],
+      "layer1_steps": "은행_계좌개설_01~45, 은행_계좌보완_01~11",
+      "p08_trigger": "은행 심사 중 보완 요청(주로 전화) → 자체수정 / 관리역 확인값 / GP 재날인 3분기",
+      "known_gap": "합본 PDF 재생성 기준·내부 공유 기준 없음"
+    }
+  },
+
+  "open_gaps": [
+    "Layer 1 §5.5·5.6·5.9·5.10·5.1·5.2 미확인(과업 범위 밖)",
+    "계좌개설 45행 중 21~45행은 축약본으로만 확인",
+    "Layer 1 근거 문서 열이 대부분 '인터뷰 반영'이라 repo Source 식별자와 대응 검증 불가",
+    "84개 업무 단위 중 고유번호증 16건만 전건 확보"
+  ]
+}

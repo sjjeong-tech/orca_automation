@@ -1,16 +1,28 @@
 {
-  "_comment": "예시 전용. 실제 ID·Token을 이 파일에 채워 Commit하지 않는다. 런타임에서 별도 주입한다.",
-  "data_sources": {
-    "fund_master": "<FUND_MASTER_DATA_SOURCE_ID>",
-    "fund_work": "<FUND_WORK_DATA_SOURCE_ID>",
-    "request": "<REQUEST_DATA_SOURCE_ID>",
-    "task": "<TASK_DATA_SOURCE_ID>"
+  "_comment": "예시 전용. 실제 ID·Token을 이 파일에 채워 Commit하지 않는다. 런타임에서 주입한다.",
+  "notion": {
+    "data_sources": {
+      "fund_master": "<FUND_MASTER_DATA_SOURCE_ID>",
+      "fund_work": "<FUND_WORK_DATA_SOURCE_ID>",
+      "request": "<REQUEST_DATA_SOURCE_ID>",
+      "task": "<TASK_DATA_SOURCE_ID>"
+    },
+    "process_model_page": "<PROCESS_MODEL_PAGE_ID>",
+    "write_mode": "preview_only",
+    "allowed_prefixes": ["[TEST][E2E03-PROTOTYPE]", "[TEST][E2E03-EVIDENCE-SHADOW]"],
+    "operating_write_enabled": false
   },
   "drive": {
     "fieldwork_root": "<FIELDWORK_ROOT_FOLDER_ID>",
-    "shared_functional_folders": {"SECURITY_CARD": "<SHARED_SECURITY_CARD_FOLDER_ID>"}
+    "shared_functional_folders": { "SECURITY_CARD": "<SHARED_SECURITY_CARD_FOLDER_ID>" },
+    "search_mode": "parent_id_only",
+    "allow_broad_search": false,
+    "content_read_enabled": false
   },
+  "slack": { "send_enabled": false, "mode": "PREVIEW_ONLY" },
   "record_prefix": "[TEST][E2E03-PROTOTYPE]",
   "write_mode": "preview_only",
-  "interface": "cli"
+  "operating_write_enabled": false,
+  "interface": "cli",
+  "_defaults_note": "write_mode=preview_only / operating_write_enabled=false / slack.send_enabled=false 는 안전 기본값이며 코드에서도 강제된다."
 }
