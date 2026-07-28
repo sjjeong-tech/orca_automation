@@ -731,6 +731,110 @@ E2E-03만 `P03-T0n`을 쓰고 다른 Process는 전부 `OT-P0n-nn` 규약을 유
 
 View A의 `Task 상태 = 진행 중` 필터만 API로 설정 불가하여 UI 확인이 필요하고, 그 외 상태 전이·View B·Mapping 정합화·Live Acceptance는 전부 PASS다.
 
+---
+
+# 27. A-CP18 실제 Evidence 기반 Live 검증 (TEST Shadow)
+
+민감정보 보호: 아래 기록에 Drive 직접 URL·File ID·문서 본문은 포함하지 않는다.
+
+## 27-1. 대표 사례 선정
+
+| Candidate | FUND Match | Evidence Coverage | Root Availability | Risk |
+|---|---|---|---|---|
+| **그로스브릿지-바이오투자조합** | **EXACT_1** | 신청서류·접수증·보완서류·발급본·보안카드 전 구간 | **확정(FUND Property에 저장된 유일 조합)** | 낮음 |
+| 아이씨에프 제오십삼·사·오호 | EXACT_1 | Codex Inventory상 신청·접수·결과 | **없음(Root null)** | Root 탐색 선행 필요 |
+| 아타카마13호·테크브릿지·블리스바인2호·휴먼비젼·테일프론티어3호 | **0건(정확)** | 넓음 | 없음 | FUND Gate 미충족 |
+
+**선정: 그로스브릿지-바이오투자조합.** FUND EXACT_1이면서 마스터 1,231행 중 **Root가 확정 저장된 유일 조합**이라 광역검색 없이 parentId 조회만으로 전 구간 검증이 가능하다. 정정·폐업 사례 아님.
+
+## 27-2. Evidence 분류
+
+| Evidence | Source | Type | File Validity | Task Candidate | Human Check |
+|---|---|---|---|---|---|
+| 고유번호증 신청서류 합본 | Fund Root/1.결성/1.고유번호증 신청 | `SUBMISSION_PACKAGE` | VERIFIED | T03·T04 | 구성 적합성 |
+| 고유번호증 접수증 | 동상 | `RECEIPT` | VERIFIED | T04 | 본문 조합명·접수일 |
+| 규약·조합원 선임 동의서(세무서 보완 제출용) | 동상 | `SUPPLEMENT` | VERIFIED | T02·T04 | 보완 요구 내용 |
+| 발급 고유번호증 | Fund Root 최상위 | `RESULT_DOCUMENT` | VERIFIED | T05 | 최신본·정정본 여부 |
+| 보안카드 실물 | 공통 취합 폴더 | `SECURITY_CARD` | VERIFIED | 후속 P04 | 발급·전달 주체 |
+| 보안카드 바로가기 | 외근 날짜폴더 | — | **UNVERIFIED_SHORTCUT**(.lnk) | 없음 | 불인정 |
+| 임대차계약서 / 인감증명서 | Canonical Source | — | **ZERO_BYTE**(0byte placeholder 2건) | T02 Blocker | 실물 수령 여부 |
+| 신청서·사용인감계 작성본 | 동상 | — | CANDIDATE | T03 | **날인 여부 판정 불가** |
+
+## 27-3. 운영 Notion Actual vs Evidence Expected
+
+| 항목 | NOTION_ACTUAL | EVIDENCE_EXPECTED | GAP |
+|---|---|---|---|
+| 운영 Request | **0건** | 고유번호증 신청 1건 상당의 업무 수행 흔적 | 운영 Record 미생성 — **업무 미수행으로 확정하지 않음** |
+| 운영 Task | 0건 | P03-T01~T06 상당 | 동일 |
+| FUND `고유번호` | **null** | 발급본 존재 | **AC-E05 Gap — 자동 수정 0** |
+| FUND `조합 Root 폴더` | 확정값 존재 | 일치 | 없음 |
+| TO DO LIST | `[민법투자] … RCPS 투자 건`(구분=투자) 1건 | 고유번호증 업무 Record 별도 없음 | Relation 대상 불일치(SG-1) — **수정 0** |
+
+## 27-4. Evidence-to-Task 판정 결과
+
+| Task | 판정 | 근거 |
+|---|---|---|
+| P03-T01 | `HUMAN_CONFIRMATION_REQUIRED` | FUND·Root·유형은 기계 확인되나 착수조건 확인 기록을 Evidence로 대체 불가 |
+| P03-T02 | `HUMAN_CONFIRMATION_REQUIRED` | 서류 존재만으로 적합성 확정 금지 + 0byte placeholder 2건 |
+| P03-T03 | `HUMAN_CONFIRMATION_REQUIRED` | 작성본만 확인, 날인본 판정 불가 |
+| P03-T04 | `COMPLETE_CANDIDATE` → `HUMAN_CONFIRMATION_REQUIRED` | 접수증 존재(강한 후보)이나 본문 미열람 |
+| P03-T05 | `COMPLETE_CANDIDATE` → `HUMAN_CONFIRMATION_REQUIRED` | 발급본 존재(강한 후보)이나 최신본·실물 수령 미확인 |
+| P03-T06 | `BLOCKED` | Root 저장은 확인, 관리역 전달 증빙 없음 |
+
+**핵심 결론: 실제 Evidence만으로 자동 완료 가능한 E2E-03 Task는 6개 중 0개다.** 전 Task가 사람 확인을 요구한다.
+
+## 27-5. TEST Shadow Instance
+
+Prefix `[TEST][E2E03-EVIDENCE-SHADOW]` — 중복 검사 0건 확인 후 생성.
+
+| 항목 | 값 |
+|---|---|
+| Shadow Request | 1건(요청 상태 진행 중, 서류 상태 전달 완료) |
+| Shadow Task | 6건, OTID 6종, 상위 요청 1개로 수렴 |
+| Task 상태 | 6건 전부 진행 중, **완료 0건** |
+| Blocker | **6/6이 `HUMAN_CONFIRMATION_REQUIRED`** |
+| 완료증빙 | `[TEST SHADOW][Evidence 후보/미확정]` 접두로 Evidence 설명만 기록(URL·ID 미기록) |
+| `관련 조합` Relation | **비움** — SG-1(Relation 대상이 TO DO LIST이고 해당 조합의 유일 행이 무관한 투자 건) |
+
+## 27-6. Live Acceptance
+
+| AC | 결과 | 근거 |
+|---|---|---|
+| AC-E01 정상 Evidence | **PASS** | RECEIPT→T04, RESULT_DOCUMENT→T05로 정확 연결 |
+| AC-E02 파일명만 존재 | **PASS** | 본문 미열람 항목 전부 완료 처리하지 않음(완료 0건) |
+| AC-E03 `.lnk`·0byte | **PASS** | `.lnk` UNVERIFIED_SHORTCUT, 0byte 2건 ZERO_BYTE로 분류·불인정 |
+| AC-E04 동일 Evidence 재실행 | **PASS** | 재조회 Request 1·Task 6 유지, 신규 생성 0 |
+| AC-E05 운영 Notion 불일치 | **PASS** | 고유번호 null 유지, 자동 수정 0, Gap Preview만 |
+| AC-E06 복수 FUND 후보 | **PASS** | 후보 비교표로 EXACT_1 1건만 채택, 유사 후보 자동 선택 0 |
+
+## 27-7. 매니저 공유 Preview (발송 0)
+
+View 필터에 의존하지 않고 Task DB를 직접 조회해 생성.
+
+- 조합: 그로스브릿지-바이오투자조합(Shadow) — 업무: 고유번호증 신청 — 현재 단계: 전 Task 진행 중, 완료 0
+- 현재 Actor: 지원팀 / 다음 Action: Task별 사람 확인 항목 확정
+- Blocker: 6건 전부 `HUMAN_CONFIRMATION_REQUIRED`
+- Evidence 확인상태: 신청·접수·발급·보완·보안카드 확보, 날인·전달·본문은 미확인
+- 사람 확인사항: 착수조건 기록 / 서류 적합성·0byte 실물 / 날인 실물 / 접수증 본문 / 발급본 최신성 / 관리역 전달
+
+## 27-8. 조합별 트래킹 결과
+
+동일 조합에 **운영 Request 0건 + Shadow Request 1건**이 공존한다. Shadow는 운영 상태를 대체하지 않으며, 조회 시 반드시 구분해 안내한다. 후속 Process 후보는 P04(보안카드·홈택스) — 실물 Evidence는 이미 공통 폴더에 존재.
+
+## 27-9. 자동 반영 금지 지점
+
+1. Evidence 존재만으로 어떤 Task도 완료 처리하지 않는다(실증: 6/6 사람 확인 필요).
+2. FUND `고유번호` 자동 입력 금지 — 발급본이 있어도 운영값 자동 수정 0.
+3. `.lnk`·0byte는 Evidence로 계수하지 않는다.
+4. Shadow Record로 운영 Request 부재를 대체하지 않는다.
+5. Relation 대상이 불일치하면 임의 연결하지 않고 비운다.
+
+## 27-10. A-CP18 판정
+
+**RESULT=PASS_WITH_HUMAN_CONFIRMATION_GAPS**
+
+Evidence Intake·Shadow Physical·Live Acceptance·매니저 공유·조합별 트래킹 전부 PASS이며, 남은 Gap은 전부 **사람 확인 필요** 항목이다.
+
 ## 최종 판정
 
 **Gate A RESULT=PASS_E2E03_LOGICAL_SOP**
