@@ -565,6 +565,73 @@ Physical Expected–Actual 불일치 0건, Live AC-01~AC-05 전부 PASS. 유일�
 STATUS=E2E03_PHYSICAL_AND_LIVE_PROTOTYPE_VERIFIED
 NEXT_OWNER=GPT_AND_USER
 
+---
+
+# 25. TEST 상태 전이·View·Legacy Mapping 정합화 (승인 실행 결과)
+
+## 25-1. TEST 상태 전이 (Notion Write 2건)
+
+| Task | 전 | 후 | 비고 |
+|---|---|---|---|
+| P03-T01 | 진행 중 / Blocker 있음 / 완료증빙 빈 값 | **완료** / Blocker 해제 / 완료증빙 기록 | 완료증빙·비고에 **"실제 업무 완료 아님, TEST Prototype 상태 전이"** 명시 |
+| P03-T02 | 시작 전 / Blocker "P03-T01 미완료" | **진행 중** / Blocker **"실제 제출서류·날인본 Evidence 미연결"** | 비고에 TEST 명시 |
+| P03-T03~T06 | — | **변경 없음** | |
+| Request | 진행 중 | **진행 중 유지** | 변경 없음 |
+
+재조회 검증: Request 1건·Task 6건 유지, 중복 생성 0, Expected–Actual 불일치 0.
+
+## 25-2. TEST View 생성 (View 2건, 신규 Property·DB 0)
+
+| View | 기준 DB | Filter | Sort | 검증 |
+|---|---|---|---|---|
+| `[TEST] 매니저 공유 — 현재 Action` | `[TEST]지원팀 Task` | `완료증빙 IS EMPTY` | `Operational Task ID` ASC | 실행 결과 **완료 처리한 P03-T01만 정확히 제외**, T02~T06 포함 |
+| `[TEST] 조합별 행정업무 트래킹` | `[TEST]지원팀 업무요청` | 없음 | `요청일` DESC, Group by `관련 조합` | 표시 Property 9종·정렬 동작 확인 |
+
+### 신규 TOOL_LIMITATION (격리 검증 완료)
+
+View DSL의 필터는 **`status` 타입 Property에서 무시된다.** 동일 DSL로 비교 실험한 결과:
+
+| Property 타입 | 예시 | 결과 |
+|---|---|---|
+| text | `비고 CONTAINS`, `완료증빙 IS EMPTY` | 적용됨(`string_contains`/`is_empty`) |
+| select | `현재 Actor != 외부기관` | 적용됨(`enum_is_not`) |
+| **status** | `Task 상태 != 완료`, `Task 상태 IN (...)` | **무시됨(빈 filter group)** |
+
+따라서 View A의 의도된 조건 `Task 상태 ≠ 완료`를 API로 설정할 수 없어, **계약상 동등한 `완료증빙 IS EMPTY`** 로 대체했다(본 SOP상 완료증빙은 Task 완료의 필수 요건이므로 논리적으로 동치이며, 완료증빙 없는 완료 Task는 오히려 노출되어야 한다). Status 기준 필터가 필요하면 **Notion UI에서 직접 추가** 필요 `[확인 필요]`.
+
+## 25-3. Legacy Mapping 정합화
+
+E2E-03 실행·상태관리 기준을 **`P03-T01~T06`(6개)** 로 통일(사용자 Process 결정). Legacy `OT-P03-01~05`는 보존·표기만.
+
+| 파일 | 처리 | 건수 |
+|---|---|---|
+| `mappings/process-to-notion-map.md` | P03 행 현행 병기, Legacy 표기, **현행 6-Task 표 + Legacy↔현행 Bridge 신설** | 6 → 표기 전환 |
+| `mappings/process-to-notion-map.yaml` | 16행에 `current_operational_task_id` **병기**(Legacy `operational_task_id` 보존) | 16 |
+| `mappings/fund-type-notion-map.md` | `P03-T02(Legacy OT-P03-02)` 표기 | 3 |
+| `mappings/variation-task-generation-map.md` | `P03-T01·T02` / `P03-T02` 표기 | 2 |
+| `mappings/human-approval-map.md` | `P03-T01/T02(Legacy OT-P03-01/02)` 표기 | 1 |
+
+**치환하지 않고 보존한 범위(Historical·Test Evidence·후보안)**
+
+| 파일 | 건수 | 사유 |
+|---|---|---|
+| `notion/schema/operational-task-candidates.md` | 7 | **제3의 `OT-P03-01~06` 후보안**(이름·UN 범위 모두 상이). 문서가 스스로 "확정 Task Template 아님" 선언 → 폐기 여부 `[확인 필요]` |
+| `notion/schema/skeleton-test-records.md` | 4 | TEST Record Historical 기록 |
+| `rag/metadata/status-evidence-metadata.md` | 1 | 메타데이터 예시값 (승인 범위 밖) |
+| `reports/**` | 5 | 과거 판정·분석 기록 |
+
+### 추적성 검증
+
+- Contract 6개 ID ↔ Mapping 현행 ID: **6/6 일치, 누락 0**
+- Atomic Step: Contract 16/16, Mapping UN-01~UN-16 전수 16행 보존
+- `process-to-notion-map.yaml` JSON 유효성: VALID
+- Legacy 값 보존: 16/16
+- Notion Schema·운영 Record 변경: **0**
+
+## 25-4. Gate 판정
+
+**RESULT=PASS_E2E03_TRANSITION_VIEW_AND_MAPPING**(단, View 필터는 status TOOL_LIMITATION 우회 적용)
+
 ## 최종 판정
 
 **Gate A RESULT=PASS_E2E03_LOGICAL_SOP**

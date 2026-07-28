@@ -2,8 +2,8 @@
 
 | 축 | 확인된 분기 | 생성/변경 가능한 운영 Task | 금지 | 상태 |
 |---|---|---|---|---|
-| Fund | UN-04~06 유형·근거 확인 | OT-P03-02의 체크 항목 조건부 확장 | 신기술 Trigger 자동 생성 | PROVISIONAL/UNKNOWN |
-| GP | 개인·법인·공동 GP 분기 존재 | OT-P03-02, OT-P04-01의 서류 확인 항목 | 12·17·20·+2종 표준화 | CONFIRMED 분기, 상세 PROVISIONAL/CASE_ONLY |
+| Fund | UN-04~06 유형·근거 확인 | P03-T01·T02(Legacy OT-P03-02)의 체크 항목 조건부 확장 | 신기술 Trigger 자동 생성 | PROVISIONAL/UNKNOWN |
+| GP | 개인·법인·공동 GP 분기 존재 | P03-T02(Legacy OT-P03-02), OT-P04-01의 서류 확인 항목 | 12·17·20·+2종 표준화 | CONFIRMED 분기, 상세 PROVISIONAL/CASE_ONLY |
 | Account | 일반·안전 명칭과 서류 차이 확인 지점 | OT-P07-01/02 체크 항목 | 수탁 자동 분류·Task 생성 | CONFIRMED 지점, 상세 UNKNOWN |
 | Institution | 세무서·은행 단계 존재 | 기존 접수·대기·보완 OT만 사용 | 채널 자동 선택, 지점 사례 일반화 | CONFIRMED/PROVISIONAL/UNKNOWN |
 

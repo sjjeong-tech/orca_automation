@@ -2,7 +2,7 @@
 
 | Approval | 연결 Process/OT | 승인 전 | 승인 후 | 반려 | Notion 기록 | Agent 한계 |
 |---|---|---|---|---|---|---|
-| HA-01 기본정보 | 전체 Intake, OT-P03-01/02, OT-P04-01, OT-P07-01/02 | RQ-REVIEW | 검수 계속 | RQ-REWORK | 완료증빙·확인값 | 대조 후보만 |
+| HA-01 기본정보 | 전체 Intake, P03-T01/T02(Legacy OT-P03-01/02), OT-P04-01, OT-P07-01/02 | RQ-REVIEW | 검수 계속 | RQ-REWORK | 완료증빙·확인값 | 대조 후보만 |
 | HA-02 착수 | 모든 요청 | RQ-REVIEW | RQ-READY | RQ-REWORK | 요청 상태·검수 결과 | Gate 충족 제안 |
 | HA-03 제출 검수 | P01/P03/P07 패키지 | TS-ACTIVE | 제출 허용 | TS-REWORK | 완료조건·EV-PACKAGE | 실물·날인 대체 금지 |
 | HA-04 계좌 유형 | OT-P07-01/02 | TS-WAIT | 유형 확정 | TS-WAIT/REWORK | Actor·판단 근거 | UNKNOWN 자동 확정 금지 |
