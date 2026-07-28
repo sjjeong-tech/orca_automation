@@ -22,6 +22,7 @@ import { createNotionProvider } from "./providers/notion.mjs";
 import { createDriveProvider } from "./providers/drive.mjs";
 import { createSlackProvider } from "./providers/slack.mjs";
 import { assertProviderShape, RESULT } from "./providers/base.mjs";
+import { evaluateEvidenceState, parseEvidenceText } from "./kernel/evidence-state.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "..", "..");
@@ -55,6 +56,7 @@ export function parseApproval(text = "", { slack = loadSlackAdapter() } = {}) {
   return kParseApproval(text, { ambiguousPhrases: slack.approval_parsing?.ambiguous_phrases ?? [] });
 }
 export const calculateDuplicateKey = kDupKey;
+export { evaluateEvidenceState, parseEvidenceText };
 
 export function detectProcess(userMessage, { process_hint } = {}, contract = loadSkillContract()) {
   if (process_hint) return process_hint === contract.process_id ? contract.process_id : null;
