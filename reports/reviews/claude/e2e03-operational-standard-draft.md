@@ -157,9 +157,263 @@ Claude·Codex·Slack을 판단·실행·입력 역할로 영구 고정하지 않
 | 검증값과 후보 구분 | PASS(9절) |
 | 과설계 없음 | PASS(10절) |
 
+---
+
+# Gate A 보완 — Evidence 기반 실행 SOP (TAP A-CP15-R1)
+
+## 13. Gate A 개요
+
+- Base main HEAD: `f25161c9abf467beba1d3c7a7648a12131ca6b5a`(PR #4 통합본), 현재 Branch는 main 병합 후 진행
+- 목적: 1~12절의 실행표준을 **실제 수행 가능한 SOP 수준**으로 상세화하고 Evidence Source를 연결한다
+- 신규 SOP 문서를 만들지 않고 본 문서에 13~18절을 추가한다(TAP "기존 구조 우선 재사용")
+- 이 절 작성 시점 Notion Write 0 / Schema 변경 0 / Drive 변경 0
+- 판정 등급: `OBSERVED`(직접 확인) / `CONFIRMED_RULE`(Canonical Source 확정) / `INFERRED`(추론) / `CONFIRMATION_REQUIRED`(확인 필요)
+
+## 14. Evidence Source Contract
+
+### 14-1. Source 4계층
+
+| 계층 | 정의 | E2E-03에서의 실체 | 판정 |
+|---|---|---|---|
+| **Fund Root** | 조합 1건의 장기 기준 폴더 | FUND 마스터 `조합 Root 폴더`(URL)로 지정. 하위에 `1. 결성` / `2. 운영` 및 조합 기준자료(규약·조합원명부·인감·통장사본) | OBSERVED(사례 1건) |
+| **Request Source Folder** | 특정 요청·외근·스캔·제출 작업 위치 | 외근 산출물 Root의 **날짜별 폴더**(`MMDD`). 조합별이 아니라 수행일 기준 | OBSERVED |
+| **Shared Functional Folder** | 업무유형 결과물을 여러 조합에 걸쳐 일괄 보관 | 공통 드라이브의 보안카드 취합 폴더 | OBSERVED |
+| **Git Evidence Inventory** | 사례·산출물 분포 검증용 참고 | `reports/evidence/fieldwork-output-inventory/**` | OBSERVED. **운영 파일의 Source of Truth 아님** |
+
+### 14-2. E2E-03 Canonical Source Folder
+
+Fund Root 하위 `1. 결성 > 1. 고유번호증 신청`이 T02~T04의 Primary Source다. 발급 결과물은 Fund Root 최상위에 저장된 사례가 확인됐다. **OBSERVED(사례 1건, 표준 확정은 CONFIRMATION_REQUIRED)**
+
+`processes/03-unique-number-application.md`의 `R-4`와 `GAP-04`는 폴더 탐색 표준을 각각 PROVISIONAL·미해결로 유지하고 있다. 본 절은 그 Gap을 **1개 사례로 좁힌 관찰**이며 공통 Rule로 승격하지 않는다.
+
+### 14-3. Evidence Type
+
+Codex 외근 Evidence Inventory가 정의한 Type을 재사용한다(신규 체계를 만들지 않는다). **OBSERVED**
+
+| Type | E2E-03 대응 | 사용 Task |
+|---|---|---|
+| `SUBMISSION_PACKAGE` | 신청서류 합본 | T03·T04 |
+| `RECEIPT` | 세무서 접수증 | T04 |
+| `RESULT_DOCUMENT` | 발급 고유번호증 | T05·T06 |
+| `SUPPLEMENT` | 보완·추가 제출자료 | T02·T04 |
+| `SECURITY_CARD` | 보안카드(후속 Process) | T06 후속 판단 |
+
+### 14-4. Evidence 판정 규칙 **CONFIRMED_RULE**
+
+1. 파일 존재만으로 Task 완료를 확정하지 않는다.
+2. 파일 부재를 업무 미수행으로 확정하지 않는다. Blocker로 남긴다.
+3. `.lnk`(Windows 바로가기)는 실물 Evidence로 인정하지 않는다.
+4. 0byte placeholder 파일은 실물 수령 증빙으로 계수하지 않는다.
+5. 폴더·파일명 괄호 메모는 조합명에서 분리하고(`operational_note`) 상태·Blocker로 자동 해석하지 않는다.
+6. 동일 파일이 Root·외근·공통 폴더에 중복 존재해도 오류가 아니다(운영상 복사본 허용).
+7. 탐색은 확정된 Root·parentId 기준 단계 조회만 사용한다. 광역 키워드 검색은 무관 조합의 민감 서류를 노출하므로 기본 방식으로 쓰지 않는다.
+8. 본문을 열어야 판정 가능한 사실(날인 여부·수령자 요건 등)은 자동 판정하지 않고 사람 확인으로 넘긴다.
+
+## 15. P03-T01~T06 실행 SOP
+
+공통 전제: Actor·상태·Blocker·완료조건·완료증빙은 **Task Property가 유일한 Source of Truth**(3절). Request에 중복 저장하지 않는다.
+
+### P03-T01 요청정보·착수조건 확인 — Atomic Step 01·03·04
+
+- **목적**: 요청을 실행 가능한 상태로 확정하고 대상 조합·유형·폴더를 식별한다
+- **Trigger**: 담당 관리역이 GP 날인본 실물서류를 지원팀에 전달(UN-01) **CONFIRMED_RULE**
+- **시작조건**: Request 생성·승인 Commit 완료
+- **Actor**: 지원팀
+- **필수 입력정보**: 대상 조합, 요청 업무 유형, 요청자, 담당 관리역, 서류 상태
+- **필요 파일**: 조합 기본정보, 투자유형·GP유형 판단자료
+- **Primary Evidence Source**: FUND 마스터 Record + Fund Root
+- **Fallback Evidence Source**: 담당 관리역 확인(사람)
+- **수행 순서**: ① FUND 정확 1건 매칭 → ② Fund Root 식별 → ③ 투자유형·GP유형·공동GP 분류(UN-04)
+- **판단 Rule**: FUND 1건 정확 일치만 진행. 0건·복수건은 Write 0 후 질문(6절) **CONFIRMED_RULE**
+- **누락 질문**: "대상 조합명을 정확히 알려주세요" / "담당 관리역은 누구인가요" / "GP 유형(개인·법인·공동)을 확인해주세요"
+- **승인점**: 없음(조회 단계). Request 생성 자체는 선행 승인 완료 상태
+- **Output**: 확정된 FUND·Root 경로·유형 판단 결과
+- **다음 상태**: T02 활성화, Request `진행 중`
+- **Exception**: 유형 식별 불가 → 관리역 확인 후 UN-04 재수행(UN-D01) **CONFIRMED_RULE**
+- **중단조건**: FUND 0건·복수건 / Root 미지정 / 조합구분 불명
+- **완료조건**: 필수 요청정보와 착수 가능 여부를 확인한다
+- **완료증빙**: 조합 Record·Root 경로·유형 판단 결과 확인 텍스트
+- **Agent 자동 범위**: FUND 매칭, Root 존재 확인, 조합구분 조회, 누락 필드 질문 생성
+- **사람 확인 범위**: GP 유형 최종 확정, 실물 날인본 인계 사실
+
+### P03-T02 제출서류 수령·누락 검수 — Atomic Step 02·05·06·07
+
+- **목적**: 제출에 필요한 서류를 수령하고 누락·오류를 식별한다
+- **Trigger**: T01 완료
+- **시작조건**: 대상 조합·유형 확정
+- **Actor**: 지원팀 →(누락 시)관리역 확인 → 지원팀 **OBSERVED(CI5 S3~S6)**
+- **필수 입력정보**: 유형별 필요 서류 목록, 현재 수령 범위
+- **필요 파일**: 규약 또는 규약(안), 승인공문·근거자료, 조합원명부·투자조합 세부명세, 주소 증빙, GP 관련 서류, 인감 관련 자료
+- **Primary Evidence Source**: Fund Root `1. 결성 > 1. 고유번호증 신청`
+- **Fallback Evidence Source**: Fund Root 최상위(규약·조합원명부 등 조합 기준자료), 담당 관리역 재전달
+- **수행 순서**: ① 유형별 근거자료 확인(UN-05) → ② 구비서류 확인(UN-06) → ③ 세부명세 합계·정보 검수(UN-07)
+- **판단 Rule**: 누락 시 Blocker를 `누락서류: {서류명} {건수}(전체 {총건수} 중 {수령건수} 수령)` 구조로 기록 **OBSERVED(CI5-G01 형식, WS2 재사용)**
+- **누락 질문**: "{서류명}이 확인되지 않습니다. 전달 예정인가요, 이미 전달하셨나요?"
+- **승인점**: 보완 수령 확정 시 사용자 확인
+- **Output**: 검수 완료된 제출서류 세트
+- **다음 상태**: T03 활성화. 누락 시 Request 서류 상태 `보완 필요`
+- **Exception**: 서류 누락·세부명세 오류(UN-EX02) → **동일 Task 내** Actor·Blocker만 변경, 신규 Task 생성 금지 **CONFIRMED_RULE**
+- **중단조건**: 필수 서류 판정 불가 / 유형별 목록 미확정(PROVISIONAL 구간)
+- **완료조건**: 수령 서류와 누락 항목을 확인한다
+- **완료증빙**: "보완 수령분 포함 전체 서류 재검수 완료" 형식
+- **Agent 자동 범위**: 파일 존재·수량 확인, 누락 목록 생성, 세부명세 합계 검증
+- **사람 확인 범위**: 서류 적합성·진위, 유형별 필요 목록의 최종 판단(`R-1` 세부목록 미확정)
+
+### P03-T03 신청서류 작성·날인본 확인 — Atomic Step 02·08
+
+- **목적**: 신청서류를 작성하고 날인본을 검수해 제출 가능 상태로 만든다
+- **Trigger**: T02 완료
+- **시작조건**: 제출서류 검수 통과
+- **Actor**: 지원팀 →(날인 대기·오류 시)GP → 지원팀 **OBSERVED(CI5 S7~S10)**
+- **필수 입력정보**: 신청서 양식 버전, 날인 필요 문서 목록
+- **필요 파일**: 고유번호증 신청서, 사용인감계, 날인본, 제출용 실물 묶음(UN-08)
+- **Primary Evidence Source**: Fund Root `1. 결성 > 1. 고유번호증 신청`
+- **Fallback Evidence Source**: 외근 날짜폴더(작성·합본 작업본)
+- **수행 순서**: ① 신청서 작성 → ② 날인·기재 검수(UN-02 재참조) → ③ 제출용 실물 묶음 구성(UN-08)
+- **판단 Rule**: 날인 여부는 파일명·메타데이터로 자동 판정하지 않는다 **CONFIRMED_RULE(14-4 규칙 8)**
+- **누락 질문**: "날인본이 최종본인지 확인이 필요합니다. 검수 완료된 버전인가요?"
+- **승인점**: 제출 가능 판정 시 사용자 확인
+- **Output**: 날인 완료된 제출용 서류 묶음(`SUBMISSION_PACKAGE`)
+- **다음 상태**: T04 활성화
+- **Exception**: 날인 오류·재요청(UN-EX01) → **동일 Task 내** 처리 **CONFIRMED_RULE**
+- **중단조건**: 날인본 진위 확인 불가 / 구양식 판별 불가(`GAP-02` UNKNOWN)
+- **완료조건**: 신청서류 작성과 날인본 확인을 완료한다
+- **완료증빙**: "재날인본 검수 완료, 제출 가능 판정" 형식
+- **Agent 자동 범위**: 신청서·인감계 파일 존재 확인, 합본 구성 여부 확인
+- **사람 확인 범위**: **날인 실물 확인(필수)**, 양식 최신성 판단
+
+### P03-T04 세무서 제출 준비·접수 — Atomic Step 09·10·11·12
+
+- **목적**: 제출 전 스캔을 확보하고 세무서에 접수해 접수증을 수령한다
+- **Trigger**: T03 완료
+- **시작조건**: 제출용 묶음 확정
+- **Actor**: 지원팀 →(현장 추가요청 시)관리역 확인 → 지원팀 **OBSERVED(CI5 S11~S13)**
+- **필수 입력정보**: 제출 기관, 제출 예정일
+- **필요 파일**: 사전 스캔본(UN-09), 접수증(`RECEIPT`), 현장 보완 자료(`SUPPLEMENT`)
+- **Primary Evidence Source**: Fund Root `1. 결성 > 1. 고유번호증 신청`
+- **Fallback Evidence Source**: 외근 날짜폴더(접수 당일 산출물)
+- **수행 순서**: ① 전체 스캔·병합(UN-09) → ② 현장 작성·보완(UN-10) → ③ 접수·접수증 수령(UN-11) → ④ 접수증 공유·저장(UN-12)
+- **판단 Rule**: **접수 완료 ≠ 전체 Process 완료.** T04 완료로 Request를 `완료` 전환하지 않는다 **CONFIRMED_RULE**
+- **누락 질문**: "접수증이 확인되지 않습니다. 접수는 완료되었나요?"
+- **승인점**: 접수 완료 기록 시 사용자 확인
+- **Output**: 접수증 + 저장·공유 완료 상태
+- **다음 상태**: T05 활성화, Actor=외부기관
+- **Exception**: 세무서 현장 추가요청(UN-EX04) → **동일 Task 내** 처리. 증빙·근거자료 성격이면 T02, 신청서·날인 성격이면 T03으로 라우팅(5절) **OBSERVED**
+- **중단조건**: 접수 가능 여부 판정 불가 / 기관별 요구 차이(`GAP-03` PROVISIONAL)
+- **완료조건**: 제출 준비와 세무서 접수 및 접수증 저장을 확인한다
+- **완료증빙**: "접수증 스캔본 확인" + 저장 위치
+- **Agent 자동 범위**: 스캔본·접수증 파일 존재 확인, 접수일 후보 추출(파일명·메타데이터 기준)
+- **사람 확인 범위**: 현장 대응, 추가요청 내용 해석, 실제 접수 사실
+
+### P03-T05 결과물 수령 — Atomic Step 13·14·15
+
+- **목적**: 처리완료를 확인하고 고유번호증 실물을 수령한다
+- **Trigger**: T04 완료(접수증 확보)
+- **시작조건**: 기관 처리 대기
+- **Actor**: 외부기관(대기) → 지원팀(통지 후) **OBSERVED(CI5 S13~S15)**
+- **필수 입력정보**: 접수번호, 처리완료 통지 여부, 수령자 정보
+- **필요 파일**: 처리완료 알림, 접수증, 발급 고유번호증(`RESULT_DOCUMENT`)
+- **Primary Evidence Source**: Fund Root 최상위(발급본 저장 위치) **OBSERVED(사례 1건)**
+- **Fallback Evidence Source**: 외근 날짜폴더(수령 당일 스캔본)
+- **수행 순서**: ① 처리완료 확인(UN-13) → ② 수령자료·자격 점검(UN-14) → ③ 실물 수령·결과 공유(UN-15)
+- **판단 Rule**: 발급본이 여러 위치에 있으면 중복 오류로 보지 않고 **최신본 후보를 사람 확인 대상으로 표시**
+- **누락 질문**: "고유번호증 발급본이 확인되지 않습니다. 수령하셨나요?"
+- **승인점**: 수령 완료 기록 시 사용자 확인
+- **Output**: 고유번호증 실물 + 촬영·스캔 공유본
+- **다음 상태**: T06 활성화
+- **Exception**: 수령자 요건 미충족(UN-EX05) → UN-14 복귀. **제3자 수령요건은 UNKNOWN**(`GAP-01`) **CONFIRMED_RULE(미확정 유지)**
+- **중단조건**: 제3자 수령 여부 판정 필요 / 발급본 최신성 판정 불가
+- **완료조건**: 고유번호증 결과물을 수령한다
+- **완료증빙**: "고유번호증 실물 수령 확인"
+- **Agent 자동 범위**: 발급본 파일 존재·발급일 후보 확인
+- **사람 확인 범위**: 실물 수령, 수령자 자격, 고유번호 진위
+
+### P03-T06 스캔·저장·관리역 전달 — Atomic Step 16
+
+- **목적**: 결과물을 지정 위치에 저장하고 담당 관리역에게 전달해 업무를 종료한다
+- **Trigger**: T05 완료
+- **시작조건**: 실물 수령 완료
+- **Actor**: 지원팀
+- **필수 입력정보**: 저장 대상 폴더, 전달 대상 관리역
+- **필요 파일**: 고유번호증 스캔본(Fund Root 저장본)
+- **Primary Evidence Source**: Fund Root
+- **Fallback Evidence Source**: 공통 취합 폴더(후속 보안카드 연계 시)
+- **수행 순서**: ① 스캔·저장(UN-16) → ② 실물 전달 → ③ 후속 Process 필요 여부 판단
+- **판단 Rule**: 저장 파일 존재와 관리역 실물 수령이 **모두** 확인돼야 완료 **CONFIRMED_RULE**
+- **누락 질문**: "관리역 전달이 완료되었나요?"
+- **승인점**: Request `완료` 전환 시 사용자 확인
+- **Output**: 저장본 + 전달 완료 상태
+- **다음 상태**: 전 Task 완료 확인 후 Request `완료`. 후속은 Process 04(보안카드·홈택스) / 07(계좌개설)로 인계(IF-03-04, IF-03-07 — PROVISIONAL)
+- **Exception**: 검증 범위 내 예외 미발생
+- **중단조건**: 전달 증빙 확인 불가
+- **완료조건**: 결과물을 스캔·저장하고 관리역에게 전달한다
+- **완료증빙**: "스캔본 저장 경로 확인, 관리역 전달 확인"
+- **Agent 자동 범위**: 저장 위치 파일 존재 확인, 후속 Process 후보 제시
+- **사람 확인 범위**: 관리역 전달 사실, 후속 Process 착수 판단
+
+## 16. 조합 유형별 차이
+
+FUND 마스터 `조합구분` 실측 옵션: `전체·신투·벤투·개투·민법·고유·기타·r투` **OBSERVED**
+
+| 유형 | 착수 Trigger | 승인공문·근거자료 | 추가서류 | 판정 |
+|---|---|---|---|---|
+| 민법조합 | 관리역의 GP 날인본 인계 | 규약(안)·사업계획서(안)·조합원명부·출자자 리스트, 민법상조합 법적근거 | 임대인동의서 또는 무상사용승낙서(주소 증빙), 사용인감계 | **OBSERVED(사례 1건)** — 단일 사례이므로 공통 Rule 아님 |
+| 개인투자조합 | 동일 Trigger 추정 | 결성계획 승인공문 관련 확인 경로 | 미확정 | `CONFIRMATION_REQUIRED`(`mappings/fund-type-notion-map.md` PROVISIONAL) |
+| 벤처투자조합 | 동일 Trigger 추정 | 핵심정보·유형별 근거자료 확인 경로 | 구체 문서세트 UNKNOWN | `CONFIRMATION_REQUIRED` |
+| 신기술사업투자조합 | **Trigger UNKNOWN** | 근거자료 UNKNOWN | 미확정 | `CONFIRMATION_REQUIRED`(`process-to-notion-map.yaml` known_gap) |
+
+`processes/03` `R-1`에 따라 GP유형(개인·법인·공동)별 첨부서류 세부 목록은 추정하지 않는다. 위 표의 민법조합 항목도 **1개 사례 관찰**이며 AGENTS.md 원칙에 따라 잠정으로 유지한다.
+
+## 17. Logical Gap Register
+
+| ID | Gap | 근거 | 처리 |
+|---|---|---|---|
+| **LG-1** | **P03 5-Task와 6-Task Mapping 병존** — `mappings/process-to-notion-map.{md,yaml}`은 `OT-P03-01~05`, `contracts/process-execution-mapping.yaml`과 본 표준은 `P03-T01~T06`. 단순 분할이 아니라 Atomic Step 그룹 자체가 다름(예: 5-Task는 UN-02를 OT-P03-01에, 6-Task는 Step 02를 T02·T03에 배치. 5-Task는 UN-09를 OT-P03-03에, 6-Task는 Step 09를 T04에 배치) | 두 파일 직접 대조 **OBSERVED** | **수정하지 않음.** GPT·사용자 Process 결정 대상(Reconciliation G-9와 동일 판정) |
+| **LG-2** | 폴더 탐색 표준 미확정 | `processes/03` `R-4`·`GAP-04` PROVISIONAL. 14-2는 사례 1건 관찰 | 표준으로 승격하지 않음 |
+| **LG-3** | 유형별 첨부서류 세부목록 미확정(특히 신기술) | `R-1`, `fund-type-notion-map.md` | 16절 `CONFIRMATION_REQUIRED` 유지 |
+| **LG-4** | 제3자 수령요건 UNKNOWN | `GAP-01`, `UN-D03` | T05 중단조건으로만 반영 |
+| **LG-5** | `일부 전달`·`보완 필요` 동시 표현 불가(Select 한계) | 2절 기존 기재 | Blocker 텍스트 병기로 우회(검증됨) |
+| **LG-6** | 이전 Task로의 역행 사례 없음 | 1절 질문 10 | `CONFIRMATION_REQUIRED` 유지 |
+
+## 18. Gate A Verification
+
+### Unit
+
+| 항목 | 결과 |
+|---|---|
+| 6개 Task 전부 존재 | PASS(15절) |
+| Task별 20개 필드(목적~사람 확인 범위) | PASS(6/6) |
+| 시작조건·완료조건 명시 | PASS |
+| Input·Output 명시 | PASS |
+| 정상·예외 경로 구분 | PASS |
+| Actor 명시 | PASS |
+| Evidence Source(Primary·Fallback) | PASS |
+| 승인점 명시 | PASS |
+
+### Integration
+
+| 항목 | 결과 |
+|---|---|
+| Task 간 상태 전이 연결(T01→T06) | PASS |
+| Request–Task 역할 분리 유지(중복 저장 없음) | PASS |
+| Fund Root–Evidence 연결 | PASS(14절) |
+| 보안카드 후속 Process 연결 | PASS(T06 다음 상태, IF-03-04) |
+| Natural Language Contract 연결 | PASS(8절 Contract 재사용, 누락 질문·승인점이 Contract 항목과 대응) |
+| Atomic Step 16/16 보존 | PASS(01~16 전부 T01~T06에 배치, Step 02는 기존 허용 중복) |
+| 5-Task Mapping과의 충돌 | **미해소 — LG-1로 기록(의도적)** |
+
+### 이번 Gate에서 하지 않은 것
+
+- Notion Write·Schema 변경·Drive 변경: 각 0건
+- 5↔6 Task Mapping 수정: 하지 않음(LG-1)
+- 신규 Rule 확정: 없음. 모든 신규 관찰은 사례 1건 기준 잠정 표기
+
 ## 최종 판정
 
-**RESULT=PASS_OPERATIONAL_STANDARD_DRAFT**
+**Gate A RESULT=PASS_E2E03_LOGICAL_SOP**
 
-STATUS=E2E03_OPERATIONAL_STANDARD_INTEGRATED
+- 1~12절: WS1-01 실행표준(기존, 변경 없음)
+- 13~18절: Gate A Evidence 기반 SOP 보완(신규)
+
+STATUS=E2E03_LOGICAL_SOP_COMPLETE_PENDING_PHYSICAL_APPROVAL
 NEXT_OWNER=GPT_AND_USER
