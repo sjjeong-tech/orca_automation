@@ -68,6 +68,71 @@ export function createDriveProvider({ config = {}, invoke, classificationRules =
       return ok({ root_id: id, masked: maskIdentifier(id) });
     },
 
+    /**
+     * Root에서 폴더명 조각을 따라 내려간다. 광역검색을 쓰지 않고 parentId만 사용한다.
+     * segments 예: ["결성", "고유번호증"] — 앞의 번호·구분자는 무시하고 부분일치로 찾는다.
+     */
+    async resolve_path({ rootId, segments = [] }) {
+      if (!rootId) return fail(RESULT.NOT_FOUND, "rootId required");
+      let current = rootId;
+      const trail = [];
+      for (const seg of segments) {
+        const res = await this.list_by_parent(current);
+        if (res.result !== RESULT.OK) return res;
+        const folders = res.data.filter((f) => f.is_folder);
+        const key = String(seg).replace(/\s+/g, "");
+        const hit = folders.find((f) => String(f.name).replace(/^[\d.\-_\s]+/, "").replace(/\s+/g, "").includes(key))
+          ?? folders.find((f) => String(f.name).replace(/\s+/g, "").includes(key));
+        if (!hit) {
+          record("resolve_path", RESULT.NOT_FOUND, { error_code: "PATH_SEGMENT_NOT_FOUND" });
+          return fail(RESULT.NOT_FOUND, "path segment not found", { resolved_trail: trail, missing_segment: seg, siblings: folders.map((f) => f.name) });
+        }
+        trail.push(hit.name);
+        current = hit._id;
+      }
+      record("resolve_path", RESULT.OK, { identifier: current, count: trail.length });
+      return ok({ folder_id: current, trail });
+    },
+
+    /**
+     * 외근 Root의 날짜 폴더 후보.
+     * 실측 구조: 당월 `MMDD` 폴더와 월 아카이브 `YYYY.MM` 폴더가 **같은 계층**에 공존한다.
+     * 지난 달 날짜 폴더는 해당 `YYYY.MM` 아래로 이동돼 있다. 날짜를 추정하지 않고 후보만 돌려준다.
+     */
+    async list_fieldwork_candidates({ rootId = config.fieldwork_root, monthly = null, daily = null } = {}) {
+      if (!rootId) return fail(RESULT.NOT_FOUND, "fieldwork_root not configured");
+      const top = await this.list_by_parent(rootId);
+      if (top.result !== RESULT.OK) return top;
+      const folders = top.data.filter((f) => f.is_folder);
+      const months = folders.filter((f) => /^\d{4}\.\d{2}$/.test(f.name)).sort((a, b) => b.name.localeCompare(a.name));
+      const currentDays = folders.filter((f) => /^\d{4}$/.test(f.name)).sort((a, b) => b.name.localeCompare(a.name));
+      const dayIds = Object.fromEntries(currentDays.map((d) => [d.name, d._id]));
+      const base = { months: months.map((m) => m.name), days: currentDays.map((d) => d.name), monthly: null, level: "CURRENT" };
+
+      if (daily && dayIds[daily]) {
+        record("list_fieldwork_candidates", RESULT.OK, { count: currentDays.length });
+        return ok({ ...base, resolved_day_id: dayIds[daily], resolved_from: "ROOT_LEVEL", _day_ids: dayIds });
+      }
+      const monthFolder = monthly ? months.find((m) => m.name === monthly) : null;
+      if (monthly && !monthFolder) return fail(RESULT.NOT_FOUND, "monthly folder not found", { ...base });
+      if (!monthFolder) {
+        record("list_fieldwork_candidates", RESULT.OK, { count: currentDays.length });
+        return ok({ ...base, resolved_day_id: null, _day_ids: dayIds });
+      }
+      const inner = await this.list_by_parent(monthFolder._id);
+      if (inner.result !== RESULT.OK) return inner;
+      const archived = inner.data.filter((f) => f.is_folder && /^\d{4}$/.test(f.name)).sort((a, b) => b.name.localeCompare(a.name));
+      const archivedIds = Object.fromEntries(archived.map((d) => [d.name, d._id]));
+      record("list_fieldwork_candidates", RESULT.OK, { count: archived.length });
+      return ok({
+        ...base, level: "ARCHIVED", monthly,
+        days: [...new Set([...archived.map((d) => d.name), ...base.days])],
+        resolved_day_id: daily ? archivedIds[daily] ?? null : null,
+        resolved_from: daily && archivedIds[daily] ? "MONTHLY_ARCHIVE" : null,
+        _day_ids: { ...dayIds, ...archivedIds }
+      });
+    },
+
     async search_records(q) {
       if (!allowBroad) { record("search_records", RESULT.ACCESS_DENIED, { error_code: "BROAD_SEARCH_DISABLED" }); return fail(RESULT.ACCESS_DENIED, "broad search disabled; use parentId traversal"); }
       return query(q, "search_records");

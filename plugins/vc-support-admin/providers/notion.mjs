@@ -84,6 +84,16 @@ export function createNotionProvider({ config = {}, invoke, logger = () => {} } 
       return ok(res.data.map((r) => ({ name: r["조합명"], key: r["조합명"], fund_type: r["조합구분"], tax_id: r["고유번호"] ?? null, root_folder: r["조합 Root 폴더"] ?? null })));
     },
 
+    /** 부분일치 후보 조회. 자동 선택하지 않는다 — 후보만 돌려주고 확정은 사람이 한다. */
+    async search_fund_candidates(name, { limit = 10 } = {}) {
+      const safe = String(name ?? "").replace(/'/g, "''");
+      if (safe.length < 2) return fail(RESULT.NOT_FOUND, "search term too short");
+      const q = `SELECT "조합명", "조합구분", "고유번호", "조합 Root 폴더" FROM "collection://${ds.fund_master}" WHERE "조합명" LIKE '%${safe}%' LIMIT ${Number(limit) || 10}`;
+      const res = await sql(ds.fund_master, q, "search_fund_candidates");
+      if (res.result !== RESULT.OK) return res;
+      return ok(res.data.map((r) => ({ name: r["조합명"], key: r["조합명"], fund_type: r["조합구분"], tax_id: r["고유번호"] ?? null, root_folder: r["조합 Root 폴더"] ?? null })));
+    },
+
     async resolve_fund_work_record(fundName) {
       const safe = String(fundName ?? "").replace(/'/g, "''");
       const q = `SELECT url, "요청사항", "구분", "상태" FROM "collection://${ds.fund_work}" WHERE "요청사항" LIKE '%${safe}%'`;
@@ -100,6 +110,18 @@ export function createNotionProvider({ config = {}, invoke, logger = () => {} } 
       const safe = String(titleContains ?? "").replace(/'/g, "''");
       const q = `SELECT "Operational Task ID" AS operational_task_id, "Task 상태" AS state, "현재 Actor" AS actor, "다음 Action" AS next_action, "Blocker" AS blocker, "완료증빙" AS evidence FROM "collection://${ds.task}" WHERE "Task명" LIKE '%${safe}%' ORDER BY operational_task_id`;
       return sql(ds.task, q, "find_tasks");
+    },
+
+    /**
+     * Task는 제목이 아니라 `상위 요청` Relation으로 Request에 붙는다.
+     * 제목 검색만 하면 정상 Instance도 0건으로 보이므로 Relation 조회를 기본 경로로 쓴다.
+     */
+    async find_tasks_by_request(requestUrlOrId) {
+      const raw = String(requestUrlOrId ?? "");
+      const token = (raw.split("/").filter(Boolean).pop() ?? raw).replace(/-/g, "").replace(/'/g, "''");
+      if (!token) return fail(RESULT.NOT_FOUND, "request reference required");
+      const q = `SELECT "Operational Task ID" AS operational_task_id, "Task명" AS title, "Task 상태" AS state, "현재 Actor" AS actor, "다음 Action" AS next_action, "Blocker" AS blocker, "완료증빙" AS evidence FROM "collection://${ds.task}" WHERE replace("상위 요청", '-', '') LIKE '%${token}%' ORDER BY operational_task_id`;
+      return sql(ds.task, q, "find_tasks_by_request");
     },
 
     async read_task_state(args) { return this.find_tasks(args); },

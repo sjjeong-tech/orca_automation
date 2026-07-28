@@ -10,13 +10,19 @@
   ],
   "traversal_policy": {"prefer": "parent_id", "broad_search": "FALLBACK_ONLY", "broad_search_risk": "무관한 실제 조합의 민감 서류 노출"},
   "evidence_classification": [
-    {"type": "SUBMISSION_PACKAGE", "signals": ["신청서류", "합본"], "task_candidates": ["P03-T03", "P03-T04"]},
+    {"type": "SUBMISSION_PACKAGE", "signals": ["신청서류", "합본"], "task_candidates": ["P03-T03", "P03-T04"], "exclude_signals": ["체크리스트", "양식", "서식"]},
     {"type": "RECEIPT", "signals": ["접수증"], "task_candidates": ["P03-T04"]},
-    {"type": "RESULT_DOCUMENT", "signals": ["고유번호증"], "task_candidates": ["P03-T05", "P03-T06"], "exclude_signals": ["신청", "접수", "정정"]},
+    {"type": "RESULT_DOCUMENT", "signals": ["고유번호증"], "task_candidates": ["P03-T05", "P03-T06"], "exclude_signals": ["신청", "접수", "정정", "체크리스트", "양식", "서식", "안내", "(안)"], "exclude_reason": "체크리스트·양식·안내문은 발급 결과물이 아니다. 실측에서 '## 고유번호증, 계좌개설 체크리스트'가 발급본으로 오분류됐다."},
     {"type": "SUPPLEMENT", "signals": ["보완"], "task_candidates": ["P03-T02", "P03-T04"]},
     {"type": "SECURITY_CARD", "signals": ["보안카드"], "task_candidates": [], "downstream_process": "P04"},
     {"type": "BANKBOOK_COPY", "signals": ["통장사본"], "task_candidates": [], "downstream_process": "P07"}
   ],
+  "scope_exclusion_signals": {
+    "note": "E2E-03 범위 밖 세무 신고 산출물. 외근 폴더에는 다른 세무업무 결과물이 함께 들어온다. 실측: '증권거래세 과세표준 신고서 접수증'이 고유번호증 접수증으로 오분류됐다.",
+    "signals": ["증권거래세", "부가가치세", "부가세", "원천세", "법인세", "소득세", "과세표준", "지급명세서", "사업자등록"],
+    "verdict": "OUT_OF_SCOPE",
+    "counts_as_evidence": false
+  },
   "validity_rules": [
     {"verdict": "UNVERIFIED_SHORTCUT", "when": "extension == lnk", "counts_as_evidence": false},
     {"verdict": "ZERO_BYTE", "when": "size == 0", "counts_as_evidence": false},

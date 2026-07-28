@@ -11,6 +11,25 @@
     "P03-T05",
     "P03-T06"
   ],
+  "operational_tasks": [
+    {"id": "P03-T01", "name": "요청정보·착수조건 확인", "actor": "지원팀"},
+    {"id": "P03-T02", "name": "제출서류 수령·누락 검수", "actor": "지원팀"},
+    {"id": "P03-T03", "name": "신청서류 작성·날인본 확인", "actor": "지원팀"},
+    {"id": "P03-T04", "name": "세무서 제출 준비·접수", "actor": "지원팀"},
+    {"id": "P03-T05", "name": "결과물 수령", "actor": "외부기관"},
+    {"id": "P03-T06", "name": "스캔·저장·관리역 전달", "actor": "지원팀"}
+  ],
+  "user_intents": [
+    {"intent": "get_fund_process_status", "label": "조합별 업무상태 조회", "fund_required": true, "reads": ["notion.fund_master", "notion.request", "notion.task", "drive.file_metadata"], "writes": []},
+    {"intent": "inspect_fieldwork_evidence", "label": "외근 산출물 검토", "fund_required": false, "reads": ["drive.folder_metadata", "drive.file_metadata"], "writes": []},
+    {"intent": "build_notion_preview", "label": "Notion 변경 Preview 생성", "fund_required": true, "reads": ["notion.task", "drive.file_metadata"], "writes": []},
+    {"intent": "build_manager_update", "label": "매니저 공유문 생성", "fund_required": true, "reads": ["notion.task", "drive.file_metadata"], "writes": []}
+  ],
+  "intent_routing": {
+    "user_supplies_intent_name": false,
+    "ambiguous_policy": "ASK_ONE_CLARIFYING_QUESTION",
+    "fund_partial_match_policy": "PROCEED_READ_ONLY_AND_CONFIRM"
+  },
   "trigger_phrases": [
     "고유번호증 신청",
     "고유번호증 진행상태",

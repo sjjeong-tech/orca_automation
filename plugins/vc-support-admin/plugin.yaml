@@ -53,9 +53,24 @@
     "slack_preview",
     "agent_session"
   ],
+  "user_intents": [
+    "get_fund_process_status",
+    "inspect_fieldwork_evidence",
+    "build_notion_preview",
+    "build_manager_update"
+  ],
+  "intent_input_policy": {
+    "user_supplies_intent_name": false,
+    "ambiguous": "ASK_ONE_CLARIFYING_QUESTION"
+  },
   "entry_points": {
     "main": "plugins/vc-support-admin/index.mjs",
     "function": "processRequest",
+    "user_facing_function": "runUserRequest",
+    "session_runner": "plugins/vc-support-admin/session-runner.mjs",
+    "session_runner_function": "runSessionWorkflow",
+    "intent_router": "kernel/intent.mjs",
+    "result_formatter": "kernel/format.mjs",
     "kernel_security": [
       "kernel/preview.mjs",
       "kernel/writeguard.mjs",
@@ -93,7 +108,14 @@
     "skills/e2e03-tax-id-application/contract.yaml",
     "reports/reviews/claude/e2e03-operational-standard-draft.md"
   ],
-  "test_command": "node plugins/vc-support-admin/tests/security.test.mjs",
+  "test_command": "node plugins/vc-support-admin/tests/smoke.test.mjs",
+  "test_commands": {
+    "smoke": "node plugins/vc-support-admin/tests/smoke.test.mjs",
+    "harness": "node plugins/vc-support-admin/tests/harness.test.mjs",
+    "provider": "node plugins/vc-support-admin/tests/provider.test.mjs",
+    "live": "node plugins/vc-support-admin/tests/live.test.mjs",
+    "security": "node plugins/vc-support-admin/tests/security.test.mjs"
+  },
   "security": {
     "typed_approval": true,
     "test_only_runtime_guard": true,

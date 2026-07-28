@@ -39,16 +39,19 @@ export function classifyEvidence(files = [], rules = []) {
       verdict,
       counts_as_evidence: COUNTS.has(verdict),
       source_layer: file.source_layer ?? null,
-      modified: file.modified ?? null
+      modified: file.modified ?? null,
+      // 중복 판정 단위. 여러 조합 산출물이 한 폴더에 섞이는 외근 폴더에서
+      // type만으로 묶으면 서로 다른 조합의 문서가 중복으로 오판된다.
+      group_key: `${file.fund_key ?? ""}|${type ?? ""}`
     };
   });
 
-  // 동일 type이 복수 위치에 있으면 오류가 아니라 최신본 판단 대상으로 표시한다.
+  // 같은 조합의 동일 type이 복수 위치에 있으면 오류가 아니라 최신본 판단 대상으로 표시한다.
   for (const item of classified) {
     if (!item.type || !item.counts_as_evidence) continue;
-    const prior = seen.get(item.type);
+    const prior = seen.get(item.group_key);
     if (prior) { prior.duplicate_group = item.type; item.duplicate_group = item.type; }
-    else seen.set(item.type, item);
+    else seen.set(item.group_key, item);
   }
   return classified;
 }
