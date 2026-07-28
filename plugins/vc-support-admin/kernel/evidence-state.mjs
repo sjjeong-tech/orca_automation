@@ -65,6 +65,12 @@ export function evaluateEvidenceState(event = {}) {
     out.evidence_judgment = validity === "VERIFIED" ? "사람 확인 필요" : "확인 필요";
     out.reason_codes.push(validity === "VERIFIED" ? "HUMAN_CONFIRMATION_REQUIRED" : "EVIDENCE_VALIDITY_NOT_VERIFIED");
   }
+  // 행동 안내는 Next Action에만 둔다. 같은 문구를 장애 사유로 복제하지 않는다.
+  if (out.proposed_blocker && out.proposed_blocker === out.proposed_next_action) out.proposed_blocker = "";
+  const requiredTasksComplete = event.all_required_tasks_complete === true;
+  const noOpenBlocker = out.proposed_blocker === "";
+  out.request_completion_allowed = requiredTasksComplete && !out.human_confirmation_required && noOpenBlocker &&
+    (out.operational_task_id !== "P03-T06" || (event.storage_confirmed === true && event.delivery_confirmed === true));
   return out;
 }
 

@@ -19,6 +19,7 @@ assert.equal(receipt.evidence_judgment, "사람 확인 필요");
 assert.equal(receipt.proposed_next_action, "접수증 본문 대조");
 assert.equal(receipt.proposed_blocker, "");
 assert.equal(receipt.request_completion_allowed, false);
+assert.equal(receipt.proposed_blocker, "");
 
 const result = evaluateEvidenceState(event({ operational_task_id: "P03-T05", evidence_type: "RESULT_DOCUMENT", human_confirmation: true }));
 assert.equal(result.proposed_next_action, "최신본·실물 수령 확인");
@@ -39,6 +40,16 @@ assert.equal(verified.evidence_judgment, "확인됨");
 // proposed_task_status=완료 is only a preview candidate; no Notion write is planned.
 assert.equal(verified.proposed_task_status, "완료");
 assert.equal(verified.completion_candidate, true);
+assert.equal(verified.request_completion_allowed, false);
+
+const requestReady = evaluateEvidenceState(event({ evidence_type: "STAMPED_DOCUMENT", human_confirmation: false, all_required_tasks_complete: true }));
+assert.equal(requestReady.request_completion_allowed, true);
+
+const blockedByTask = evaluateEvidenceState(event({ evidence_type: "STAMPED_DOCUMENT", human_confirmation: false, all_required_tasks_complete: true, current_blocker: "서류 재확인" }));
+assert.equal(blockedByTask.request_completion_allowed, false);
+
+const deliveryReady = evaluateEvidenceState(event({ operational_task_id: "P03-T06", evidence_type: "DELIVERY_EVIDENCE", human_confirmation: false, storage_confirmed: true, delivery_confirmed: true, all_required_tasks_complete: true }));
+assert.equal(deliveryReady.request_completion_allowed, true);
 
 const preview = evaluateEvidenceState(event());
 assert.equal(preview.change_preview.planned_write_count, 0);
