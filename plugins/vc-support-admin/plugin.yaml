@@ -1,15 +1,36 @@
 {
   "plugin_id": "vc-support-admin",
   "name": "VC 지원팀 행정업무 Agent Plugin (Prototype)",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "purpose": "검증된 E2E-03 업무 흐름을 다른 조합·세션·Interface에서 재사용 가능한 실행 단위로 제공한다. Repository 내부 Prototype이며 외부 배포·설치 대상이 아니다.",
-  "supported_skills": ["e2e03-tax-id-application"],
-  "required_connectors": ["notion"],
-  "optional_connectors": ["drive", "slack"],
+  "supported_skills": [
+    "e2e03-tax-id-application"
+  ],
+  "required_connectors": [
+    "notion"
+  ],
+  "optional_connectors": [
+    "drive",
+    "slack"
+  ],
   "permissions": {
-    "notion": {"read": true, "write_test_records": true, "write_operating_records": false, "schema_change": false, "database_create": false, "view_create": false},
-    "drive": {"read_metadata": true, "read_content": false, "write": false},
-    "slack": {"preview_only": true, "send": false}
+    "notion": {
+      "read": true,
+      "write_test_records": true,
+      "write_operating_records": false,
+      "schema_change": false,
+      "database_create": false,
+      "view_create": false
+    },
+    "drive": {
+      "read_metadata": true,
+      "read_content": false,
+      "write": false
+    },
+    "slack": {
+      "preview_only": true,
+      "send": false
+    }
   },
   "approval_required_actions": [
     "notion.test_request.create",
@@ -18,10 +39,31 @@
   ],
   "data_sources": {
     "note": "실제 Database·Page·Drive ID는 Git에 저장하지 않는다. runtime_config로 주입한다.",
-    "injected_keys": ["fund_master", "fund_work", "request", "task", "fund_root_property", "shared_functional_folders"]
+    "injected_keys": [
+      "fund_master",
+      "fund_work",
+      "request",
+      "task",
+      "fund_root_property",
+      "shared_functional_folders"
+    ]
   },
-  "interfaces": ["cli", "slack_preview", "agent_session"],
-  "entry_points": {"main": "plugins/vc-support-admin/index.mjs", "function": "processRequest"},
+  "interfaces": [
+    "cli",
+    "slack_preview",
+    "agent_session"
+  ],
+  "entry_points": {
+    "main": "plugins/vc-support-admin/index.mjs",
+    "function": "processRequest",
+    "kernel_security": [
+      "kernel/preview.mjs",
+      "kernel/writeguard.mjs",
+      "kernel/transaction.mjs",
+      "kernel/errors.mjs",
+      "providers/bridge.mjs"
+    ]
+  },
   "error_policy": {
     "on_fund_not_found": "NO_WRITE_AND_ASK",
     "on_fund_multiple": "NO_WRITE_AND_ASK",
@@ -37,7 +79,12 @@
     "broad_search": "FALLBACK_ONLY"
   },
   "duplicate_policy": {
-    "key": ["fund_key", "process_id", "request_type", "record_prefix"],
+    "key": [
+      "fund_key",
+      "process_id",
+      "request_type",
+      "record_prefix"
+    ],
     "on_existing": "REUSE_AND_RESUME",
     "create_when_existing": false
   },
@@ -46,5 +93,17 @@
     "skills/e2e03-tax-id-application/contract.yaml",
     "reports/reviews/claude/e2e03-operational-standard-draft.md"
   ],
-  "test_command": "node plugins/vc-support-admin/tests/harness.test.mjs"
+  "test_command": "node plugins/vc-support-admin/tests/security.test.mjs",
+  "security": {
+    "typed_approval": true,
+    "test_only_runtime_guard": true,
+    "sequential_transaction": true,
+    "partial_write_ledger": true,
+    "fail_closed": true,
+    "write_bridge_enabled": false,
+    "auto_write_retry": false,
+    "rollback_supported": false,
+    "audited_commit": "ffebdaa",
+    "audit_report": "reports/codex/e2e03-security-reaudit.md"
+  }
 }

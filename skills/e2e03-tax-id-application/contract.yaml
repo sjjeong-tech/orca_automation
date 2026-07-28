@@ -1,6 +1,6 @@
 {
   "skill_id": "e2e03-tax-id-application",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "process_id": "P03",
   "e2e_process_id": "E2E-03",
   "operational_task_ids": [
@@ -222,14 +222,16 @@
     "processes/03-unique-number-application.md",
     "mappings/process-to-notion-map.md",
     "skills/e2e03-tax-id-application/canonical-reference.yaml",
-    "skills/e2e03-tax-id-application/evidence-taxonomy.yaml"
+    "skills/e2e03-tax-id-application/evidence-taxonomy.yaml",
+    "reports/codex/e2e03-security-reaudit.md"
   ],
   "test_refs": [
     "skills/e2e03-tax-id-application/tests/cases.yaml",
     "skills/e2e03-tax-id-application/tests/expected.yaml",
     "plugins/vc-support-admin/tests/harness.test.mjs",
     "plugins/vc-support-admin/tests/provider.test.mjs",
-    "plugins/vc-support-admin/tests/live.test.mjs"
+    "plugins/vc-support-admin/tests/live.test.mjs",
+    "plugins/vc-support-admin/tests/security.test.mjs"
   ],
   "not_supported": [
     "P04",
@@ -241,5 +243,71 @@
   ],
   "document_profiles_dir": "skills/e2e03-tax-id-application/document_profiles",
   "kernel_path": "plugins/vc-support-admin/kernel",
-  "providers_path": "plugins/vc-support-admin/providers"
+  "providers_path": "plugins/vc-support-admin/providers",
+  "security_contract": {
+    "typed_preview_required": true,
+    "preview_hash_fields": [
+      "process_id",
+      "target_data_source",
+      "target_record",
+      "target_property",
+      "current_value",
+      "proposed_value",
+      "action",
+      "write_scope",
+      "transaction_id"
+    ],
+    "typed_approval_required": true,
+    "approval_validation": [
+      "preview_exists",
+      "preview_not_expired",
+      "approval_not_expired",
+      "preview_id_match",
+      "preview_hash_match",
+      "transaction_id_match",
+      "action_match",
+      "scope_match",
+      "target_record_and_property_present",
+      "current_value_unchanged",
+      "approval_actor_present"
+    ],
+    "natural_language_is_not_approval": true,
+    "test_write_guard": {
+      "require_test_data_source_allowlist": true,
+      "require_test_prefix_or_metadata": true,
+      "require_process_allowlist": true,
+      "require_action_allowlist": true,
+      "require_complete_runtime_config": true
+    },
+    "guard_codes": [
+      "BLOCKED_PREVIEW_ONLY",
+      "BLOCKED_OPERATING_WRITE",
+      "BLOCKED_DATA_SOURCE",
+      "BLOCKED_RECORD_SCOPE",
+      "BLOCKED_PROCESS",
+      "BLOCKED_ACTION",
+      "BLOCKED_APPROVAL",
+      "BLOCKED_CONFIG"
+    ],
+    "fail_closed_errors": [
+      "PROVIDER_ERROR",
+      "CONNECTION_CLOSED",
+      "RATE_LIMIT",
+      "ACCESS_DENIED",
+      "TIMEOUT",
+      "UNKNOWN_RESPONSE",
+      "REQUERY_FAILED",
+      "EXPECTED_ACTUAL_MISMATCH",
+      "PARTIAL_WRITE",
+      "NORMALIZATION_FAILED"
+    ],
+    "auto_write_retry": false,
+    "rollback_supported": false,
+    "partial_write_policy": "STOP_RETURN_LEDGER_HUMAN_HANDOFF",
+    "idempotency": {
+      "completed_transaction": "NO_OP",
+      "partial_transaction": "HUMAN_RECOVERY_REQUIRED"
+    },
+    "write_bridge_enabled": false
+  }
 }

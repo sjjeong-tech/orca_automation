@@ -17,7 +17,7 @@
     },
     {
       "id": "LIVE-02",
-      "input": "그로스브릿지 고유번호증 업무 진행해주세요.",
+      "input": "TEST FUND ALPHA 고유번호증 업무 진행해주세요.",
       "expected": {"approval_required": true, "error_code": "APPROVAL_AMBIGUOUS", "write": 0, "clarifying_question": true}
     },
     {

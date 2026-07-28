@@ -13,8 +13,8 @@
 | Active Branch | `agent/claude/e2e03-natural-language-contract` |
 | Main Head | `f25161c` |
 | Branch Head | `ffebdaa` |
-| Last Completed Commit | `ffebdaa` [Provider] MCP provider layer, shared skill kernel, canonical alignment |
-| Current Gate | Codex 보안 재감사 대기 |
+| Last Completed Commit | A-CP22 보안 수정(아래 11절) |
+| Current Gate | P0 수정 완료 → Codex 재검증 대기 |
 | Current Mode | **preview_only / 운영 Write 0** |
 
 ## 2. 완료된 단계 (Commit·판정만)
@@ -76,8 +76,8 @@ TO DO LIST (FUND)  (업무건 트래커, 운영 DB)
 | Drive | read-only, 광역검색 off |
 | `test_write` 승격 | **금지 — 사용자 승인 필요** |
 | 하드코딩 ID(비테스트 산출물) | 0 |
-| 이전 Codex P0 | **4건**(사용자 제공 정보 — Claude가 직접 검증하지 않음) |
-| 현재 Codex 재감사 | `ffebdaa` 대상 진행 예정 |
+| 이전 Codex P0 | **4건 + 신규 2건(P0-05·P0-06)** — 재감사 `4c0cf88`, 보고서 `reports/codex/e2e03-security-reaudit.md` |
+| 현재 Codex 재감사 | `ffebdaa` 대상 완료 — 판정 FAIL(2/10). A-CP22에서 수정 |
 | 규칙 | **P0 PASS 전 어떤 Write도 하지 않는다** |
 
 ## 7. Canonical Conflict (C1~C7, 전부 미해소)
@@ -146,3 +146,19 @@ Layer 2의 "자동화 보류"를 다음 4가지 금지로 해석할 것을 제�
 6. 보안카드 자격증명 평문 — 본문 미독 정책 확정 필요
 7. View A의 status 필터가 API로 설정 불가 → UI 적용 필요
 8. Request `관련 조합` 값 혼재(일부가 FUND 마스터 Page 지시)
+
+## 11. A-CP22 보안 수정 (Codex 재감사 4c0cf88 대응)
+
+감사 판정 FAIL(필수 10건 중 2 PASS) → 수정 후 **10/10 + 추가 34건 PASS**.
+
+| 항목 | 수정 |
+|---|---|
+| P0-1 Typed Approval | `kernel/preview.mjs` — Typed Preview(13필드)·핵심값 결정적 `preview_hash`·Typed Approval(8필드)·11개 검증 조건. 자연어는 승인 후보만 생성 |
+| P0-2 TEST-only Guard | `kernel/writeguard.mjs` — TEST Data Source Allowlist **와** TEST Prefix·메타데이터를 **둘 다** 요구. process·action allowlist, 완전한 runtime config, 8개 차단 코드 |
+| P0-3 Transaction | `kernel/transaction.mjs` — 순차 실행기, 단계별 PASS 요구, 생성 원장, Partial 승격, Idempotency Store(완료=NO_OP, 부분=사람 복구) |
+| P0-4 Fail-closed | `kernel/errors.mjs` + Provider — transport 예외 정규화(10코드), 응답 형태 검증, requery 불일치를 실패로 반환, 자동 Write 재시도 영구 금지 |
+| P0-05 실사례 Fixture | live fixture·cases.yaml·e2e03-live.yaml의 실제 조합명·Drive URL 전량 합성 교체. 실사례 노출 **0** |
+| P0-06 Idempotency | Transaction Store로 재실행 시 신규 Write 0 |
+| P1 Bridge | `providers/bridge.mjs` — Bridge Request/Response 계약, 논리 동작→Connector 도구 매핑, Write Bridge 기본 비활성, Raw 미보관 |
+
+여전히 `preview_only`이며 실제 Write Bridge는 비활성이다. `test_write` 승격은 Codex 재검증과 사용자 승인 이후에만 가능하다.

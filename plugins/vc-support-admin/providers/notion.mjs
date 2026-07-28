@@ -3,6 +3,7 @@
 import { RESULT, ok, fail, unsupported, requireInvoke } from "./base.mjs";
 import { WRITE_MODE } from "../kernel/guards.mjs";
 import { auditLog, maskIdentifier } from "../kernel/sanitize.mjs";
+import { DOMAIN_ERROR, normalizeTransportError, normalizeResponseShape } from "../kernel/errors.mjs";
 
 const SQL_TOOL = "notion-query-data-sources";
 const FETCH_TOOL = "notion-fetch";
@@ -28,12 +29,15 @@ export function createNotionProvider({ config = {}, invoke, logger = () => {} } 
     const started = Date.now();
     try {
       const res = await invoke(SQL_TOOL, { data: { data_source_urls: [`collection://${dataSourceId}`], query } });
-      const rows = res?.results ?? [];
+      const shape = normalizeResponseShape(res, { expectArray: "results" });
+      if (!shape.ok) { record(operation, shape.error_code, { error_code: shape.error_code, elapsed_ms: Date.now() - started }); return fail(shape.error_code, "unexpected response shape"); }
+      const rows = res.results;
       record(operation, RESULT.OK, { count: rows.length, identifier: dataSourceId, elapsed_ms: Date.now() - started });
       return ok(rows);
     } catch (error) {
-      record(operation, RESULT.ACCESS_DENIED, { error_code: error?.code ?? "SQL_FAILED", elapsed_ms: Date.now() - started });
-      return fail(RESULT.ACCESS_DENIED, "query failed");
+      const n = normalizeTransportError(error);
+      record(operation, n.error_code, { error_code: n.error_code, elapsed_ms: Date.now() - started });
+      return fail(n.error_code, "query failed", { retryable: n.retryable, auto_write_retry: false });
     }
   }
 
@@ -123,8 +127,21 @@ export function createNotionProvider({ config = {}, invoke, logger = () => {} } 
       if (allowedPrefixes.length && bad) return fail(RESULT.APPROVAL_REQUIRED, "payload outside allowed TEST prefix");
       const created = [];
       for (const p of payloads) {
-        const res = await invoke(p.tool, { parent: p.parent, pages: p.pages });
-        created.push({ id: maskIdentifier(res?.pages?.[0]?.id ?? "") });
+        try {
+          const res = await invoke(p.tool, { parent: p.parent, pages: p.pages });
+          const shape = normalizeResponseShape(res);
+          if (!shape.ok) throw Object.assign(new Error("bad shape"), { code: shape.error_code });
+          created.push({ id: maskIdentifier(res?.pages?.[0]?.id ?? ""), step: p.step ?? null });
+        } catch (error) {
+          const n = error?.code && DOMAIN_ERROR[error.code] ? { error_code: error.code, retryable: false } : normalizeTransportError(error);
+          const partial = created.length > 0;
+          record("commit_write", partial ? DOMAIN_ERROR.PARTIAL_WRITE : n.error_code, { count: created.length, error_code: n.error_code });
+          // 부분 생성 원장을 반드시 반환하고 후속 Write를 중단한다. 자동 재시도 없음.
+          return fail(partial ? DOMAIN_ERROR.PARTIAL_WRITE : n.error_code, "write stopped", {
+            created_records: created, failed_step: p.step ?? null,
+            auto_write_retry: false, next_write_allowed: false, rollback_supported: false
+          });
+        }
       }
       record("commit_write", RESULT.OK, { count: created.length });
       return ok({ write_count: created.length, records: created });
@@ -134,9 +151,14 @@ export function createNotionProvider({ config = {}, invoke, logger = () => {} } 
     async requery(args) { return this.find_tasks(args); },
     async requery_and_verify({ titleContains, expected }) {
       const tasks = await this.find_tasks({ titleContains });
-      if (tasks.result !== RESULT.OK) return tasks;
+      if (tasks.result !== RESULT.OK) return fail(DOMAIN_ERROR.REQUERY_FAILED, "requery failed", { upstream: tasks.result, next_write_allowed: false });
       const actual = { task_count: tasks.data.length, completed: tasks.data.filter((t) => t.state === "완료").length };
-      return ok({ actual, expected, match: JSON.stringify(actual) === JSON.stringify(expected) });
+      const match = JSON.stringify(actual) === JSON.stringify(expected);
+      if (!match) {
+        record("requery_and_verify", DOMAIN_ERROR.EXPECTED_ACTUAL_MISMATCH, { error_code: DOMAIN_ERROR.EXPECTED_ACTUAL_MISMATCH });
+        return fail(DOMAIN_ERROR.EXPECTED_ACTUAL_MISMATCH, "expected-actual mismatch", { actual, expected, next_write_allowed: false });
+      }
+      return ok({ actual, expected, match: true });
     },
     async verify(args) { return this.requery_and_verify(args); },
 
