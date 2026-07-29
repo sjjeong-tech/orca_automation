@@ -1,0 +1,4 @@
+interface:
+  display_name: "Test Lab Write Requery"
+  short_description: "Safely requery approved TEST LAB transactions"
+  default_prompt: "Review an approved TEST LAB transaction without operational writes."

@@ -1,0 +1,16 @@
+{
+  "fixture_kind": "sanitized_actual_snapshot",
+  "environment": "TEST_LAB",
+  "transaction_id": "GB-P03-001",
+  "runtime_reference_required": true,
+  "fund_work": {"ref": "TEST_LAB_FUND_WORK", "count": 1, "master_match": "EXACT_1"},
+  "request": {"ref": "TEST_LAB_REQUEST", "count": 1, "fund_relation": "EXACT_1", "completion_allowed": false},
+  "tasks": [
+    {"operational_task_id": "P03-T01", "status": "시작 전", "evidence_judgment": "미확인", "request_relation": "EXACT_1"},
+    {"operational_task_id": "P03-T02", "status": "진행 중", "evidence_judgment": "일부 확인", "request_relation": "EXACT_1"},
+    {"operational_task_id": "P03-T03", "status": "진행 중", "evidence_judgment": "사람 확인 필요", "request_relation": "EXACT_1"},
+    {"operational_task_id": "P03-T04", "status": "진행 중", "evidence_judgment": "사람 확인 필요", "request_relation": "EXACT_1"},
+    {"operational_task_id": "P03-T05", "status": "진행 중", "evidence_judgment": "사람 확인 필요", "request_relation": "EXACT_1"},
+    {"operational_task_id": "P03-T06", "status": "시작 전", "evidence_judgment": "미확인", "request_relation": "EXACT_1"}
+  ]
+}

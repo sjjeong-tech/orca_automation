@@ -1,0 +1,10 @@
+{
+  "transaction_id": "GB-P03-001",
+  "approval_required": true,
+  "request_completion_allowed": false,
+  "questions": [
+    {"task": "P03-T03", "priority": "P1", "question": "날인본 원본과 필수 날인 위치가 확인됐나요?"},
+    {"task": "P03-T04", "priority": "P0", "question": "접수증의 조합명·접수일·신청유형이 일치하나요?"},
+    {"task": "P03-T05", "priority": "P0", "question": "발급본이 최신본이며 실물을 수령했나요?"}
+  ]
+}

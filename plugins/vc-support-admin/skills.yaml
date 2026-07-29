@@ -12,6 +12,17 @@
       "write_mode": "preview_only",
       "approval_policy": "EXPLICIT_TARGET_AND_VALUE_REQUIRED"
     }
+    ,{
+      "skill_id": "test-lab-write-requery",
+      "skill_path": "plugins/vc-support-admin/skills/test-lab-write-requery",
+      "process_id": "P03",
+      "trigger_phrases": ["TEST LAB 재조회", "TEST LAB 중복 재실행", "Growthbridge Snapshot 검토"],
+      "enabled": true,
+      "required_connectors": ["notion"],
+      "optional_connectors": [],
+      "write_mode": "preview_only",
+      "approval_policy": "EXPLICIT_APPROVAL_REQUIRED_FOR_FUTURE_WRITE"
+    }
   ],
   "planned_not_implemented": [
     {"skill_id": "p04-security-card-hometax", "reason": "E2E-03 Plugin Prototype PASS 이후 별도 TAP"}

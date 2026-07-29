@@ -1,0 +1,16 @@
+import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
+import fs from "node:fs";
+const fixture = "plugins/vc-support-admin/fixtures/growthbridge-actual-snapshot.json";
+const output = execFileSync("node", ["plugins/vc-support-admin/cli/test-lab-write-requery.mjs", "--snapshot", fixture, "--transaction", "GB-P03-001", "--preview"], { encoding: "utf8" });
+const actual = JSON.parse(output);
+assert.equal(actual.skill_id, "test-lab-write-requery");
+assert.equal(actual.environment, "TEST_LAB");
+assert.equal(actual.result, "NO_OP_ALREADY_COMMITTED");
+assert.equal(actual.fund_count, 1); assert.equal(actual.request_count, 1); assert.equal(actual.task_count, 6);
+assert.equal(actual.relation_pass, true); assert.equal(actual.expected_actual, "PASS");
+assert.equal(actual.request_completion_allowed, false); assert.equal(actual.committed_write_count, 0);
+const confirmation = JSON.parse(fs.readFileSync("plugins/vc-support-admin/fixtures/growthbridge-human-confirmation.json", "utf8"));
+assert.equal(confirmation.approval_required, true); assert.equal(confirmation.request_completion_allowed, false);
+assert.deepEqual(confirmation.questions.map((q) => `${q.task}:${q.priority}`), ["P03-T03:P1", "P03-T04:P0", "P03-T05:P0"]);
+console.log("test-lab-write-requery e2e: PASS");
