@@ -1,0 +1,14 @@
+import assert from "node:assert/strict";
+import { mapNotionTaskSnapshot } from "../kernel/notion-task-snapshot.mjs";
+const props = { "Task 상태": "진행 중", "현재 Actor": "지원팀", "다음 Action": "접수증 본문 확인", Blocker: "", "Evidence 판정": "사람 확인 필요", "Evidence Source": "FWO-0001", "Evidence 확인사항": "조합명 확인", 완료증빙: "없음", "Operational Task ID": "P03-T04" };
+const base = { database_id: "test-db", data_source_id: "test-ds", record_id: "task-1", title: "P03-T04", properties: props, test_lab: true, target_match_status: "EXACT_1", process_id: "P03" };
+const ok = mapNotionTaskSnapshot(base); assert.equal(ok.environment_classification, "TEST_LAB"); assert.equal(ok.comparison_ready, true); assert.equal(ok.mapped_actual_values.task_status, "진행 중"); assert.equal(ok.actual_notion_write_count, 0);
+assert.equal(mapNotionTaskSnapshot({ ...base, test_lab: false }).environment_classification, "OPERATIONAL");
+assert.equal(mapNotionTaskSnapshot({ ...base, test_lab: true, process_id: "E2E-03" }).identifier_warning.length, 1);
+assert.equal(mapNotionTaskSnapshot({ ...base, test_lab: undefined }).environment_classification, "OPERATIONAL");
+assert.equal(mapNotionTaskSnapshot({ ...base, data_source_id: null }).comparison_ready, false);
+assert.equal(mapNotionTaskSnapshot({ ...base, properties: { ...props, "Operational Task ID": undefined } }).comparison_ready, false);
+assert.equal(mapNotionTaskSnapshot({ ...base, target_match_status: "MULTIPLE" }).comparison_ready, false);
+assert.equal(mapNotionTaskSnapshot({ ...base, test_lab: false, database_id: null, data_source_id: null }).environment_classification, "UNKNOWN");
+const t = mapNotionTaskSnapshot(base); assert.ok(t.started_at_kst && t.completed_at_kst && typeof t.elapsed_time_ms === "number");
+console.log("notion-task-snapshot tests: PASS (8 cases, aliases, environments, guards, KST, write=0)");
