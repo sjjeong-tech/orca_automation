@@ -1,0 +1,14 @@
+import assert from "node:assert/strict";
+import { compareTaskActual, mapNotionTaskToActual } from "../kernel/task-actual-compare.mjs";
+const expected = { proposed_values: { task_status: "진행 중", actor: "지원팀", next_action: "접수증 본문 확인", blocker: "", evidence_judgment: "사람 확인 필요", evidence_source: "FWO-0001", evidence_confirmation: "조합명 확인", completion_evidence: "없음" } };
+const actual = { task_id: "P03-T04", task_status: "진행 중", actor: "지원팀", next_action: "접수증 본문 확인", blocker: "", evidence_judgment: "사람 확인 필요", evidence_source: "FWO-0001", evidence_confirmation: "조합명 확인", completion_evidence: "없음" };
+assert.equal(compareTaskActual({ expected_preview: expected, notion_task_actual: actual, target_match_status: "EXACT_1" }).comparison_result, "EXACT_MATCH");
+assert.equal(compareTaskActual({ expected_preview: expected, notion_task_actual: { ...actual, next_action: "접수증 조합명·접수일 대조" }, target_match_status: "EXACT_1" }).comparison_result, "SEMANTIC_MATCH");
+assert.equal(compareTaskActual({ expected_preview: expected, notion_task_actual: { ...actual, evidence_judgment: "확인 완료" }, target_match_status: "EXACT_1" }).comparison_result, "MISMATCH");
+assert.equal(compareTaskActual({ expected_preview: expected, notion_task_actual: { ...actual, next_action: "다른 행동" }, target_match_status: "EXACT_1" }).mismatches.length, 1);
+assert.ok(compareTaskActual({ expected_preview: expected, notion_task_actual: { ...actual, blocker: undefined }, target_match_status: "EXACT_1" }).missing_properties.includes("blocker"));
+assert.equal(compareTaskActual({ expected_preview: expected, notion_task_actual: actual, target_match_status: "MULTIPLE" }).comparison_result, "BLOCKED");
+assert.equal(compareTaskActual({ expected_preview: expected, notion_task_actual: actual, target_match_status: "EXACT_1", preview_only: false }).actual_notion_write_count, 0);
+assert.equal(mapNotionTaskToActual({ task_status: "진행 중" }).task_status, "진행 중");
+const time = compareTaskActual({ expected_preview: expected, notion_task_actual: actual, target_match_status: "EXACT_1" }); assert.ok(time.started_at_kst && time.completed_at_kst && typeof time.elapsed_time_ms === "number");
+console.log("task-actual-compare tests: PASS (8 cases, KST timestamps, write=0)");
