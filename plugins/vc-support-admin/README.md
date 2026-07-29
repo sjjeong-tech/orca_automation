@@ -124,3 +124,9 @@ Skill 본체는 `skills/e2e03-tax-id-application/`에 있다.
 ## Canonical 참조
 
 `skills/e2e03-tax-id-application/SKILL.md`, `reports/reviews/claude/e2e03-operational-standard-draft.md`
+
+### TEST LAB 승인·Commit·Requery 계약
+
+`kernel/test-lab-write-requery.mjs`는 주입된 fixture provider에만 순차 Write를 수행한다. `TEST_LAB`, `test_write`, 명시적 approval token, transaction id, data-source allowlist, `EXACT_0` 중복 확인을 모두 통과해야 하며 운영 환경은 fail-closed로 차단된다. 실패 시 후속 생성·자동 재시도는 0이고 생성된 TEST LAB 목록과 수동 복구 안내를 반환한다.
+
+미리보기 CLI: `node plugins/vc-support-admin/cli/test-lab-write-requery.mjs --fixture plugins/vc-support-admin/fixtures/growthbridge-test-lab-transaction.json`

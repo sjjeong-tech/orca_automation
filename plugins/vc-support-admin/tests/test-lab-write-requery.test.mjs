@@ -1,0 +1,14 @@
+import assert from "node:assert/strict";
+import { createTestLabCommitPreview, commitTestLabWithRequery } from "../kernel/test-lab-write-requery.mjs";
+const input = { transaction_id: "tx-1", environment: "TEST_LAB", target_data_source: "lab-ds", request: { id: "r1" }, tasks: [{ id: "t1" }, { id: "t2" }] };
+const runtime = { environment: "TEST_LAB", write_mode: "test_write", operating_write_enabled: false, test_lab_data_sources: ["lab-ds"] };
+const provider = () => { const records = new Map(); let writes = 0; return { get writes() { return writes; }, async createRequest(x) { writes++; const r = { ...x, id: "r1", kind: "request" }; records.set(r.id, r); return r; }, async requeryRequest(id) { return records.get(id); }, async verifyRelation() { return true; }, async createTask(x) { writes++; const r = { ...x, id: x.id, kind: "task" }; records.set(r.id, r); return r; }, async requeryTasks(ids) { return ids.map((id) => records.get(id)); } }; };
+const preview = createTestLabCommitPreview(input);
+const approval = { approval_id: "a1", actor: "tester", transaction_id: "tx-1", write_scope: "TEST_LAB", preview_hash: preview.preview_hash, expires_at: new Date(Date.now() + 60000).toISOString(), explicit_approval: true };
+const ok = await commitTestLabWithRequery({ preview, approval, runtime, provider: provider(), expected: (a) => a.tasks.length === 2 });
+assert.equal(ok.result, "PASS"); assert.equal(ok.operational_write_count, 0);
+const noApproval = await commitTestLabWithRequery({ preview, runtime, provider: provider() }); assert.equal(noApproval.result, "BLOCKED_BY_GUARD");
+const ops = await commitTestLabWithRequery({ preview, approval, runtime: { ...runtime, environment: "OPERATIONAL" }, provider: provider() }); assert.equal(ops.result, "BLOCKED_BY_GUARD");
+const dup = await commitTestLabWithRequery({ preview, approval, runtime, duplicateStatus: "MULTIPLE", provider: provider() }); assert.equal(dup.result, "BLOCKED_BY_GUARD");
+const store = new Map([["tx-1", "COMPLETE"]]); const noop = await commitTestLabWithRequery({ preview, approval, runtime, provider: provider(), idempotencyStore: store }); assert.equal(noop.result, "NO_OP");
+console.log("test-lab-write-requery: PASS");

@@ -1,0 +1,11 @@
+{
+  "transaction_id": "GROWTHBRIDGE-TESTLAB-001",
+  "environment": "TEST_LAB",
+  "target_data_source": "collection://test-lab-support-request",
+  "request": {"id": "req-growthbridge-001", "process_id": "P03", "status": "진행 중", "completion_allowed": false},
+  "tasks": [
+    {"id": "P03-T02", "process_id": "P03", "e2e_id": "E2E-03", "status": "진행 중"},
+    {"id": "P03-T04", "process_id": "P03", "e2e_id": "E2E-03", "status": "진행 중"},
+    {"id": "P03-T05", "process_id": "P03", "e2e_id": "E2E-03", "status": "진행 중"}
+  ]
+}
