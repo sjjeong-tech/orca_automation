@@ -6,5 +6,10 @@
     {"task": "P03-T03", "priority": "P1", "question": "날인본 원본과 필수 날인 위치가 확인됐나요?"},
     {"task": "P03-T04", "priority": "P0", "question": "접수증의 조합명·접수일·신청유형이 일치하나요?"},
     {"task": "P03-T05", "priority": "P0", "question": "발급본이 최신본이며 실물을 수령했나요?"}
+  ],
+  "human_confirmation": [
+    {"operational_task_id": "P03-T03", "record_id": "3ac72a41-d9d7-81af-bc14-f7f288d0bea4", "actual_confirmation": "날인 위치·조합명·본문 확인 필요", "canonical_question": "날인본 원본과 필수 날인 위치가 확인됐나요?", "evidence_source": "Evidence 근거 미확정", "next_action": "날인본 원문·날인 위치 확인", "actor": "사람 확인", "priority": "P1", "completion_allowed": false, "approval_required": true, "comparison": "NEEDS_WORDING_FIX"},
+    {"operational_task_id": "P03-T04", "record_id": "3ac72a41-d9d7-8109-8a21-e3e238813027", "actual_confirmation": "조합명·접수일·신청유형·보완 여부 확인 필요", "canonical_question": "접수증의 조합명·접수일·신청유형이 일치하나요?", "evidence_source": "FWO-0121 / RECEIPT 후보", "next_action": "접수증 본문 대조", "actor": "지원팀", "priority": "P0", "completion_allowed": false, "approval_required": true, "comparison": "SEMANTIC_MATCH"},
+    {"operational_task_id": "P03-T05", "record_id": "3ac72a41-d9d7-81bf-9be9-d67cc351b649", "actual_confirmation": "최신 발급본·실물 수령 확인 필요", "canonical_question": "발급본이 최신본이며 실물을 수령했나요?", "evidence_source": "FWO-0087 / RESULT_DOCUMENT 후보", "next_action": "발급본 최신성·실물 수령 확인", "actor": "지원팀", "priority": "P0", "completion_allowed": false, "approval_required": true, "comparison": "SEMANTIC_MATCH"}
   ]
 }

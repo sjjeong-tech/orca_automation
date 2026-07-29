@@ -130,3 +130,13 @@ Skill 본체는 `skills/e2e03-tax-id-application/`에 있다.
 `kernel/test-lab-write-requery.mjs`는 주입된 fixture provider에만 순차 Write를 수행한다. `TEST_LAB`, `test_write`, 명시적 approval token, transaction id, data-source allowlist, `EXACT_0` 중복 확인을 모두 통과해야 하며 운영 환경은 fail-closed로 차단된다. 실패 시 후속 생성·자동 재시도는 0이고 생성된 TEST LAB 목록과 수동 복구 안내를 반환한다.
 
 미리보기 CLI: `node plugins/vc-support-admin/cli/test-lab-write-requery.mjs --fixture plugins/vc-support-admin/fixtures/growthbridge-test-lab-transaction.json`
+
+### Read-only Runtime Snapshot Bridge
+
+An approved session may inject a sanitized TEST LAB snapshot without invoking MCP from Node or writing to Notion. The bridge verifies schema, TEST LAB environment, approved data-source allowlist, transaction, 1/1/6 record counts, relations, sanitization, and SHA-256 integrity before returning a read-only replay result.
+
+```text
+node plugins/vc-support-admin/cli/test-lab-write-requery.mjs --runtime-snapshot plugins/vc-support-admin/fixtures/growthbridge-runtime-test-lab-snapshot.json --transaction GB-P03-001 --preview
+```
+
+Use `--runtime-snapshot -` to read the same JSON from standard input. The bridge never calls Notion, creates records, completes a Request, or enables operating writes.

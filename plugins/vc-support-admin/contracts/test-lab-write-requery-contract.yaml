@@ -7,3 +7,4 @@ guards: [environment, approval, transaction_id, duplicate_exact_0, data_source_a
 sequence: [preview, approval, guard, duplicate_check, request_write, request_requery, relation_verify, task_writes, task_requery, expected_actual]
 fail_closed_codes: [PARTIAL_WRITE, PROVIDER_ERROR, REQUERY_FAILED, EXPECTED_ACTUAL_MISMATCH, BLOCKED_BY_GUARD]
 operational_write_count: 0
+runtime_snapshot: {source: APPROVED_SESSION, environment: TEST_LAB, data_source_allowlist: TEST_LAB_ONLY, required_checks: [schema, environment, allowlist, transaction, record_count, relation, sanitization, integrity]}

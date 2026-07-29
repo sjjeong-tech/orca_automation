@@ -13,4 +13,6 @@ assert.equal(actual.request_completion_allowed, false); assert.equal(actual.comm
 const confirmation = JSON.parse(fs.readFileSync("plugins/vc-support-admin/fixtures/growthbridge-human-confirmation.json", "utf8"));
 assert.equal(confirmation.approval_required, true); assert.equal(confirmation.request_completion_allowed, false);
 assert.deepEqual(confirmation.questions.map((q) => `${q.task}:${q.priority}`), ["P03-T03:P1", "P03-T04:P0", "P03-T05:P0"]);
+assert.deepEqual(confirmation.human_confirmation.map((q) => `${q.operational_task_id}:${q.comparison}`), ["P03-T03:NEEDS_WORDING_FIX", "P03-T04:SEMANTIC_MATCH", "P03-T05:SEMANTIC_MATCH"]);
+assert.equal(confirmation.human_confirmation.every((q) => q.completion_allowed === false && q.approval_required === true), true);
 console.log("test-lab-write-requery e2e: PASS");

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Approved TEST LAB runtime snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "source", "environment", "data_source_id", "transaction_id", "snapshot_hash", "fund_work", "request", "tasks", "human_confirmation"],
+  "properties": {
+    "version": {"const": "1.0"},
+    "source": {"const": "APPROVED_SESSION"},
+    "environment": {"const": "TEST_LAB"},
+    "data_source_id": {"type": "string", "pattern": "^collection://[0-9a-f-]{36}$"},
+    "transaction_id": {"type": "string", "pattern": "^[A-Z0-9-]{3,64}$"},
+    "snapshot_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "fund_work": {"type": "object", "additionalProperties": false, "required": ["count", "master_match"], "properties": {"count": {"const": 1}, "master_match": {"const": "EXACT_1"}}},
+    "request": {"type": "object", "additionalProperties": false, "required": ["count", "fund_relation", "completion_allowed"], "properties": {"count": {"const": 1}, "fund_relation": {"const": "EXACT_1"}, "completion_allowed": {"const": false}}},
+    "tasks": {"type": "array", "minItems": 6, "maxItems": 6},
+    "human_confirmation": {"type": "array", "minItems": 3, "maxItems": 3}
+  }
+}

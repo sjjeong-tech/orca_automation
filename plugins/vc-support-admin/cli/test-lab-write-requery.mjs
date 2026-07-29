@@ -1,10 +1,21 @@
 import fs from "node:fs";
+import { evaluateRuntimeSnapshot } from "../kernel/runtime-snapshot-bridge.mjs";
 
-const arg = (name) => process.argv[process.argv.indexOf(name) + 1];
-const file = arg("--snapshot") ?? arg("--fixture");
-if (!file || !process.argv.includes("--preview")) throw new Error("Use --snapshot <sanitized snapshot> --transaction <id> --preview");
-const snapshot = JSON.parse(fs.readFileSync(file, "utf8"));
+const arg = (name) => {
+  const index = process.argv.indexOf(name);
+  return index >= 0 ? process.argv[index + 1] : undefined;
+};
+const runtimeFile = arg("--runtime-snapshot");
+const file = runtimeFile ?? arg("--snapshot") ?? arg("--fixture");
+if (!file || !process.argv.includes("--preview")) throw new Error("Use --snapshot <sanitized snapshot> or --runtime-snapshot <path|-> --transaction <id> --preview");
+const snapshot = JSON.parse((file === "-" ? fs.readFileSync(0, "utf8") : fs.readFileSync(file, "utf8")).replace(/^\uFEFF/, ""));
 const transaction = arg("--transaction");
+if (runtimeFile) {
+  const runtime = evaluateRuntimeSnapshot(snapshot, { transactionId: transaction });
+  console.log(JSON.stringify(runtime, null, 2));
+  if (!runtime.ok) process.exitCode = 1;
+  process.exit();
+}
 const relationPass = snapshot.fund_work?.master_match === "EXACT_1" && snapshot.request?.fund_relation === "EXACT_1" && snapshot.tasks?.length === 6 && snapshot.tasks.every((task) => task.request_relation === "EXACT_1");
 const result = {
   skill_id: "test-lab-write-requery",

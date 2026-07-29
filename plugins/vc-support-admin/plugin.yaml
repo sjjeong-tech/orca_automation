@@ -78,7 +78,8 @@
       "kernel/transaction.mjs",
       "kernel/errors.mjs",
       "providers/bridge.mjs"
-    ]
+    ],
+    "runtime_snapshot_bridge": "kernel/runtime-snapshot-bridge.mjs"
   },
   "error_policy": {
     "on_fund_not_found": "NO_WRITE_AND_ASK",
@@ -116,6 +117,7 @@
     "provider": "node plugins/vc-support-admin/tests/provider.test.mjs",
     "live": "node plugins/vc-support-admin/tests/live.test.mjs",
     "security": "node plugins/vc-support-admin/tests/security.test.mjs"
+    ,"runtime_snapshot": "node plugins/vc-support-admin/tests/runtime-snapshot-bridge.test.mjs"
   },
   "security": {
     "typed_approval": true,
