@@ -1,0 +1,11 @@
+import assert from "node:assert/strict";
+import { locateOperationalRecords } from "../kernel/record-locator.mjs";
+const base = { fund_name: "Alpha", master_matches: [{ name: "Alpha", layer: "OPERATING" }] };
+assert.equal(locateOperationalRecords(base).operational_match_status, "EXACT_1");
+assert.equal(locateOperationalRecords({ ...base, fund_work_matches: [{ title: "Work", layer: "OPERATING" }] }).recommended_action, "RESUME_EXISTING");
+assert.equal(locateOperationalRecords({ ...base, request_matches: [{ title: "R1" }, { title: "R2" }] }).recommended_action, "BLOCK_AND_ASK");
+const excluded = locateOperationalRecords({ ...base, master_matches: [{ name: "Alpha", layer: "TEST" }, { name: "Alpha", layer: "SHADOW" }, { name: "Alpha", layer: "LAB" }] });
+assert.equal(excluded.operational_match_status, "NOT_FOUND"); assert.equal(excluded.excluded_test_records.length, 1); assert.equal(excluded.excluded_shadow_records.length, 1); assert.equal(excluded.excluded_lab_records.length, 1);
+assert.equal(locateOperationalRecords({ fund_name: "Alpha", master_matches: [{ name: "Alpha" }, { name: "Alpha 2" }] }).ambiguity, "MULTIPLE_CANDIDATES");
+assert.equal(locateOperationalRecords({}).missing_information[0], "fund_name");
+console.log("record-locator tests: PASS (match, duplicate, exclusion, ambiguity, missing input)");
