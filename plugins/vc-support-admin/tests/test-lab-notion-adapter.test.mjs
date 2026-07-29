@@ -1,0 +1,11 @@
+import assert from "node:assert/strict";
+import { createTestLabNotionAdapter } from "../adapters/test-lab-notion.mjs";
+const seen = [];
+const invoke = async (tool, payload) => { seen.push({ tool, payload }); return { results: [] }; };
+const adapter = createTestLabNotionAdapter({ invoke, dataSources: { fund_work: "lab-fund", request: "lab-request", task: "lab-task" }, allowWrites: false });
+const blocked = await adapter.createRequest({ title: "TEST" }, { approval: { explicit_approval: true }, transactionId: "tx", previewHash: "x" });
+assert.equal(blocked.error_code, "TEST_LAB_WRITE_DISABLED"); assert.equal(seen.length, 0);
+const dup = await adapter.duplicateCheck({ source: "lab-request", transactionId: "tx" }); assert.equal(dup.status, "EXACT_0");
+const operational = createTestLabNotionAdapter({ invoke, dataSources: { request: "ops" }, environment: "OPERATIONAL", allowWrites: true });
+const denied = await operational.createRequest({}, { approval: { explicit_approval: true, transaction_id: "tx", preview_hash: "x" }, transactionId: "tx", previewHash: "x" }); assert.equal(denied.error_code, "ENVIRONMENT_NOT_TEST_LAB");
+console.log("test-lab-notion-adapter: PASS");

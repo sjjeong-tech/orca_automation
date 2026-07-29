@@ -24,6 +24,7 @@ import { createSlackProvider } from "./providers/slack.mjs";
 import { assertProviderShape, RESULT } from "./providers/base.mjs";
 import { evaluateEvidenceState, parseEvidenceText } from "./kernel/evidence-state.mjs";
 import { createTestLabCommitPreview, commitTestLabWithRequery } from "./kernel/test-lab-write-requery.mjs";
+import { createTestLabNotionAdapter } from "./adapters/test-lab-notion.mjs";
 export { buildEvidencePreview, normalizeEvidenceInput } from "./kernel/evidence-adapter.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -686,5 +687,6 @@ export {
   INTENT, INTENT_LABEL, routeIntent, parseUserMessage, extractFundName, extractFolderHint,
   formatUserResult, buildManagerMessageText
   , createTestLabCommitPreview, commitTestLabWithRequery
+  , createTestLabNotionAdapter
 };
 export default { processRequest, runUserRequest, buildProviders, healthCheck, USER_INTENTS };
