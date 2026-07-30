@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>지원팀 행정업무 Console — PILOT v0.1</title>
+    <style>
+      :root { --ink:#1a1230; --sub:#657083; --line:#d9dce5; --bg:#f7f7f8; --card:#fff; --brand:#49317b; --brand-soft:#f5f3f8; --danger:#9c3342; --danger-soft:#fff1f2; font-family:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif; color:var(--ink); background:var(--bg); }
+      * { box-sizing:border-box; } body { margin:0; } main { width:min(1420px,calc(100% - 32px)); margin:28px auto 56px; } .card,.column { background:var(--card); border:1px solid var(--line); border-radius:14px; box-shadow:0 4px 14px rgba(26,18,48,.05); } .card { padding:22px; margin-bottom:16px; } .header { display:flex; justify-content:space-between; gap:24px; align-items:flex-start; border-top:4px solid var(--brand); } h1,h2,h3,h4,p { margin-top:0; } h1 { font-size:clamp(1.65rem,3vw,2.35rem); margin-bottom:8px; } h2 { font-size:1.2rem; margin-bottom:0; } h3 { font-size:1rem; } h4 { font-size:1rem; margin:4px 0 10px; } .eyebrow { color:var(--brand); font-size:.73rem; letter-spacing:.08em; font-weight:800; margin-bottom:7px; } .sub,.muted { color:var(--sub); } .header-facts,.facts,.task-facts { display:grid; margin:0; } .header-facts { grid-template-columns:repeat(3,minmax(105px,1fr)); border:1px solid var(--line); border-radius:10px; overflow:hidden; min-width:360px; } .header-facts div { padding:11px; border-right:1px solid var(--line); } .header-facts div:last-child { border:0; } dt { color:var(--sub); font-size:.76rem; font-weight:700; } dd { margin:5px 0 0; font-weight:700; overflow-wrap:anywhere; } .section-head { display:flex; justify-content:space-between; gap:14px; align-items:flex-start; margin-bottom:15px; } .badge { border-radius:999px; padding:6px 10px; background:var(--brand-soft); color:var(--brand); font-weight:800; font-size:.79rem; white-space:nowrap; } .blocked { color:var(--danger); background:var(--danger-soft); } .facts { grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; } .facts div { background:var(--bg); padding:11px; border-radius:9px; } .facts .wide { grid-column:span 2; } .kanban { display:grid; grid-template-columns:repeat(5,minmax(190px,1fr)); gap:12px; overflow-x:auto; } .column { min-height:190px; padding:14px; background:#fbfbfc; box-shadow:none; } .column h3 { margin-bottom:12px; padding-bottom:10px; border-bottom:2px solid var(--brand-soft); } .task { border:1px solid #c8bddb; border-left:4px solid var(--brand); border-radius:10px; padding:13px; background:#fff; } .task.history { border-left-color:#a5a9b5; opacity:.84; } .task p { margin-bottom:7px; } .task-facts { gap:8px; margin-top:12px; } .task-facts div { border-top:1px solid #eeeef2; padding-top:8px; } .empty { color:var(--sub); text-align:center; margin-top:32px; font-size:.9rem; } .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; } .callout { padding:10px; border-radius:9px; background:var(--danger-soft); color:var(--danger); font-weight:800; } table { width:100%; border-collapse:collapse; font-size:.9rem; } th,td { text-align:left; padding:9px 6px; vertical-align:top; border-bottom:1px solid var(--line); overflow-wrap:anywhere; } th { color:var(--sub); font-size:.76rem; } ul { padding-left:20px; margin-bottom:0; } .timeline { display:grid; grid-template-columns:repeat(4,minmax(180px,1fr)); gap:12px; padding:0; margin:0; list-style:none; } .timeline li { border:1px solid var(--line); border-radius:10px; padding:13px; background:#fbfbfc; } .timeline li::before { content:""; display:block; width:11px; height:11px; background:#9ca3af; border-radius:50%; margin-bottom:9px; } .timeline li.current { background:var(--danger-soft); border-color:var(--danger); } .timeline li.current::before { background:var(--danger); } .timeline p { margin:8px 0 0; color:#424b5d; font-size:.88rem; } .blocker { color:var(--danger)!important; font-weight:700; } details summary { cursor:pointer; color:var(--brand); font-weight:800; } pre { max-height:430px; overflow:auto; margin:14px 0 0; padding:15px; border-radius:9px; background:#1a1230; color:#f4f1fb; font:.77rem/1.45 ui-monospace,SFMono-Regular,Consolas,monospace; white-space:pre-wrap; } .footnote { font-size:.82rem; color:var(--sub); }
+      @media (max-width:950px) { .header { display:block; }.header-facts { margin-top:18px; min-width:0; }.grid { grid-template-columns:1fr; }.timeline { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+      @media (max-width:640px) { main { width:min(100% - 20px,1420px); margin-top:10px; }.card { padding:16px; }.header-facts,.facts,.timeline { grid-template-columns:1fr; }.facts .wide { grid-column:auto; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header class="card header">
+        <div><p class="eyebrow">LOCAL DEMO · BACKEND_MODE=LOCAL_PREVIEW · NOTION_BACKEND=NOT_CONNECTED</p><h1>지원팀 행정업무 Console</h1><p class="sub">PILOT v0.1 · <strong>PREVIEW ONLY</strong> · 검증된 Output Snapshot을 정적으로 표시합니다.</p></div>
+        <dl class="header-facts"><div><dt>Skill Commit</dt><dd>504ca85</dd></div><div><dt>지원 범위</dt><dd>1 Scenario</dd></div><div><dt>Operational Write</dt><dd>0</dd></div></dl>
+      </header>
+
+      <section class="card"><div class="section-head"><div><p class="eyebrow">REQUEST</p><h2>Request Summary</h2></div><span class="badge blocked">BLOCKED</span></div>
+        <dl class="facts"><div class="wide"><dt>요청 원문</dt><dd>DUMMY-FUND-B의 고유번호증 신청 건을 확인해줘. 신청서 초안은 있지만 날인본 원본은 아직 준비되지 않았어.</dd></div><div><dt>Dummy Fund</dt><dd>DUMMY-FUND-B</dd></div><div><dt>Process</dt><dd>P03</dd></div><div><dt>Scenario</dt><dd>SINGLE-P03-02</dd></div><div><dt>Transaction ID</dt><dd>PROTO-SINGLE-P03-02</dd></div><div><dt>전체 상태</dt><dd>BLOCKED</dd></div></dl>
+      </section>
+
+      <section><div class="section-head"><div><p class="eyebrow">TASK PROJECTION</p><h2>Task Kanban</h2></div><span class="badge">Canonical Stage 유지</span></div>
+        <div class="kanban">
+          <section class="column"><h3>요청 접수</h3><article class="task history"><p class="eyebrow">이전 Snapshot</p><h4>P03 업무 · P03-T03</h4><p class="muted">RECEIVED</p></article></section>
+          <section class="column"><h3>Evidence 검토</h3><article class="task history"><p class="eyebrow">이전 Snapshot</p><h4>P03 업무 · P03-T03</h4><p class="muted">EVIDENCE_REVIEW</p></article></section>
+          <section class="column"><h3>사람 확인</h3><article class="task history"><p class="eyebrow">이전 Snapshot</p><h4>P03 업무 · P03-T03</h4><p class="muted">HUMAN_CONFIRMATION</p></article></section>
+          <section class="column"><h3>중단</h3><article class="task"><p class="eyebrow">현재 Task</p><h4>P03 업무 · P03-T03</h4><p class="muted">BLOCKED</p><dl class="task-facts"><div><dt>Actor</dt><dd>사람 확인</dd></div><div><dt>다음 Action</dt><dd>유효한 날인본 원본 재수집</dd></div><div><dt>Blocker</dt><dd>날인본 원본 미확보</dd></div><div><dt>완료조건</dt><dd>날인본 원본과 필수 날인 위치가 확인됐나요?</dd></div><div><dt>완료증빙</dt><dd>EV-P03-SUBMISSION</dd></div><div><dt>Completion Candidate / Allowed</dt><dd>false / false</dd></div></dl></article></section>
+          <section class="column"><h3>완료 후보</h3><p class="empty">완료 후보 없음</p></section>
+        </div>
+      </section>
+
+      <section class="grid" style="margin-top:16px">
+        <section class="card"><div class="section-head"><div><p class="eyebrow">INTERACTION</p><h2>사람 확인</h2></div></div><p class="callout">사람 확인 필요</p><h3>확인 질문</h3><ul><li>날인본 원본과 필수 날인 위치가 확인됐나요?</li></ul><p class="footnote">Clarification: false · 누락 정보: 없음</p></section>
+        <section class="card"><div class="section-head"><div><p class="eyebrow">EVIDENCE</p><h2>Evidence 검토</h2></div></div><table><thead><tr><th>Evidence Type</th><th>Result</th><th>Legacy Compatibility</th></tr></thead><tbody><tr><td>SUBMISSION_PACKAGE</td><td>VALID</td><td>SUBMISSION_PACKAGE / PRESENT_VALID</td></tr><tr><td>STAMPED_ORIGINAL</td><td>MISSING</td><td>STAMPED_DOCUMENT / ABSENT</td></tr></tbody></table></section>
+        <section class="card"><div class="section-head"><div><p class="eyebrow">EXECUTION SAFETY</p><h2>실행 안전</h2></div></div><dl class="facts"><div><dt>Request Completion Allowed</dt><dd>false</dd></div><div><dt>Task Completion Allowed</dt><dd>false</dd></div><div><dt>Downstream Auto Completion</dt><dd>false</dd></div><div><dt>Operational Write Allowed</dt><dd>false</dd></div><div><dt>Operational Write Count</dt><dd>0</dd></div></dl></section>
+      </section>
+
+      <section class="card"><div class="section-head"><div><p class="eyebrow">SNAPSHOT TIMELINE</p><h2>시점별 상태</h2></div><span class="badge">Task가 현재 상태 Source of Truth</span></div><ol class="timeline"><li><strong>RECEIVED</strong><p>Request: DUMMY-FUND-B · P03</p></li><li><strong>EVIDENCE_REVIEW</strong><p>Evidence: STAMPED_ORIGINAL / MISSING</p></li><li><strong>HUMAN_CONFIRMATION</strong><p>질문: 날인본 원본과 필수 날인 위치가 확인됐나요?</p><p>다음 Action: 유효한 날인본 원본 재수집</p></li><li class="current"><strong>BLOCKED</strong><p class="blocker">Blocker: 날인본 원본 미확보</p><p>자동 완료 및 Write 차단</p></li></ol></section>
+
+      <details class="card"><summary>상세 Raw JSON 보기</summary><pre>{
+  "scenario_id": "SINGLE-P03-02",
+  "transaction_id": "PROTO-SINGLE-P03-02",
+  "request": { "dummy_fund_id": "DUMMY-FUND-B", "process_ids": ["P03"], "overall_status": "BLOCKED", "preview_only": true },
+  "tasks": [{ "operational_task_id": "P03-T03", "stage": "BLOCKED", "actor": "사람 확인", "next_action": "유효한 날인본 원본 재수집", "blocker": "날인본 원본 미확보", "completion_candidate": false, "completion_allowed": false }],
+  "interaction": { "clarification_required": false, "human_confirmation_required": true, "questions": ["날인본 원본과 필수 날인 위치가 확인됐나요?"] },
+  "execution": { "request_completion_allowed": false, "downstream_auto_completion": false, "operational_write_allowed": false, "operational_write_count": 0 },
+  "snapshot_timeline": ["RECEIVED", "EVIDENCE_REVIEW", "HUMAN_CONFIRMATION", "BLOCKED"]
+}</pre></details>
+    </main>
+  </body>
+</html>

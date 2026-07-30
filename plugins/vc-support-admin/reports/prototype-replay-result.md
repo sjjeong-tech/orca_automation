@@ -88,3 +88,25 @@ Independent browser review completed five rounds and returned `ACCEPT_WITH_GAPS`
 - Remaining gap: the adapter recognizes only the declared synthetic P03 missing-stamped-original request. It is not a general natural-language parser, and persistent-store duplicate observation remains not run.
 - Revalidation command: `node plugins/vc-support-admin/cli/admin-process-prototype-replay.mjs --scenario plugins/vc-support-admin/fixtures/prototype-single-p03-human-confirmation.json --scenario-id SINGLE-P03-02 --request-text "DUMMY-FUND-B의 고유번호증 신청 건을 확인해줘. 신청서 초안은 있지만 날인본 원본은 아직 준비되지 않았어." --preview --emit-snapshots`
 - Revalidation ready: `true`.
+
+## Revalidation — D20 Dry Run 01
+
+- Previous failure: `FAIL_SNAPSHOT_TIMELINE` from `DRY-P03-02-01`.
+- Repair commit: `504ca85a28b7611ccd0e6c2680b4fb2c47a97de4`.
+- User request: `DUMMY-FUND-B의 고유번호증 신청 건을 확인해줘. 신청서 초안은 있지만 날인본 원본은 아직 준비되지 않았어.`
+- Actual command: `node plugins/vc-support-admin/cli/admin-process-prototype-replay.mjs --scenario plugins/vc-support-admin/fixtures/prototype-single-p03-human-confirmation.json --scenario-id SINGLE-P03-02 --request-text "DUMMY-FUND-B의 고유번호증 신청 건을 확인해줘. 신청서 초안은 있지만 날인본 원본은 아직 준비되지 않았어." --preview --emit-snapshots`
+- Request output: exact request text, `DUMMY-FUND-B`, `P03`, `SINGLE-P03-02`, `PROTO-SINGLE-P03-02`, `BLOCKED`, and `preview_only=true`.
+- Task output: `P03-T03`, actor `사람 확인`, next action `유효한 날인본 원본 재수집`, blocker `날인본 원본 미확보`, a human-question completion condition, one valid submission Evidence ID, and both completion fields false.
+- Interaction and execution: clarification is false; human confirmation is true with the canonical question; Request completion, downstream auto-completion, and operational writes are all false/zero.
+- Evidence and timeline: canonical `STAMPED_ORIGINAL` / `MISSING`; `RECEIVED -> EVIDENCE_REVIEW -> HUMAN_CONFIRMATION -> BLOCKED` in exact order.
+- Expected–Actual: core Request, Task, Interaction, Execution, Evidence, timeline, duplicate preview, and incomplete-request guards all passed.
+- Duplicate replay: a second identical preview was deterministic, created no records, and reported `PASS_IN_PREVIEW_FIXTURE`; persistent-store observation remains not run.
+- Incomplete request probe: `DUMMY-FUND-B의 고유번호증 신청 건을 확인해줘.` returned `clarification_required=true`, `scenario_id=null`, `missing_information=[stamped_original_status]`, and zero writes.
+- Console pilot readiness: `READY_WITH_DISPLAY_GAPS`. Root `request`, `tasks`, `interaction`, and `execution` objects contain the panel data. The timeline is available as `snapshot_timeline`, not `snapshots`; only the `HUMAN_CONFIRMATION` snapshot repeats Task details. `RECEIVED`, `EVIDENCE_REVIEW`, and `BLOCKED` remain compact stage records.
+- Result: `PASS_WITH_NON_BLOCKING_DISPLAY_GAPS`. No code, fixture, Contract, Notion, or operational record was modified in this revalidation.
+
+## Console MVP — G21
+
+- The local-only `admin-process-console-server.mjs` adapter invokes the existing pure preview reducer directly. It exposes `POST /api/preview` for `SINGLE-P03-02` only and never enables an operational write path.
+- The user-facing Console projects existing `request`, `tasks`, `interaction`, `evidence`, `execution`, and `snapshot_timeline` output into Request, Kanban, Evidence, Timeline, and Safety panels. It does not infer a completion state or change Skill values.
+- Demo evidence: `reports/console-pilot/request-task-console-v0.1-output.json`, the standalone `reports/console-pilot/request-task-console-v0.1.html`, `reports/console-pilot/request-task-console-v0.1-demo.md`, and `reports/console-pilot/request-task-console-v0.1.png`. The PNG is generated from the standalone local HTML with an installed Chrome Headless CLI; no external URL, connector, or operational write is used.
