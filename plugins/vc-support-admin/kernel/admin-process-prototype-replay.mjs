@@ -15,6 +15,13 @@ const CONTRACT_REFERENCE = Object.freeze({
   reference_recorded_for_traceability: true,
   conformance_claimed: false
 });
+const LEGACY_EVIDENCE_TYPE_TO_CANONICAL = Object.freeze({ STAMPED_DOCUMENT: "STAMPED_ORIGINAL" });
+const LEGACY_FIXTURE_STATE_TO_RESULT = Object.freeze({
+  PRESENT_VALID: "VALID",
+  ABSENT: "MISSING",
+  PRESENT_NEEDS_HUMAN: "NEEDS_HUMAN",
+  PRESENT_REJECTED: "REJECTED"
+});
 const UI_AUXILIARY_STATE = Object.freeze({
   notion_status_values: Object.freeze(["진행 중"]),
   notion_status_classification: "TASK_OR_UI_AUXILIARY_STATE",
@@ -41,6 +48,28 @@ const fail = (code, detail) => {
 };
 
 const clone = (value) => JSON.parse(JSON.stringify(value));
+
+export function normalizePrototypeRequest(requestText) {
+  const text = typeof requestText === "string" ? requestText.trim() : "";
+  const dummyFundId = text.match(/\bDUMMY-FUND-[A-Z0-9-]+\b/i)?.[0]?.toUpperCase() ?? null;
+  const p03Requested = text.includes("고유번호증");
+  const stampedOriginalMissing = text.includes("날인본 원본") && /(아직|미|없|준비되지)/.test(text);
+  const missingInformation = [];
+  if (!dummyFundId) missingInformation.push("dummy_fund_id");
+  if (!p03Requested) missingInformation.push("process_id");
+  if (!stampedOriginalMissing) missingInformation.push("stamped_original_status");
+  const clarificationRequired = missingInformation.length > 0;
+  return {
+    request_text: text || null,
+    transaction_id: "PROTO-SINGLE-P03-02",
+    scenario_id: clarificationRequired ? null : "SINGLE-P03-02",
+    dummy_fund_id: dummyFundId,
+    process_ids: p03Requested ? ["P03"] : [],
+    preview_only: true,
+    missing_information: missingInformation,
+    clarification_question: clarificationRequired ? "조합 식별자, 고유번호증 신청 여부, 날인본 원본 준비 상태를 확인해 주세요." : null
+  };
+}
 
 function assertOnlyKeys(value, allowed, path) {
   if (!value || typeof value !== "object" || Array.isArray(value)) fail("SCHEMA_OBJECT_REQUIRED", path);
@@ -138,8 +167,10 @@ function evidenceDecision(lane, evidence, evaluateEvidence) {
   const state = evidence.fixture_state;
   return {
     evidence_id: evidence.evidence_id,
-    evidence_type: evidence.evidence_type,
-    fixture_state: state,
+    evidence_type: LEGACY_EVIDENCE_TYPE_TO_CANONICAL[evidence.evidence_type] ?? evidence.evidence_type,
+    evidence_result: LEGACY_FIXTURE_STATE_TO_RESULT[state],
+    legacy_evidence_type: evidence.evidence_type,
+    legacy_fixture_state: state,
     required_for_completion: evidence.required_for_completion === true,
     evidence_judgment: state === "ABSENT" ? "MISSING" : evaluated.evidence_judgment,
     validity: state === "PRESENT_VALID" ? "VALID" : state === "PRESENT_REJECTED" ? "REJECTED" : state === "PRESENT_NEEDS_HUMAN" ? "NEEDS_HUMAN" : "MISSING",
@@ -157,9 +188,9 @@ function predecessorReady(lane, completed) {
 
 function projectLane(lane, completed, evaluateEvidence) {
   const decisions = lane.evidence.map((evidence) => evidenceDecision(lane, evidence, evaluateEvidence));
-  const absent = decisions.find((decision) => decision.fixture_state === "ABSENT");
-  const rejected = decisions.find((decision) => decision.fixture_state === "PRESENT_REJECTED");
-  const needsHuman = decisions.find((decision) => decision.fixture_state === "PRESENT_NEEDS_HUMAN");
+  const absent = decisions.find((decision) => decision.legacy_fixture_state === "ABSENT");
+  const rejected = decisions.find((decision) => decision.legacy_fixture_state === "PRESENT_REJECTED");
+  const needsHuman = decisions.find((decision) => decision.legacy_fixture_state === "PRESENT_NEEDS_HUMAN");
   const gateReady = predecessorReady(lane, completed);
   const projection = { ...(lane.task_projection ?? {}) };
   let stage = "EVIDENCE_REVIEW";
@@ -237,7 +268,20 @@ function stageSnapshots(lane) {
   } else {
     snapshots.push({ stage: "EVIDENCE_REVIEW", lane_id: lane.lane_id });
   }
-  if (lane.stage === "HUMAN_CONFIRMATION") snapshots.push({ stage: "HUMAN_CONFIRMATION", lane_id: lane.lane_id });
+  const humanConfirmation = lane.human_confirmation[0];
+  if (humanConfirmation) {
+    snapshots.push({
+      stage: "HUMAN_CONFIRMATION",
+      lane_id: lane.lane_id,
+      actor: humanConfirmation.actor,
+      question: humanConfirmation.question,
+      blocker: lane.task_projection.blocker,
+      next_action: lane.task_projection.next_action,
+      completion_candidate: false,
+      completion_allowed: false,
+      request_completion_allowed: false
+    });
+  }
   if (lane.stage === "RESULT_REVIEW") snapshots.push({ stage: "RESULT_REVIEW", lane_id: lane.lane_id });
   if (lane.stage === "NEXT_PROCESS") snapshots.push({ stage: "NEXT_PROCESS", lane_id: lane.lane_id });
   if (lane.stage === "COMPLETION_CANDIDATE") snapshots.push({ stage: "COMPLETION_CANDIDATE", lane_id: lane.lane_id });
@@ -284,8 +328,20 @@ function assertSafetyInvariants(lanes) {
 /**
  * Pure preview-only reducer. It performs no I/O, connector calls, writes, or clock reads.
  */
-export function replayAdminProcessPrototype(input = {}, { evaluateEvidence = evaluateEvidenceState } = {}) {
+export function replayAdminProcessPrototype(input = {}, { evaluateEvidence = evaluateEvidenceState, requestContext = null } = {}) {
   const scenario = validatePrototypeScenario(input);
+  const fallbackRequest = {
+    request_text: null,
+    transaction_id: scenario.transaction_id,
+    scenario_id: scenario.scenario_id,
+    dummy_fund_id: null,
+    process_ids: [...new Set(scenario.lanes.map((lane) => lane.process_id))],
+    preview_only: true,
+    missing_information: [],
+    clarification_question: null
+  };
+  const request = { ...fallbackRequest, ...(requestContext ?? {}) };
+  if (request.scenario_id && request.scenario_id !== scenario.scenario_id) fail("REQUEST_SCENARIO_MISMATCH", request.scenario_id);
   const completed = new Map();
   const lanes = [];
   for (const lane of scenario.lanes) {
@@ -293,6 +349,7 @@ export function replayAdminProcessPrototype(input = {}, { evaluateEvidence = eva
     completed.set(lane.lane_id, result);
     lanes.push(result);
   }
+  request.overall_status = lanes.some((lane) => lane.stage === "BLOCKED") ? "BLOCKED" : "IN_PROGRESS";
   const timeline = lanes.flatMap(stageSnapshots);
   if (!timeline.every((snapshot) => STAGES.has(snapshot.stage))) fail("INTERNAL_STAGE_VOCABULARY_ERROR");
   assertSafetyInvariants(lanes);
@@ -319,11 +376,29 @@ export function replayAdminProcessPrototype(input = {}, { evaluateEvidence = eva
     },
     ui_auxiliary_state: { ...UI_AUXILIARY_STATE, notion_status_values: [...UI_AUXILIARY_STATE.notion_status_values] },
     process_instances: lanes.map((lane) => ({ lane_id: lane.lane_id, process_id: lane.process_id, stage: lane.stage, mapping_status: lane.mapping_status, operational_relation: lane.operational_relation, completion_candidate: lane.completion_candidate, candidate_reason: lane.candidate_reason })),
+    request,
     request_instances: lanes.map((lane) => ({ lane_id: lane.lane_id, process_id: lane.process_id, request_completion_allowed: false })),
-    task_instances: lanes.map((lane) => ({ lane_id: lane.lane_id, ...lane.task_projection, stage: lane.stage, completion_allowed: false })),
+    task_instances: lanes.map((lane) => ({ lane_id: lane.lane_id, process_id: lane.process_id, ...lane.task_projection, stage: lane.stage, completion_allowed: false })),
+    tasks: lanes.map((lane) => ({
+      operational_task_id: lane.task_projection.operational_task_id,
+      process_id: lane.process_id,
+      stage: lane.stage,
+      actor: lane.task_projection.actor,
+      next_action: lane.task_projection.next_action,
+      blocker: lane.task_projection.blocker,
+      completion_condition: lane.human_confirmation[0]?.question ?? "필수 Evidence 확인",
+      completion_evidence: lane.evidence_decisions.filter((decision) => decision.evidence_result === "VALID").map((decision) => decision.evidence_id),
+      completion_candidate: lane.completion_candidate,
+      completion_allowed: false
+    })),
     evidence_decisions: lanes.flatMap((lane) => lane.evidence_decisions.map((decision) => ({ lane_id: lane.lane_id, ...decision }))),
     evidence_validity: lanes.flatMap((lane) => lane.evidence_decisions.map((decision) => ({ lane_id: lane.lane_id, evidence_id: decision.evidence_id, validity: decision.validity }))),
     human_confirmation: lanes.flatMap((lane) => lane.human_confirmation.map((entry) => ({ lane_id: lane.lane_id, ...entry }))),
+    interaction: {
+      clarification_required: request.missing_information.length > 0,
+      human_confirmation_required: lanes.some((lane) => lane.human_confirmation.length > 0),
+      questions: lanes.flatMap((lane) => lane.human_confirmation.map((entry) => entry.question))
+    },
     actor_transitions: lanes.map((lane) => ({ lane_id: lane.lane_id, actor: lane.task_projection.actor, stage: lane.stage })),
     next_actions: lanes.map((lane) => ({ lane_id: lane.lane_id, next_action: lane.task_projection.next_action })),
     blockers: lanes.filter((lane) => lane.task_projection.blocker).map((lane) => ({ lane_id: lane.lane_id, blocker: lane.task_projection.blocker })),
@@ -332,6 +407,8 @@ export function replayAdminProcessPrototype(input = {}, { evaluateEvidence = eva
     completion_candidate: lanes.some((lane) => lane.completion_candidate),
     completion_allowed: false,
     request_completion_allowed: false,
+    downstream_auto_completion: false,
+    operational_write_allowed: false,
     next_process_candidates: lanes.filter((lane) => lane.stage === "NEXT_PROCESS").map((lane) => ({ lane_id: lane.lane_id, process_id: lane.process_id, mapping_status: lane.mapping_status })),
     duplicate_result: {
       replay_key: scenario.transaction_id,
@@ -345,6 +422,7 @@ export function replayAdminProcessPrototype(input = {}, { evaluateEvidence = eva
     },
     resume_contract: lanes.map((lane) => ({ lane_id: lane.lane_id, ...lane.resume })),
     errors,
+    execution: { operational_write_allowed: false, operational_write_count: 0, request_completion_allowed: false, downstream_auto_completion: false },
     write_plan: { mode: "preview_only", approval_required_for_future_write: true, operations: [], actual_write_count: 0 },
     write_counts: { notion: 0, drive: 0, slack: 0, file: 0, total: 0 },
     connector_calls: { notion: 0, drive: 0, slack: 0, total: 0 },

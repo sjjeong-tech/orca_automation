@@ -3,6 +3,7 @@ import { execFileSync, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import {
   replayAdminProcessPrototype,
+  normalizePrototypeRequest,
   validatePrototypeScenario,
   PROTOTYPE_REPLAY_STAGES,
   PROTOTYPE_REPLAY_CONTRACT_REFERENCE,
@@ -37,11 +38,36 @@ assert.equal(contract.ui_auxiliary_state.is_canonical_skill_stage, false);
 assert.deepEqual(contract.ui_auxiliary_state.notion_status_values, ["진행 중"]);
 assert.equal(contract.safety.duplicate_validation_scope, "PASS_IN_PREVIEW_FIXTURE");
 assert.equal(contract.safety.persistent_store_duplicate_observation, "PERSISTENT_STORE_DUPLICATE_OBSERVATION_NOT_RUN");
+assert.ok(contract.input.includes("request_text"));
+assert.ok(contract.required_output.includes("request"));
+assert.ok(contract.required_output.includes("tasks"));
+assert.ok(contract.required_output.includes("interaction"));
+assert.ok(contract.required_output.includes("execution"));
+assert.deepEqual(contract.evidence_vocabulary, { canonical_type: "STAMPED_ORIGINAL", canonical_result: "MISSING", legacy_type: "STAMPED_DOCUMENT", legacy_result: "ABSENT" });
 assert.equal(PROTOTYPE_REPLAY_CONTRACT_REFERENCE.conformance_claimed, false);
 assert.deepEqual(PROTOTYPE_REPLAY_UI_AUXILIARY_STATE, contract.ui_auxiliary_state);
 assert.equal(validatePrototypeScenario(normalFixture).scenario_id, "SINGLE-P03-01");
 assert.equal(validatePrototypeScenario(humanFixture).scenario_id, "SINGLE-P03-02");
 assert.equal(validatePrototypeScenario(compositeFixture).scenario_id, "COMPOSITE-01");
+
+// Minimal request adapter: recognize only the supported synthetic missing-stamped-original request.
+const humanRequestText = "DUMMY-FUND-B의 고유번호증 신청 건을 확인해줘. 신청서 초안은 있지만 날인본 원본은 아직 준비되지 않았어.";
+const normalizedHumanRequest = normalizePrototypeRequest(humanRequestText);
+assert.deepEqual(normalizedHumanRequest, {
+  request_text: humanRequestText,
+  transaction_id: "PROTO-SINGLE-P03-02",
+  scenario_id: "SINGLE-P03-02",
+  dummy_fund_id: "DUMMY-FUND-B",
+  process_ids: ["P03"],
+  preview_only: true,
+  missing_information: [],
+  clarification_question: null
+});
+const unclearRequest = normalizePrototypeRequest("고유번호증 신청을 확인해줘.");
+assert.equal(unclearRequest.scenario_id, null);
+assert.equal(unclearRequest.missing_information.includes("dummy_fund_id"), true);
+assert.equal(unclearRequest.missing_information.includes("stamped_original_status"), true);
+assert.ok(unclearRequest.clarification_question);
 
 // SINGLE-P03-01: valid documents can only propose a completion candidate.
 const normal = replay(normalFixture);
@@ -61,11 +87,49 @@ const human = replay(humanFixture);
 assert.equal(human.process_instances[0].stage, "BLOCKED");
 assert.equal(human.task_instances[0].actor, "사람 확인");
 assert.equal(human.task_instances[0].blocker, "날인본 원본 미확보");
+assert.equal(human.task_instances[0].next_action, "유효한 날인본 원본 재수집");
 assert.equal(human.human_confirmation[0].question, "날인본 원본과 필수 날인 위치가 확인됐나요?");
 assert.notEqual(human.human_confirmation[0].question, human.task_instances[0].blocker);
 assert.equal(human.completion_candidate, false);
 assert.equal(human.request_completion_allowed, false);
 assert.equal(human.errors[0].code, "MISSING_REQUIRED_EVIDENCE");
+const humanStampedEvidence = human.evidence_decisions.find((decision) => decision.evidence_id === "EV-P03-STAMPED");
+assert.equal(humanStampedEvidence.evidence_type, "STAMPED_ORIGINAL");
+assert.equal(humanStampedEvidence.evidence_result, "MISSING");
+assert.equal(humanStampedEvidence.legacy_evidence_type, "STAMPED_DOCUMENT");
+assert.equal(humanStampedEvidence.legacy_fixture_state, "ABSENT");
+const humanSnapshot = human.snapshot_timeline.find((snapshot) => snapshot.stage === "HUMAN_CONFIRMATION");
+assert.ok(humanSnapshot);
+assert.deepEqual(humanSnapshot, {
+  stage: "HUMAN_CONFIRMATION",
+  lane_id: "SINGLE-P03-02/P03",
+  actor: human.human_confirmation[0].actor,
+  question: human.human_confirmation[0].question,
+  blocker: human.task_instances[0].blocker,
+  next_action: human.task_instances[0].next_action,
+  completion_candidate: false,
+  completion_allowed: false,
+  request_completion_allowed: false
+});
+assert.deepEqual(human.snapshot_timeline.map((snapshot) => snapshot.stage), ["RECEIVED", "EVIDENCE_REVIEW", "HUMAN_CONFIRMATION", "BLOCKED"]);
+const humanWithRequest = replayAdminProcessPrototype(humanFixture, { requestContext: normalizedHumanRequest });
+assert.deepEqual(humanWithRequest.request, { ...normalizedHumanRequest, overall_status: "BLOCKED" });
+assert.deepEqual(humanWithRequest.tasks[0], {
+  operational_task_id: "P03-T03",
+  process_id: "P03",
+  stage: "BLOCKED",
+  actor: "사람 확인",
+  next_action: "유효한 날인본 원본 재수집",
+  blocker: "날인본 원본 미확보",
+  completion_condition: "날인본 원본과 필수 날인 위치가 확인됐나요?",
+  completion_evidence: ["EV-P03-SUBMISSION"],
+  completion_candidate: false,
+  completion_allowed: false
+});
+assert.deepEqual(humanWithRequest.interaction, { clarification_required: false, human_confirmation_required: true, questions: ["날인본 원본과 필수 날인 위치가 확인됐나요?"] });
+assert.deepEqual(humanWithRequest.execution, { operational_write_allowed: false, operational_write_count: 0, request_completion_allowed: false, downstream_auto_completion: false });
+assert.equal(humanWithRequest.downstream_auto_completion, false);
+assert.equal(humanWithRequest.operational_write_allowed, false);
 
 // COMPOSITE-01: P03 and P04 are preserved while P07 is the isolated failure.
 const composite = replay(compositeFixture);
@@ -203,9 +267,19 @@ const cliOutput = JSON.parse(execFileSync("node", cliArgs, { encoding: "utf8" })
 assert.equal(cliOutput.cli.preview, true);
 assert.equal(cliOutput.cli.emit_snapshots, true);
 assert.equal(cliOutput.write_count, 0);
+const requestCliOutput = JSON.parse(execFileSync("node", [`${root}/cli/admin-process-prototype-replay.mjs`, "--scenario", `${root}/fixtures/prototype-single-p03-human-confirmation.json`, "--scenario-id", "SINGLE-P03-02", "--request-text", humanRequestText, "--preview", "--emit-snapshots"], { encoding: "utf8" }));
+assert.equal(requestCliOutput.cli.source, "REQUEST_TEXT_WITH_SCENARIO_FIXTURE");
+assert.equal(requestCliOutput.request.dummy_fund_id, "DUMMY-FUND-B");
+assert.deepEqual(requestCliOutput.snapshot_timeline.map((snapshot) => snapshot.stage), ["RECEIVED", "EVIDENCE_REVIEW", "HUMAN_CONFIRMATION", "BLOCKED"]);
+assert.equal(requestCliOutput.execution.operational_write_allowed, false);
+assert.equal(requestCliOutput.execution.operational_write_count, 0);
+const clarificationCliOutput = JSON.parse(execFileSync("node", [`${root}/cli/admin-process-prototype-replay.mjs`, "--request-text", "고유번호증 신청을 확인해줘.", "--preview"], { encoding: "utf8" }));
+assert.equal(clarificationCliOutput.interaction.clarification_required, true);
+assert.equal(clarificationCliOutput.request.scenario_id, null);
 const help = execFileSync("node", [`${root}/cli/admin-process-prototype-replay.mjs`, "--help"], { encoding: "utf8" });
 assert.match(help, /Supported scenarios: 3\/6/);
 assert.match(help, /SINGLE-P07-01, SINGLE-P08-01, COMPOSITE-02/);
+assert.match(help, /--request-text/);
 assert.doesNotMatch(help, /"scenario_id"|"write_count"/);
 for (const prosePath of [
   `${root}/reports/prototype-replay-result.md`,

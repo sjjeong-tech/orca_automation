@@ -63,3 +63,28 @@ This was a temporary, uncommitted source-mutation check; each mutation was resto
 The fixtures/goldens are hand-reviewed safety assertions, not generated golden outputs. The confirmed review fields are completion candidate, request completion, blocker, human question, mapping status, operational relation, and every per-surface counter.
 
 Independent browser review completed five rounds and returned `ACCEPT_WITH_GAPS`: no blocking repair was requested. The acceptance is limited to this three-scenario, preview-only prototype and does not authorize operational use or a merge.
+
+## Dry Run — DRY-P03-02-01
+
+- User request: `DUMMY-FUND-B의 고유번호증 신청 건을 확인해줘. 신청서 초안은 있지만 날인본 원본은 아직 준비되지 않았어.`
+- Command: `node plugins/vc-support-admin/cli/admin-process-prototype-replay.mjs --scenario plugins/vc-support-admin/fixtures/prototype-single-p03-human-confirmation.json --scenario-id SINGLE-P03-02 --preview --emit-snapshots`
+- Skill commit: `f3a5747deeb66d491fe48e066e792eda76b2aa1f`
+- Mapping: the CLI accepts a scenario fixture, not natural-language intake. The request was manually mapped to `SINGLE-P03-02`; `DUMMY-FUND-B` is not represented in the current fixture/output contract.
+- Actual: `SUBMISSION_PACKAGE/PRESENT_VALID` and `STAMPED_DOCUMENT/ABSENT`; human question, actor, blocker, and next action were emitted separately. Completion candidate, Task completion, and Request completion were all `false`; every write counter and operational write count was `0`.
+- Timeline: `RECEIVED -> EVIDENCE_REVIEW -> BLOCKED`. This is not fully accepted because the expected canonical `HUMAN_CONFIRMATION` snapshot stage was absent even though the separate human-confirmation object was emitted.
+- Duplicate replay: deterministic second preview produced no records; `PASS_IN_PREVIEW_FIXTURE` only. Persistent-store observation remains `PERSISTENT_STORE_DUPLICATE_OBSERVATION_NOT_RUN`.
+- Counterfactual: `NOT_RUN_UNSUPPORTED_INPUT_OVERRIDE`; the CLI supports only scenario-fixture input and no safe evidence override.
+- Acceptance status: `FAIL_SNAPSHOT_TIMELINE`; no code or fixture was changed in this dry run. User review is needed for wording and for whether the missing timeline stage requires an implementation repair.
+
+## Repair — D20 Dry Run 01
+
+- Previous result: `FAIL_SNAPSHOT_TIMELINE` for `DRY-P03-02-01`.
+- Root cause: the reducer emitted a `human_confirmation` object only. Its snapshot builder added `HUMAN_CONFIRMATION` only when the lane itself had that terminal stage, so a blocked P03 lane skipped the required review snapshot.
+- Changed contract: `--request-text` now accepts the supported synthetic P03 missing-stamped-original request and emits a `request` context, `tasks`, `interaction`, and `execution` structures. The request adapter fails closed with `missing_information` and a clarification question when the supported pattern is incomplete.
+- Evidence display: user-facing decisions normalize `STAMPED_DOCUMENT` / `ABSENT` to `STAMPED_ORIGINAL` / `MISSING`; the legacy type and fixture state remain explicit compatibility fields. Kernel evaluation still uses the legacy fixture vocabulary.
+- Human confirmation: the P03-T03 timeline is now `RECEIVED -> EVIDENCE_REVIEW -> HUMAN_CONFIRMATION -> BLOCKED`. The review snapshot repeats the actor, question, blocker, next action, and all three false completion gates from the corresponding Task projection.
+- Actual revalidation: the supported request retains `DUMMY-FUND-B`, `P03`, and `SINGLE-P03-02`; its next action is `유효한 날인본 원본 재수집`; completion candidate and completion permissions remain false; all write counters remain zero.
+- Test evidence: adapter unit cases, request-to-fixture CLI integration, snapshot ordering, canonical evidence vocabulary, output compatibility fields, three-scenario E2E, full plugin regression, security suites, smoke, parse, syntax, and scans passed.
+- Remaining gap: the adapter recognizes only the declared synthetic P03 missing-stamped-original request. It is not a general natural-language parser, and persistent-store duplicate observation remains not run.
+- Revalidation command: `node plugins/vc-support-admin/cli/admin-process-prototype-replay.mjs --scenario plugins/vc-support-admin/fixtures/prototype-single-p03-human-confirmation.json --scenario-id SINGLE-P03-02 --request-text "DUMMY-FUND-B의 고유번호증 신청 건을 확인해줘. 신청서 초안은 있지만 날인본 원본은 아직 준비되지 않았어." --preview --emit-snapshots`
+- Revalidation ready: `true`.

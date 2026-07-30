@@ -10,7 +10,7 @@ Use this prototype to inspect a synthetic P03 flow, a missing-stamped-document h
 Run only in preview mode:
 
 ```powershell
-node plugins/vc-support-admin/cli/admin-process-prototype-replay.mjs --scenario plugins/vc-support-admin/fixtures/prototype-composite-p03-p04-p07.json --scenario-id COMPOSITE-01 --preview --emit-snapshots
+  node plugins/vc-support-admin/cli/admin-process-prototype-replay.mjs --scenario plugins/vc-support-admin/fixtures/prototype-composite-p03-p04-p07.json --scenario-id COMPOSITE-01 --preview --emit-snapshots
 ```
 
 Safety boundaries:
@@ -19,6 +19,7 @@ Safety boundaries:
 - `completion_candidate` never authorizes Task or Request completion.
 - P04 and P07 are candidate mappings requiring later canonical confirmation.
 - Output is always JSON on stdout; this prototype has no result-file option.
+- Use `--request-text` only for the supported synthetic P03 missing-stamped-original intake. It preserves request text and the parsed Dummy Fund ID, or returns clarification metadata without selecting a scenario.
 
 ## Contract alignment and scope
 
@@ -28,5 +29,6 @@ Safety boundaries:
 - Canonical Skill stages are exactly: `RECEIVED`, `INFORMATION_CHECK`, `EVIDENCE_REVIEW`, `HUMAN_CONFIRMATION`, `EXTERNAL_WAIT`, `RESULT_REVIEW`, `NEXT_PROCESS`, `COMPLETION_CANDIDATE`, `BLOCKED`.
 - Notion `진행 중` is a `TASK_OR_UI_AUXILIARY_STATE`; it is not a tenth canonical Skill stage.
 - Duplicate replay is validated only as `PASS_IN_PREVIEW_FIXTURE`. `PERSISTENT_STORE_DUPLICATE_OBSERVATION_NOT_RUN` remains an explicit limit.
+- User-facing evidence output normalizes legacy `STAMPED_DOCUMENT` / `ABSENT` to `STAMPED_ORIGINAL` / `MISSING`; legacy fields remain explicit compatibility metadata.
 
 Snapshot stage-count differences in external documents are intentionally not normalized here.

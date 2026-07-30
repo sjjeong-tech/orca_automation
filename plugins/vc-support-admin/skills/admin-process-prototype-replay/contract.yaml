@@ -10,10 +10,11 @@
   },
   "contract_scenario_coverage": 6,
   "implemented_scenario_coverage": 3,
-  "input": ["scenario", "scenario_id", "mode", "preview", "emit_snapshots"],
+  "input": ["scenario", "scenario_id", "request_text", "mode", "preview", "emit_snapshots"],
   "supported_scenarios": ["SINGLE-P03-01", "SINGLE-P03-02", "COMPOSITE-01"],
   "not_implemented_scenarios": ["SINGLE-P07-01", "SINGLE-P08-01", "COMPOSITE-02"],
-  "required_output": ["process_instances", "request_instances", "task_instances", "evidence_decisions", "human_confirmation", "snapshot_timeline", "expected_actual", "resume_contract", "write_count"],
+  "required_output": ["request", "process_instances", "request_instances", "task_instances", "tasks", "evidence_decisions", "human_confirmation", "interaction", "execution", "snapshot_timeline", "expected_actual", "resume_contract", "write_count"],
+  "evidence_vocabulary": { "canonical_type": "STAMPED_ORIGINAL", "canonical_result": "MISSING", "legacy_type": "STAMPED_DOCUMENT", "legacy_result": "ABSENT" },
   "snapshot_stage_vocabulary": ["RECEIVED", "INFORMATION_CHECK", "EVIDENCE_REVIEW", "HUMAN_CONFIRMATION", "EXTERNAL_WAIT", "RESULT_REVIEW", "NEXT_PROCESS", "COMPLETION_CANDIDATE", "BLOCKED"],
   "snapshot_stage_note": "Tokens are TAP-prescribed. This prototype makes no stage-count claim and does not resolve the external manual/contract stage disagreement.",
   "ui_auxiliary_state": {
