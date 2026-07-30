@@ -65,6 +65,7 @@ export { discoverEvidence } from "./kernel/evidence-discovery.mjs";
 export { buildTaskEvidencePreview } from "./kernel/task-evidence-preview.mjs";
 export { mapNotionTaskSnapshot } from "./kernel/notion-task-snapshot.mjs";
 export { reviewTaskEvidence, reviewEvidenceBundle } from "./kernel/task-evidence-orchestrator.mjs";
+export { replayAdminProcessPrototype, validatePrototypeScenario, PROTOTYPE_REPLAY_STAGES } from "./kernel/admin-process-prototype-replay.mjs";
 
 export function detectProcess(userMessage, { process_hint } = {}, contract = loadSkillContract()) {
   if (process_hint) return process_hint === contract.process_id ? contract.process_id : null;

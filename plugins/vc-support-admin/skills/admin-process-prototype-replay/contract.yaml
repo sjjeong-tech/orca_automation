@@ -1,0 +1,12 @@
+{
+  "skill_id": "admin-process-prototype-replay",
+  "mode": "preview_only",
+  "input": ["scenario", "scenario_id", "mode", "preview", "emit_snapshots"],
+  "supported_scenarios": ["SINGLE-P03-01", "SINGLE-P03-02", "COMPOSITE-01"],
+  "required_output": ["process_instances", "request_instances", "task_instances", "evidence_decisions", "human_confirmation", "snapshot_timeline", "expected_actual", "resume_contract", "write_count"],
+  "snapshot_stage_vocabulary": ["RECEIVED", "INFORMATION_CHECK", "EVIDENCE_REVIEW", "HUMAN_CONFIRMATION", "EXTERNAL_WAIT", "RESULT_REVIEW", "NEXT_PROCESS", "COMPLETION_CANDIDATE", "BLOCKED"],
+  "snapshot_stage_note": "Tokens are TAP-prescribed. This prototype makes no stage-count claim and does not resolve the external manual/contract stage disagreement.",
+  "expected_actual": { "expected_source": "scenario.expectations", "comparison_mode": "EXACT", "actual_to_expected_copying": false },
+  "forbidden": ["notion_write", "drive_write", "slack_send", "operational_write", "auto_approval", "auto_completion", "raw_mcp_payload"],
+  "safety": { "request_completion_allowed": false, "write_count": 0, "connector_calls": 0, "duplicate_replay": "NO_NEW_RECORDS_PREVIEW_ONLY" }
+}

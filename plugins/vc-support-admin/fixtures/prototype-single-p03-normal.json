@@ -1,0 +1,27 @@
+{
+  "schema_version": "prototype-replay/1",
+  "scenario_id": "SINGLE-P03-01",
+  "transaction_id": "PROTO-SINGLE-P03-01",
+  "mode": "single",
+  "lanes": [
+    {
+      "lane_id": "SINGLE-P03-01/P03",
+      "process_id": "P03",
+      "mapping_status": "CONFIRMED",
+      "depends_on": [],
+      "operational_task_id": "P03-T06",
+      "allow_completion_candidate": true,
+      "task_projection": { "actor": "지원팀", "next_action": "저장·전달 Evidence 확인", "blocker": "" },
+      "evidence": [
+        { "evidence_id": "EV-P03-SUBMISSION", "evidence_type": "SUBMISSION_PACKAGE", "fixture_state": "PRESENT_VALID", "required_for_completion": true },
+        { "evidence_id": "EV-P03-RECEIPT", "evidence_type": "RECEIPT", "fixture_state": "PRESENT_VALID", "required_for_completion": true },
+        { "evidence_id": "EV-P03-RESULT", "evidence_type": "RESULT_DOCUMENT", "fixture_state": "PRESENT_VALID", "required_for_completion": true }
+      ]
+    }
+  ],
+  "expectations": {
+    "lanes": {
+      "SINGLE-P03-01/P03": { "stage": "COMPLETION_CANDIDATE", "completion_candidate": true, "request_completion_allowed": false }
+    }
+  }
+}

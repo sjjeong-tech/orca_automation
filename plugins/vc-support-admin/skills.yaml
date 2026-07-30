@@ -23,6 +23,18 @@
       "write_mode": "preview_only",
       "approval_policy": "EXPLICIT_APPROVAL_REQUIRED_FOR_FUTURE_WRITE",
       "read_only_transports": ["runtime_snapshot", "session_snapshot"]
+    },
+    {
+      "skill_id": "admin-process-prototype-replay",
+      "skill_path": "plugins/vc-support-admin/skills/admin-process-prototype-replay",
+      "process_id": "P03",
+      "trigger_phrases": ["admin process prototype replay", "P03 P04 P07 preview", "synthetic process replay"],
+      "enabled": true,
+      "required_connectors": [],
+      "optional_connectors": [],
+      "write_mode": "preview_only",
+      "approval_policy": "NO_WRITE_IN_PROTOTYPE",
+      "scope": "THREE_SYNTHETIC_SCENARIOS_ONLY"
     }
   ],
   "planned_not_implemented": [

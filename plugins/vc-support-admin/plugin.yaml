@@ -5,7 +5,8 @@
   "purpose": "검증된 E2E-03 업무 흐름을 다른 조합·세션·Interface에서 재사용 가능한 실행 단위로 제공한다. Repository 내부 Prototype이며 외부 배포·설치 대상이 아니다.",
   "supported_skills": [
     "e2e03-tax-id-application",
-    "test-lab-write-requery"
+    "test-lab-write-requery",
+    "admin-process-prototype-replay"
   ],
   "required_connectors": [
     "notion"
@@ -80,7 +81,8 @@
       "providers/bridge.mjs"
     ],
     "runtime_snapshot_bridge": "kernel/runtime-snapshot-bridge.mjs",
-    "session_snapshot_transport_adapter": "kernel/session-snapshot-transport-adapter.mjs"
+    "session_snapshot_transport_adapter": "kernel/session-snapshot-transport-adapter.mjs",
+    "admin_process_prototype_replay": "kernel/admin-process-prototype-replay.mjs"
   },
   "error_policy": {
     "on_fund_not_found": "NO_WRITE_AND_ASK",
@@ -119,7 +121,8 @@
     "live": "node plugins/vc-support-admin/tests/live.test.mjs",
     "security": "node plugins/vc-support-admin/tests/security.test.mjs"
     ,"runtime_snapshot": "node plugins/vc-support-admin/tests/runtime-snapshot-bridge.test.mjs",
-    "session_snapshot_transport": "node plugins/vc-support-admin/tests/session-snapshot-transport-adapter.test.mjs"
+    "session_snapshot_transport": "node plugins/vc-support-admin/tests/session-snapshot-transport-adapter.test.mjs",
+    "prototype_replay": "node plugins/vc-support-admin/tests/admin-process-prototype-replay.e2e.test.mjs"
   },
   "security": {
     "typed_approval": true,
