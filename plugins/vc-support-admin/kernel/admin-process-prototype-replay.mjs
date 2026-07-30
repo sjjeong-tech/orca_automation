@@ -7,7 +7,7 @@ const STAGES = new Set([
 const CONTRACT_REFERENCE = Object.freeze({
   manifest_id: "PROTOTYPE-SCENARIO-CONTRACT-V0.1",
   manifest_hash: "3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d",
-  batch_id: "A-CP25-B18-V18",
+  batch_id: "A-CP25-B18",
   contract_scenario_coverage: 6,
   implemented_scenario_coverage: 3,
   implemented_scenarios: Object.freeze(["SINGLE-P03-01", "SINGLE-P03-02", "COMPOSITE-01"]),

@@ -4,7 +4,7 @@ Status: preview-only prototype. The kernel accepts only synthetic, sanitized sce
 
 ## Contract alignment (G19)
 
-- Recorded reference: `PROTOTYPE-SCENARIO-CONTRACT-V0.1`, manifest hash `3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d`, batch `A-CP25-B18-V18`. The reference is traceability metadata; `conformance_claim.claimed` remains `false`.
+- Recorded reference: `PROTOTYPE-SCENARIO-CONTRACT-V0.1`, manifest hash `3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d`, batch `A-CP25-B18`. Artifact/UI version `V18` is separate metadata and not part of the Batch ID. The reference is traceability metadata; `conformance_claim.claimed` remains `false`.
 - Contract coverage is `6`; implementation coverage is `3`: `SINGLE-P03-01`, `SINGLE-P03-02`, and `COMPOSITE-01`. `SINGLE-P07-01`, `SINGLE-P08-01`, and `COMPOSITE-02` are not implemented.
 - Canonical Skill stages remain the nine TAP-prescribed tokens. Notion `진행 중` is reported only as `TASK_OR_UI_AUXILIARY_STATE`, never as a tenth stage.
 - Duplicate replay is `PASS_IN_PREVIEW_FIXTURE`; `PERSISTENT_STORE_DUPLICATE_OBSERVATION_NOT_RUN` remains explicit. No persistent-store duplicate claim is made.

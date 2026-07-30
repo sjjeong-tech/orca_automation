@@ -22,7 +22,7 @@ Safety boundaries:
 
 ## Contract alignment and scope
 
-- Recorded contract reference: `PROTOTYPE-SCENARIO-CONTRACT-V0.1`, manifest hash `3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d`, batch `A-CP25-B18-V18`. This is traceability metadata, not a claim of contract conformance.
+- Recorded contract reference: `PROTOTYPE-SCENARIO-CONTRACT-V0.1`, manifest hash `3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d`, batch `A-CP25-B18`. Artifact/UI version `V18` is separate metadata and is not part of the Batch ID. This is traceability metadata, not a claim of contract conformance.
 - Contract coverage is **6 scenarios**. This Skill implements **3**: `SINGLE-P03-01`, `SINGLE-P03-02`, and `COMPOSITE-01`.
 - Not implemented: `SINGLE-P07-01`, `SINGLE-P08-01`, and `COMPOSITE-02`.
 - Canonical Skill stages are exactly: `RECEIVED`, `INFORMATION_CHECK`, `EVIDENCE_REVIEW`, `HUMAN_CONFIRMATION`, `EXTERNAL_WAIT`, `RESULT_REVIEW`, `NEXT_PROCESS`, `COMPLETION_CANDIDATE`, `BLOCKED`.

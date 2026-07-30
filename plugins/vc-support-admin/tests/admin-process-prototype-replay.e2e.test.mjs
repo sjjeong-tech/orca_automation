@@ -26,7 +26,8 @@ assert.ok(registry.skills.some((skill) => skill.skill_id === "admin-process-prot
 assert.equal(contract.safety.write_count, 0);
 assert.equal(contract.contract_reference.manifest_id, "PROTOTYPE-SCENARIO-CONTRACT-V0.1");
 assert.equal(contract.contract_reference.manifest_hash, "3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d");
-assert.equal(contract.contract_reference.batch_id, "A-CP25-B18-V18");
+assert.equal(contract.contract_reference.batch_id, "A-CP25-B18");
+assert.doesNotMatch(contract.contract_reference.batch_id, /V18/);
 assert.equal(contract.contract_scenario_coverage, 6);
 assert.equal(contract.implemented_scenario_coverage, 3);
 assert.deepEqual(contract.supported_scenarios, ["SINGLE-P03-01", "SINGLE-P03-02", "COMPOSITE-01"]);
@@ -84,7 +85,8 @@ assert.doesNotMatch(composite.task_instances.find((task) => task.lane_id === "CO
 for (const output of [normal, human, composite]) {
   assert.equal(output.conformance_claim.contract_id, "PROTOTYPE-SCENARIO-CONTRACT-V0.1");
   assert.equal(output.conformance_claim.manifest_hash, "3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d");
-  assert.equal(output.conformance_claim.batch_id, "A-CP25-B18-V18");
+  assert.equal(output.conformance_claim.batch_id, "A-CP25-B18");
+  assert.doesNotMatch(output.conformance_claim.batch_id, /V18/);
   assert.equal(output.conformance_claim.contract_scenario_coverage, 6);
   assert.equal(output.conformance_claim.implemented_scenario_coverage, 3);
   assert.equal(output.conformance_claim.claimed, false);
