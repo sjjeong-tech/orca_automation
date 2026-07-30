@@ -2,6 +2,22 @@
 
 Claude thread: `https://claude.ai/chat/24601187-7c2e-425f-9a77-d9ccc8ed42bb`
 
+## G19 — Contract alignment (three-round budget)
+
+### Round 1 — alignment review
+
+Claude reviewed only the six supplied deltas. It verified the supplied manifest hash against the Contract page, verified the COMPOSITE-01 P07 action `계좌개설 제출서류 수집`, and confirmed that Notion `진행 중` is a Task-status value rather than a canonical Skill stage. Codex accepted the in-scope alignment changes: traceability-only manifest metadata, explicit 6/3/3 coverage, the P07 fixture wording, a non-completion candidate reason, `--help`, auxiliary-state classification, and explicit duplicate-observation scope. Codex rejected unrelated stage renaming and broader scenario work because they exceed G19.
+
+### Round 2 — diff and test review
+
+Codex supplied the minimal eight-file diff and a full 19-file plugin regression. The alignment E2E covers the exact manifest reference, all three scenario outputs with `claimed=false`, P07 wording and negative `재수집` check, candidate reason with completion still blocked, nine-stage membership, auxiliary `진행 중`, preview-only duplicate scope, and non-executing `--help`. No Notion, Drive, Slack, file, or operational write occurred.
+
+The G19 reviewer requested evidence reconciliation. Codex confirmed the actual change set contains eight existing files: CLI, COMPOSITE fixture, kernel, E2E test, Skill contract, SKILL.md, replay report, and this summary. The P07 value lives in the COMPOSITE fixture, and this prototype has no generated golden artifacts; fixtures are hand-authored inputs. `git show 293954731276ce92f6c11fd6916da675e5113cc8` confirmed the old P07 wording and absence of the new manifest/candidate/duplicate fields. The E2E test records the exact scope lists, all-three-output conformance fields, status/stage separation, P07 negative wording check, and report duplicate qualifiers.
+
+### Round 3 — final acceptance (pending response)
+
+The final packet will retain these declared nonblocking gaps: three contract scenarios are not implemented, persistent-store duplicate observation is `PERSISTENT_STORE_DUPLICATE_OBSERVATION_NOT_RUN`, P04/P07 mappings remain candidates, and external manual stage disagreement is unresolved. `PASS_IN_PREVIEW_FIXTURE` is the only duplicate result claimed; no prose or test output may imply persistent duplicate suppression.
+
 ## Round 4 - failure and recovery review
 
 Claude found no redesign requirement and endorsed full regression, subject to independent evidence before final acceptance. Codex accepted the following focused actions: strict expectation schema; explicit expected-source metadata; negative comparison tests for completion candidate, request completion, human question, and blocker; global blocked-candidacy and completion guards; frozen-token membership and exact completion-token absence checks; recovery assertions; connector-call counters; and reducer-only index export confirmation.
@@ -35,3 +51,9 @@ Claude proposed a pure lane reducer, closed state vocabulary, deterministic repl
 ## Round 3 — implementation diff review
 
 Claude accepted the preview-only direction but required stronger adversarial evidence. Codex accepted the clamp, Expected–Actual negative, strict schema, recovery, output-leakage, per-surface write-counter, and explicit duplicate-limitation requests. Codex rejected stage-token namespacing because the TAP itself prescribes the emitted token names; the manual-versus-contract stage disagreement remains an explicit open gap. The raw browser transcript is intentionally not stored.
+
+## G19R2 — browser recovery and final acceptance
+
+Codex used the existing Orca workspace tab through the Orca CLI after the in-app Browser binding was unavailable. A fresh page identifier and accessibility snapshot were obtained; no stale browser reference was reused. The `READY_G19R2` keepalive passed before the final packet was sent.
+
+Claude Round 3 returned `ACCEPT_WITH_GAPS`, with no safety blockers and a commit recommendation for this isolated prototype branch. It confirmed the six G19 alignment items, completion clamps, composite-lane isolation, explicit 6/3/3 coverage, nine canonical stages with auxiliary UI status separation, and preview-fixture-only duplicate scope. The qualifier remains the declared nonblocking scope: three scenarios unimplemented, persistent-store duplicate observation not run, candidate P04/P07 mappings, and the external manual stage-count conflict. No browser transcript is stored.

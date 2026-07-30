@@ -1,7 +1,13 @@
 import assert from "node:assert/strict";
 import { execFileSync, spawnSync } from "node:child_process";
 import fs from "node:fs";
-import { replayAdminProcessPrototype, validatePrototypeScenario, PROTOTYPE_REPLAY_STAGES } from "../kernel/admin-process-prototype-replay.mjs";
+import {
+  replayAdminProcessPrototype,
+  validatePrototypeScenario,
+  PROTOTYPE_REPLAY_STAGES,
+  PROTOTYPE_REPLAY_CONTRACT_REFERENCE,
+  PROTOTYPE_REPLAY_UI_AUXILIARY_STATE
+} from "../kernel/admin-process-prototype-replay.mjs";
 
 const root = "plugins/vc-support-admin";
 const fixture = (name) => JSON.parse(fs.readFileSync(`${root}/fixtures/${name}`, "utf8"));
@@ -18,6 +24,20 @@ assert.ok(plugin.supported_skills.includes("admin-process-prototype-replay"));
 assert.equal(plugin.entry_points.admin_process_prototype_replay, "kernel/admin-process-prototype-replay.mjs");
 assert.ok(registry.skills.some((skill) => skill.skill_id === "admin-process-prototype-replay" && skill.write_mode === "preview_only"));
 assert.equal(contract.safety.write_count, 0);
+assert.equal(contract.contract_reference.manifest_id, "PROTOTYPE-SCENARIO-CONTRACT-V0.1");
+assert.equal(contract.contract_reference.manifest_hash, "3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d");
+assert.equal(contract.contract_reference.batch_id, "A-CP25-B18-V18");
+assert.equal(contract.contract_scenario_coverage, 6);
+assert.equal(contract.implemented_scenario_coverage, 3);
+assert.deepEqual(contract.supported_scenarios, ["SINGLE-P03-01", "SINGLE-P03-02", "COMPOSITE-01"]);
+assert.deepEqual(contract.not_implemented_scenarios, ["SINGLE-P07-01", "SINGLE-P08-01", "COMPOSITE-02"]);
+assert.equal(contract.ui_auxiliary_state.notion_status_classification, "TASK_OR_UI_AUXILIARY_STATE");
+assert.equal(contract.ui_auxiliary_state.is_canonical_skill_stage, false);
+assert.deepEqual(contract.ui_auxiliary_state.notion_status_values, ["진행 중"]);
+assert.equal(contract.safety.duplicate_validation_scope, "PASS_IN_PREVIEW_FIXTURE");
+assert.equal(contract.safety.persistent_store_duplicate_observation, "PERSISTENT_STORE_DUPLICATE_OBSERVATION_NOT_RUN");
+assert.equal(PROTOTYPE_REPLAY_CONTRACT_REFERENCE.conformance_claimed, false);
+assert.deepEqual(PROTOTYPE_REPLAY_UI_AUXILIARY_STATE, contract.ui_auxiliary_state);
 assert.equal(validatePrototypeScenario(normalFixture).scenario_id, "SINGLE-P03-01");
 assert.equal(validatePrototypeScenario(humanFixture).scenario_id, "SINGLE-P03-02");
 assert.equal(validatePrototypeScenario(compositeFixture).scenario_id, "COMPOSITE-01");
@@ -29,6 +49,7 @@ assert.equal(normal.completion_allowed, false);
 assert.equal(normal.request_completion_allowed, false);
 assert.equal(normal.task_instances[0].actor, "지원팀");
 assert.equal(normal.task_instances[0].blocker, "");
+assert.equal(normal.process_instances[0].candidate_reason, "저장·전달 Evidence 확인 필요");
 assert.ok(normal.snapshot_timeline.some((snapshot) => snapshot.stage === "COMPLETION_CANDIDATE"));
 assert.equal(normal.write_count, 0);
 assert.deepEqual(normal.write_counts, { notion: 0, drive: 0, slack: 0, file: 0, total: 0 });
@@ -52,12 +73,27 @@ assert.equal(byLane.get("COMPOSITE-01/P03").stage, "RESULT_REVIEW");
 assert.equal(byLane.get("COMPOSITE-01/P04").stage, "NEXT_PROCESS");
 assert.equal(byLane.get("COMPOSITE-01/P07").stage, "BLOCKED");
 assert.equal(composite.task_instances.find((task) => task.lane_id === "COMPOSITE-01/P07").blocker, "P07 제출서류 미확보");
+assert.equal(composite.task_instances.find((task) => task.lane_id === "COMPOSITE-01/P07").next_action, "계좌개설 제출서류 수집");
 assert.equal(composite.next_process_candidates[0].mapping_status, "CANDIDATE_CONFIRMATION_REQUIRED");
 assert.equal(composite.errors.length, 1);
 assert.equal(composite.errors[0].lane_id, "COMPOSITE-01/P07");
 assert.equal(composite.request_completion_allowed, false);
 assert.equal(byLane.get("COMPOSITE-01/P04").operational_relation, "NONE");
 assert.equal(byLane.get("COMPOSITE-01/P07").mapping_status, "CANDIDATE_CONFIRMATION_REQUIRED");
+assert.doesNotMatch(composite.task_instances.find((task) => task.lane_id === "COMPOSITE-01/P07").next_action, /재수집/);
+for (const output of [normal, human, composite]) {
+  assert.equal(output.conformance_claim.contract_id, "PROTOTYPE-SCENARIO-CONTRACT-V0.1");
+  assert.equal(output.conformance_claim.manifest_hash, "3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d");
+  assert.equal(output.conformance_claim.batch_id, "A-CP25-B18-V18");
+  assert.equal(output.conformance_claim.contract_scenario_coverage, 6);
+  assert.equal(output.conformance_claim.implemented_scenario_coverage, 3);
+  assert.equal(output.conformance_claim.claimed, false);
+  for (const lane of output.process_instances) {
+    assert.equal(lane.completion_candidate, lane.candidate_reason !== null);
+  }
+}
+assert.deepEqual([...contract.supported_scenarios, ...contract.not_implemented_scenarios].sort(), ["COMPOSITE-01", "COMPOSITE-02", "SINGLE-P03-01", "SINGLE-P03-02", "SINGLE-P07-01", "SINGLE-P08-01"]);
+assert.equal(new Set([...contract.supported_scenarios, ...contract.not_implemented_scenarios]).size, 6);
 
 // Partial failure does not mutate prior lanes; the replay remains deterministic and duplicate-safe.
 const altered = JSON.parse(JSON.stringify(compositeFixture));
@@ -70,6 +106,8 @@ assert.equal(composite.duplicate_result.duplicates_created, 0);
 assert.equal(composite.duplicate_result.new_records, 0);
 assert.equal(composite.duplicate_result.new_duplicates, 0);
 assert.match(composite.duplicate_result.limitation, /does not observe a persistent record store/);
+assert.equal(composite.duplicate_result.validation_scope, "PASS_IN_PREVIEW_FIXTURE");
+assert.equal(composite.duplicate_result.persistent_store_duplicate_observation, "PERSISTENT_STORE_DUPLICATE_OBSERVATION_NOT_RUN");
 assert.equal(composite.resume_contract.find((lane) => lane.lane_id === "COMPOSITE-01/P07").resume_scope, "COMPOSITE-01/P07");
 
 // A failed predecessor blocks dependent lanes without contaminating the original fixture result.
@@ -130,6 +168,13 @@ assert.equal(blockerMismatch.result, "MISMATCH");
 
 // Closed vocabulary, pure output, sanitization and fail-closed schema checks.
 assert.equal(composite.snapshot_timeline.every((snapshot) => PROTOTYPE_REPLAY_STAGES.includes(snapshot.stage)), true);
+assert.deepEqual(PROTOTYPE_REPLAY_STAGES, contract.snapshot_stage_vocabulary);
+assert.equal(PROTOTYPE_REPLAY_STAGES.length, 9);
+assert.equal(PROTOTYPE_REPLAY_STAGES.includes("진행 중"), false);
+assert.equal(composite.ui_auxiliary_state.notion_status_classification, "TASK_OR_UI_AUXILIARY_STATE");
+assert.equal(composite.ui_auxiliary_state.is_canonical_skill_stage, false);
+assert.deepEqual(composite.ui_auxiliary_state.notion_status_values, ["진행 중"]);
+assert.equal(composite.snapshot_timeline.some((snapshot) => snapshot.stage === "진행 중"), false);
 assert.equal(PROTOTYPE_REPLAY_STAGES.some((stage) => ["COMPLETE", "COMPLETED", "DONE"].includes(stage)), false);
 assert.equal(composite.expected_actual.mismatch_count, 0);
 assert.equal(composite.expected_actual.entries.every((entry) => entry.comparison_mode === "EXACT"), true);
@@ -142,6 +187,7 @@ assert.notStrictEqual(composite.process_instances[0], composite.process_instance
 assert.notStrictEqual(composite.task_instances[0], composite.task_instances[1]);
 assert.throws(() => replay({ ...normalFixture, external_url: "https://example.invalid" }), (error) => error.code === "UNSANITIZED_EXTERNAL_URL");
 assert.throws(() => replay({ ...normalFixture, arbitrary_property: "no" }), (error) => error.code === "SCHEMA_UNKNOWN_PROPERTY");
+assert.throws(() => replay({ ...normalFixture, lanes: [{ ...normalFixture.lanes[0], stage: "진행 중" }] }), (error) => error.code === "SCHEMA_UNKNOWN_PROPERTY");
 assert.throws(() => replay({ ...normalFixture, expectations: { lanes: { "unknown/lane": {} } } }), (error) => error.code === "EXPECTATION_UNKNOWN_LANE");
 assert.throws(() => replay({ ...normalFixture, expectations: { lanes: { "SINGLE-P03-01/P03": { actual: "forbidden" } } } }), (error) => error.code === "SCHEMA_UNKNOWN_PROPERTY");
 assert.throws(() => replay({ ...normalFixture, lanes: [{ ...normalFixture.lanes[0], evidence: [{ ...normalFixture.lanes[0].evidence[0], evidence_type: "UNKNOWN" }] }] }), (error) => error.code === "UNSUPPORTED_EVIDENCE_TYPE");
@@ -155,7 +201,20 @@ const cliOutput = JSON.parse(execFileSync("node", cliArgs, { encoding: "utf8" })
 assert.equal(cliOutput.cli.preview, true);
 assert.equal(cliOutput.cli.emit_snapshots, true);
 assert.equal(cliOutput.write_count, 0);
+const help = execFileSync("node", [`${root}/cli/admin-process-prototype-replay.mjs`, "--help"], { encoding: "utf8" });
+assert.match(help, /Supported scenarios: 3\/6/);
+assert.match(help, /SINGLE-P07-01, SINGLE-P08-01, COMPOSITE-02/);
+assert.doesNotMatch(help, /"scenario_id"|"write_count"/);
+for (const prosePath of [
+  `${root}/reports/prototype-replay-result.md`,
+  `${root}/reports/browser-ai-collaboration/admin-process-prototype-replay.md`
+]) {
+  const prose = fs.readFileSync(prosePath, "utf8");
+  assert.match(prose, /PASS_IN_PREVIEW_FIXTURE/);
+  assert.match(prose, /PERSISTENT_STORE_DUPLICATE_OBSERVATION_NOT_RUN/);
+  assert.equal(/duplicate replay:\s*PASS(?!_IN_PREVIEW_FIXTURE)/i.test(prose), false);
+}
 assert.equal(spawnSync("node", [`${root}/cli/admin-process-prototype-replay.mjs`, "--scenario", `${root}/fixtures/prototype-single-p03-normal.json`, "--scenario-id", "SINGLE-P03-01"], { encoding: "utf8" }).status, 1);
 assert.equal(spawnSync("node", [...cliArgs, "--output", "forbidden.json"], { encoding: "utf8" }).status, 1);
 
-console.log("admin-process-prototype-replay e2e: PASS (manifest, CLI, schemas, 3 scenarios, isolation, duplicate, resume, sanitization, write=0)");
+console.log("admin-process-prototype-replay e2e: PASS (manifest, CLI, schemas, 3/6 scope, 9 stages, PASS_IN_PREVIEW_FIXTURE, persistent duplicate observation NOT_RUN, isolation, resume, sanitization, write=0)");

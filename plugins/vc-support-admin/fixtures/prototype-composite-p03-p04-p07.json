@@ -33,7 +33,7 @@
       "mapping_status": "CANDIDATE_CONFIRMATION_REQUIRED",
       "depends_on": ["COMPOSITE-01/P04"],
       "operational_task_id": "P07-T01",
-      "task_projection": { "actor": "지원팀", "next_action": "P07 제출서류 재수집", "blocker": "P07 제출서류 미확보" },
+      "task_projection": { "actor": "지원팀", "next_action": "계좌개설 제출서류 수집", "blocker": "P07 제출서류 미확보" },
       "evidence": [
         { "evidence_id": "EV-P07-SUBMISSION", "evidence_type": "SUBMISSION_PACKAGE", "fixture_state": "ABSENT", "required_for_completion": true }
       ]
@@ -43,7 +43,7 @@
     "lanes": {
       "COMPOSITE-01/P03": { "stage": "RESULT_REVIEW", "completion_candidate": false, "request_completion_allowed": false },
       "COMPOSITE-01/P04": { "stage": "NEXT_PROCESS", "completion_candidate": false, "request_completion_allowed": false },
-      "COMPOSITE-01/P07": { "stage": "BLOCKED", "completion_candidate": false, "request_completion_allowed": false }
+      "COMPOSITE-01/P07": { "stage": "BLOCKED", "completion_candidate": false, "request_completion_allowed": false, "task.next_action": "계좌개설 제출서류 수집" }
     }
   }
 }

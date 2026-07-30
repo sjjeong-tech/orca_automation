@@ -11,16 +11,21 @@ const arg = (name) => {
 const scenarioPath = arg("--scenario");
 const scenarioId = arg("--scenario-id");
 const preview = process.argv.includes("--preview");
-const allowedFlags = new Set(["--scenario", "--scenario-id", "--preview", "--emit-snapshots"]);
+const allowedFlags = new Set(["--scenario", "--scenario-id", "--preview", "--emit-snapshots", "--help"]);
+const helpText = `admin-process-prototype-replay (preview-only)\n\nSupported scenarios: 3/6\n- Implemented: SINGLE-P03-01, SINGLE-P03-02, COMPOSITE-01\n- Not implemented: SINGLE-P07-01, SINGLE-P08-01, COMPOSITE-02\n\nUsage:\n  node plugins/vc-support-admin/cli/admin-process-prototype-replay.mjs --scenario <fixture.json> --scenario-id <id> --preview [--emit-snapshots]\n\nThe skill emits synthetic preview JSON only. It does not write Notion, Drive, Slack, files, or operational records.`;
 
 try {
   for (const token of process.argv.slice(2)) if (token.startsWith("--") && !allowedFlags.has(token)) throw Object.assign(new Error(`Unsupported preview CLI option: ${token}`), { code: "UNSUPPORTED_CLI_OPTION" });
-  if (!preview) throw Object.assign(new Error("--preview is required; this prototype has no write mode."), { code: "PREVIEW_REQUIRED" });
-  if (!scenarioPath || !scenarioId) throw Object.assign(new Error("--scenario and --scenario-id are required."), { code: "SCENARIO_ARGUMENT_REQUIRED" });
-  const parsed = JSON.parse(fs.readFileSync(scenarioPath, "utf8").replace(/^\uFEFF/, ""));
-  if (parsed.scenario_id !== scenarioId) throw Object.assign(new Error("Requested scenario_id is not present in the selected scenario fixture."), { code: "SCENARIO_ID_NOT_FOUND" });
-  const output = replayAdminProcessPrototype(parsed);
-  console.log(JSON.stringify({ ...output, cli: { preview: true, emit_snapshots: process.argv.includes("--emit-snapshots"), source: "SCENARIO_FIXTURE" } }, null, 2));
+  if (process.argv.includes("--help")) {
+    console.log(helpText);
+  } else {
+    if (!preview) throw Object.assign(new Error("--preview is required; this prototype has no write mode."), { code: "PREVIEW_REQUIRED" });
+    if (!scenarioPath || !scenarioId) throw Object.assign(new Error("--scenario and --scenario-id are required."), { code: "SCENARIO_ARGUMENT_REQUIRED" });
+    const parsed = JSON.parse(fs.readFileSync(scenarioPath, "utf8").replace(/^\uFEFF/, ""));
+    if (parsed.scenario_id !== scenarioId) throw Object.assign(new Error("Requested scenario_id is not present in the selected scenario fixture."), { code: "SCENARIO_ID_NOT_FOUND" });
+    const output = replayAdminProcessPrototype(parsed);
+    console.log(JSON.stringify({ ...output, cli: { preview: true, emit_snapshots: process.argv.includes("--emit-snapshots"), source: "SCENARIO_FIXTURE" } }, null, 2));
+  }
 } catch (error) {
   console.error(JSON.stringify({ ok: false, error_code: error.code ?? "PROTOTYPE_REPLAY_FAILED", message: error.message, actual_write_count: 0, operational_write_count: 0 }, null, 2));
   process.exitCode = 1;

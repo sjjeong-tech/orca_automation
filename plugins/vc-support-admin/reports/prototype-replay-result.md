@@ -2,11 +2,31 @@
 
 Status: preview-only prototype. The kernel accepts only synthetic, sanitized scenario fixtures and emits no connector call, record operation, approval, completion, or output-file write.
 
+## Contract alignment (G19)
+
+- Recorded reference: `PROTOTYPE-SCENARIO-CONTRACT-V0.1`, manifest hash `3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d`, batch `A-CP25-B18-V18`. The reference is traceability metadata; `conformance_claim.claimed` remains `false`.
+- Contract coverage is `6`; implementation coverage is `3`: `SINGLE-P03-01`, `SINGLE-P03-02`, and `COMPOSITE-01`. `SINGLE-P07-01`, `SINGLE-P08-01`, and `COMPOSITE-02` are not implemented.
+- Canonical Skill stages remain the nine TAP-prescribed tokens. Notion `진행 중` is reported only as `TASK_OR_UI_AUXILIARY_STATE`, never as a tenth stage.
+- Duplicate replay is `PASS_IN_PREVIEW_FIXTURE`; `PERSISTENT_STORE_DUPLICATE_OBSERVATION_NOT_RUN` remains explicit. No persistent-store duplicate claim is made.
+
+### G19 verification traceability
+
+| Alignment requirement | Evidence |
+|---|---|
+| Manifest identity, hash, batch, 6/3/3 scope | `admin-process-prototype-replay.e2e.test.mjs` byte-exact contract and all-three-output assertions. |
+| P07 state preservation and next action | Fixture Expected–Actual plus direct actor, blocker, stage, exact next-action, and negative `재수집` assertions. |
+| P03 completion candidate gate | Candidate is true, `candidate_reason` is `저장·전달 Evidence 확인 필요`, and Task/Request completion stay false. The reason lives only on the process instance, not in the fixture input. |
+| Scope disclosure | `SKILL.md`, CLI `--help`, contract, output, and both reports name the three implemented and three unimplemented scenarios. |
+| Nine stages versus Task status | The test asserts exactly nine canonical tokens; `진행 중` appears only in `ui_auxiliary_state`, never in a timeline, and any lane-supplied `stage` field is rejected by strict schema. |
+| Duplicate scope | Contract, output, E2E PASS line, and both reports carry `PASS_IN_PREVIEW_FIXTURE` and `PERSISTENT_STORE_DUPLICATE_OBSERVATION_NOT_RUN`. |
+
+Pre-patch inspection at `293954731276ce92f6c11fd6916da675e5113cc8` confirmed the old P07 string was `P07 제출서류 재수집` and that manifest hash, candidate reason, and duplicate-scope labels were absent. This prototype has no generated golden artifacts; its checked fixtures are hand-authored scenario inputs, so golden regeneration is not applicable.
+
 Validated scenarios:
 
-- `SINGLE-P03-01`: valid package, receipt, and result document produce a completion candidate only; Request completion remains false pending storage and delivery confirmation.
+- `SINGLE-P03-01`: valid package, receipt, and result document produce a completion candidate only; its candidate reason is `저장·전달 Evidence 확인 필요`, and Request completion remains false.
 - `SINGLE-P03-02`: an absent stamped original produces a separate canonical human question and a real blocker. It does not complete the Task or Request.
-- `COMPOSITE-01`: P03 result review and a candidate P04 requirement decision remain preserved while P07 alone is blocked by missing submission material.
+- `COMPOSITE-01`: P03 result review and a candidate P04 requirement decision remain preserved while P07 alone is blocked by `P07 제출서류 미확보`; its next action is `계좌개설 제출서류 수집`.
 
 The duplicate fields report only the pure reducer's zero record-emission behavior. They do not claim persistent-store duplicate suppression.
 

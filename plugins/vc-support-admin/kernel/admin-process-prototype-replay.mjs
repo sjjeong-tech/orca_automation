@@ -4,6 +4,22 @@ const STAGES = new Set([
   "RECEIVED", "INFORMATION_CHECK", "EVIDENCE_REVIEW", "HUMAN_CONFIRMATION",
   "EXTERNAL_WAIT", "RESULT_REVIEW", "NEXT_PROCESS", "COMPLETION_CANDIDATE", "BLOCKED"
 ]);
+const CONTRACT_REFERENCE = Object.freeze({
+  manifest_id: "PROTOTYPE-SCENARIO-CONTRACT-V0.1",
+  manifest_hash: "3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d",
+  batch_id: "A-CP25-B18-V18",
+  contract_scenario_coverage: 6,
+  implemented_scenario_coverage: 3,
+  implemented_scenarios: Object.freeze(["SINGLE-P03-01", "SINGLE-P03-02", "COMPOSITE-01"]),
+  not_implemented_scenarios: Object.freeze(["SINGLE-P07-01", "SINGLE-P08-01", "COMPOSITE-02"]),
+  reference_recorded_for_traceability: true,
+  conformance_claimed: false
+});
+const UI_AUXILIARY_STATE = Object.freeze({
+  notion_status_values: Object.freeze(["진행 중"]),
+  notion_status_classification: "TASK_OR_UI_AUXILIARY_STATE",
+  is_canonical_skill_stage: false
+});
 const FIXTURE_STATES = new Set(["PRESENT_VALID", "ABSENT", "PRESENT_NEEDS_HUMAN", "PRESENT_REJECTED"]);
 const MAPPING_STATES = new Set(["CONFIRMED", "CANDIDATE_CONFIRMATION_REQUIRED"]);
 const FORBIDDEN_INPUT_KEYS = new Set(["raw_mcp_payload", "raw_response", "credential", "token", "password"]);
@@ -179,6 +195,7 @@ function projectLane(lane, completed, evaluateEvidence) {
 
   const question = lane.human_confirmation_question ?? null;
   const completionCandidate = stage === "COMPLETION_CANDIDATE";
+  const candidateReason = completionCandidate ? "저장·전달 Evidence 확인 필요" : null;
   return {
     lane_id: lane.lane_id,
     process_id: lane.process_id,
@@ -201,6 +218,7 @@ function projectLane(lane, completed, evaluateEvidence) {
       completion_allowed: false
     }] : [],
     completion_candidate: completionCandidate,
+    candidate_reason: candidateReason,
     completion_allowed: false,
     request_completion_allowed: false,
     resume: {
@@ -287,12 +305,20 @@ export function replayAdminProcessPrototype(input = {}, { evaluateEvidence = eva
     transaction_id: scenario.transaction_id,
     mode: scenario.mode,
     conformance_claim: {
-      contract_id: "PROTOTYPE-SCENARIO-CONTRACT-V0.1",
-      prototype_scope: 3,
+      contract_id: CONTRACT_REFERENCE.manifest_id,
+      manifest_hash: CONTRACT_REFERENCE.manifest_hash,
+      batch_id: CONTRACT_REFERENCE.batch_id,
+      contract_scenario_coverage: CONTRACT_REFERENCE.contract_scenario_coverage,
+      implemented_scenario_coverage: CONTRACT_REFERENCE.implemented_scenario_coverage,
+      implemented_scenarios: [...CONTRACT_REFERENCE.implemented_scenarios],
+      not_implemented_scenarios: [...CONTRACT_REFERENCE.not_implemented_scenarios],
+      reference_recorded_for_traceability: CONTRACT_REFERENCE.reference_recorded_for_traceability,
+      prototype_scope: CONTRACT_REFERENCE.implemented_scenario_coverage,
       claimed: false,
-      reason: "Three synthetic scenarios only; external TEST LAB contract remains broader."
+      reason: "Three of six contract scenarios are implemented; the manifest reference is traceability metadata, not a conformance certification."
     },
-    process_instances: lanes.map((lane) => ({ lane_id: lane.lane_id, process_id: lane.process_id, stage: lane.stage, mapping_status: lane.mapping_status, operational_relation: lane.operational_relation, completion_candidate: lane.completion_candidate })),
+    ui_auxiliary_state: { ...UI_AUXILIARY_STATE, notion_status_values: [...UI_AUXILIARY_STATE.notion_status_values] },
+    process_instances: lanes.map((lane) => ({ lane_id: lane.lane_id, process_id: lane.process_id, stage: lane.stage, mapping_status: lane.mapping_status, operational_relation: lane.operational_relation, completion_candidate: lane.completion_candidate, candidate_reason: lane.candidate_reason })),
     request_instances: lanes.map((lane) => ({ lane_id: lane.lane_id, process_id: lane.process_id, request_completion_allowed: false })),
     task_instances: lanes.map((lane) => ({ lane_id: lane.lane_id, ...lane.task_projection, stage: lane.stage, completion_allowed: false })),
     evidence_decisions: lanes.flatMap((lane) => lane.evidence_decisions.map((decision) => ({ lane_id: lane.lane_id, ...decision }))),
@@ -307,7 +333,16 @@ export function replayAdminProcessPrototype(input = {}, { evaluateEvidence = eva
     completion_allowed: false,
     request_completion_allowed: false,
     next_process_candidates: lanes.filter((lane) => lane.stage === "NEXT_PROCESS").map((lane) => ({ lane_id: lane.lane_id, process_id: lane.process_id, mapping_status: lane.mapping_status })),
-    duplicate_result: { replay_key: scenario.transaction_id, result: "NO_NEW_RECORDS_PREVIEW_ONLY", duplicates_created: 0, new_records: 0, new_duplicates: 0, limitation: "Pure preview reducer does not observe a persistent record store." },
+    duplicate_result: {
+      replay_key: scenario.transaction_id,
+      result: "NO_NEW_RECORDS_PREVIEW_ONLY",
+      validation_scope: "PASS_IN_PREVIEW_FIXTURE",
+      persistent_store_duplicate_observation: "PERSISTENT_STORE_DUPLICATE_OBSERVATION_NOT_RUN",
+      duplicates_created: 0,
+      new_records: 0,
+      new_duplicates: 0,
+      limitation: "Pure preview reducer does not observe a persistent record store."
+    },
     resume_contract: lanes.map((lane) => ({ lane_id: lane.lane_id, ...lane.resume })),
     errors,
     write_plan: { mode: "preview_only", approval_required_for_future_write: true, operations: [], actual_write_count: 0 },
@@ -319,3 +354,5 @@ export function replayAdminProcessPrototype(input = {}, { evaluateEvidence = eva
 }
 
 export const PROTOTYPE_REPLAY_STAGES = Object.freeze([...STAGES]);
+export const PROTOTYPE_REPLAY_CONTRACT_REFERENCE = CONTRACT_REFERENCE;
+export const PROTOTYPE_REPLAY_UI_AUXILIARY_STATE = UI_AUXILIARY_STATE;
