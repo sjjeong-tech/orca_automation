@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Sanitized Session Tool TEST LAB read packet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "source", "sanitized", "environment", "transaction_id", "data_sources", "fund_work", "request", "tasks", "relations", "retrieved_at_kst", "source_metadata"],
+  "properties": {
+    "version": {"const": "1.0"},
+    "source": {"const": "SESSION_TOOL_READ"},
+    "sanitized": {"const": true},
+    "environment": {"const": "TEST_LAB"},
+    "transaction_id": {"type": "string", "pattern": "^[A-Z0-9-]{3,64}$"},
+    "data_sources": {"type": "object", "additionalProperties": false, "required": ["task"], "properties": {"task": {"type": "string", "pattern": "^collection://[0-9a-f-]{36}$"}}},
+    "fund_work": {"type": "object"},
+    "request": {"type": "object"},
+    "tasks": {"type": "array", "minItems": 6, "maxItems": 6},
+    "relations": {"type": "object"},
+    "retrieved_at_kst": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\+09:00$"},
+    "source_metadata": {"type": "object", "additionalProperties": false, "required": ["provider", "operation", "raw_response_stored"], "properties": {"provider": {"const": "notion"}, "operation": {"const": "read"}, "raw_response_stored": {"const": false}}}
+  }
+}

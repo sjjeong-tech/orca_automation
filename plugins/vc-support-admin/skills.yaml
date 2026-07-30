@@ -21,7 +21,8 @@
       "required_connectors": ["notion"],
       "optional_connectors": [],
       "write_mode": "preview_only",
-      "approval_policy": "EXPLICIT_APPROVAL_REQUIRED_FOR_FUTURE_WRITE"
+      "approval_policy": "EXPLICIT_APPROVAL_REQUIRED_FOR_FUTURE_WRITE",
+      "read_only_transports": ["runtime_snapshot", "session_snapshot"]
     }
   ],
   "planned_not_implemented": [

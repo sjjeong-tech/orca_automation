@@ -1,0 +1,39 @@
+{
+  "version": "1.0",
+  "source": "SESSION_TOOL_READ",
+  "sanitized": true,
+  "environment": "TEST_LAB",
+  "transaction_id": "GB-P03-001",
+  "data_sources": {
+    "task": "collection://1d06db48-32b8-49d7-b4bb-27e822df87a1"
+  },
+  "fund_work": {
+    "record_id": "TEST_LAB_FUND_WORK",
+    "count": 1,
+    "master_match": "EXACT_1"
+  },
+  "request": {
+    "record_id": "TEST_LAB_REQUEST",
+    "count": 1,
+    "fund_relation": "EXACT_1",
+    "completion_allowed": false
+  },
+  "tasks": [
+    {"record_id": "TEST_LAB_T01", "properties": {"Operational Task ID": "P03-T01", "LAB 여부": true, "상위 요청 Relation": "EXACT_1"}},
+    {"record_id": "TEST_LAB_T02", "properties": {"Operational Task ID": "P03-T02", "LAB 여부": true, "상위 요청 Relation": "EXACT_1"}},
+    {"record_id": "3ac72a41-d9d7-81af-bc14-f7f288d0bea4", "properties": {"Operational Task ID": "P03-T03", "LAB 여부": true, "상위 요청 Relation": "EXACT_1", "Task 상태": "진행 중", "현재 Actor": "사람 확인", "다음 Action": "날인본 원문·날인 위치 확인", "Blocker": "", "Evidence 판정": "사람 확인 필요", "Evidence Source": "Evidence 근거 미확정", "Evidence 확인사항": "날인 위치·조합명·본문 확인 필요", "완료증빙": "확인 전"}},
+    {"record_id": "3ac72a41-d9d7-8109-8a21-e3e238813027", "properties": {"Operational Task ID": "P03-T04", "LAB 여부": true, "상위 요청 Relation": "EXACT_1", "Task 상태": "진행 중", "현재 Actor": "지원팀", "다음 Action": "접수증 본문 대조", "Blocker": "", "Evidence 판정": "사람 확인 필요", "Evidence Source": "FWO-0121 / RECEIPT 후보", "Evidence 확인사항": "조합명·접수일·신청유형·보완 여부 확인 필요", "완료증빙": "확인 전"}},
+    {"record_id": "3ac72a41-d9d7-81bf-9be9-d67cc351b649", "properties": {"Operational Task ID": "P03-T05", "LAB 여부": true, "상위 요청 Relation": "EXACT_1", "Task 상태": "진행 중", "현재 Actor": "지원팀", "다음 Action": "발급본 최신성·실물 수령 확인", "Blocker": "", "Evidence 판정": "사람 확인 필요", "Evidence Source": "FWO-0087 / RESULT_DOCUMENT 후보", "Evidence 확인사항": "최신 발급본·실물 수령 확인 필요", "완료증빙": "확인 전"}},
+    {"record_id": "TEST_LAB_T06", "properties": {"Operational Task ID": "P03-T06", "LAB 여부": true, "상위 요청 Relation": "EXACT_1"}}
+  ],
+  "relations": {
+    "fund_work_to_request": "EXACT_1",
+    "request_to_tasks": "EXACT_1"
+  },
+  "retrieved_at_kst": "2026-07-29T18:24:37+09:00",
+  "source_metadata": {
+    "provider": "notion",
+    "operation": "read",
+    "raw_response_stored": false
+  }
+}

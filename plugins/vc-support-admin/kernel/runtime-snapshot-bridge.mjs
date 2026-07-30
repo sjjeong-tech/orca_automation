@@ -3,11 +3,11 @@ import { createHash } from "node:crypto";
 // Approved TEST LAB collection only. Operating sources are never allowlisted.
 export const TEST_LAB_DATA_SOURCE_ALLOWLIST = new Set(["collection://1d06db48-32b8-49d7-b4bb-27e822df87a1"]);
 const TASK_IDS = ["P03-T01", "P03-T02", "P03-T03", "P03-T04", "P03-T05", "P03-T06"];
-const HUMAN_RULES = {
+export const HUMAN_CONFIRMATION_RULES = Object.freeze({
   "P03-T03": { priority: "P1", canonical_question: "날인본 원본과 필수 날인 위치가 확인됐나요?", comparison: "NEEDS_WORDING_FIX" },
   "P03-T04": { priority: "P0", canonical_question: "접수증의 조합명·접수일·신청유형이 일치하나요?", comparison: "SEMANTIC_MATCH" },
   "P03-T05": { priority: "P0", canonical_question: "발급본이 최신본이며 실물을 수령했나요?", comparison: "SEMANTIC_MATCH" }
-};
+});
 
 function stable(value) {
   if (Array.isArray(value)) return `[${value.map(stable).join(",")}]`;
@@ -20,8 +20,8 @@ export function calculateRuntimeSnapshotHash(snapshot) {
   return createHash("sha256").update(stable(unsigned)).digest("hex");
 }
 
-function hasForbiddenContent(value, key = "") {
-  if (Array.isArray(value)) return value.some((item) => hasForbiddenContent(item));
+export function hasForbiddenSnapshotContent(value, key = "") {
+  if (Array.isArray(value)) return value.some((item) => hasForbiddenSnapshotContent(item));
   if (!value || typeof value !== "object") {
     if (typeof value !== "string") return false;
     if (/https?:\/\//i.test(value) || /drive\.google\.com|app\.notion\.com/i.test(value)) return true;
@@ -29,25 +29,36 @@ function hasForbiddenContent(value, key = "") {
     if (/\b\d{6}-?\d{7}\b/.test(value) || /\b[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}\b/.test(value)) return true;
     return false;
   }
-  return Object.entries(value).some(([nestedKey, nestedValue]) => nestedKey !== "data_source_id" && hasForbiddenContent(nestedValue, nestedKey));
+  return Object.entries(value).some(([nestedKey, nestedValue]) => nestedKey !== "data_source_id" && hasForbiddenSnapshotContent(nestedValue, nestedKey));
 }
 
 function schemaErrors(snapshot) {
   const errors = [];
-  const allowed = new Set(["version", "source", "environment", "data_source_id", "transaction_id", "snapshot_hash", "fund_work", "request", "tasks", "human_confirmation"]);
+  const allowed = new Set(["version", "source", "sanitized", "environment", "data_source_id", "transaction_id", "snapshot_hash", "record_counts", "records", "relations", "fund_work", "request", "tasks", "human_confirmation"]);
   if (!snapshot || typeof snapshot !== "object" || Array.isArray(snapshot)) return ["SNAPSHOT_SCHEMA_INVALID"];
   if (Object.keys(snapshot).some((key) => !allowed.has(key))) errors.push("SNAPSHOT_SCHEMA_INVALID");
   for (const key of allowed) if (!(key in snapshot)) errors.push("SNAPSHOT_SCHEMA_INVALID");
-  if (snapshot.version !== "1.0" || snapshot.source !== "APPROVED_SESSION") errors.push("SNAPSHOT_SCHEMA_INVALID");
+  if (snapshot.version !== "1.0" || !["APPROVED_SESSION", "SESSION_TOOL_BRIDGE"].includes(snapshot.source) || snapshot.sanitized !== true) errors.push("SNAPSHOT_SCHEMA_INVALID");
   if (!/^collection:\/\/[0-9a-f-]{36}$/.test(snapshot.data_source_id ?? "")) errors.push("SNAPSHOT_SCHEMA_INVALID");
   if (!/^[A-Z0-9-]{3,64}$/.test(snapshot.transaction_id ?? "") || !/^[a-f0-9]{64}$/.test(snapshot.snapshot_hash ?? "")) errors.push("SNAPSHOT_SCHEMA_INVALID");
-  if (!snapshot.fund_work || typeof snapshot.fund_work !== "object" || !snapshot.request || typeof snapshot.request !== "object" || !Array.isArray(snapshot.tasks) || !Array.isArray(snapshot.human_confirmation)) errors.push("SNAPSHOT_SCHEMA_INVALID");
+  if (!snapshot.record_counts || typeof snapshot.record_counts !== "object" || !snapshot.records || typeof snapshot.records !== "object" || !snapshot.relations || typeof snapshot.relations !== "object" || !snapshot.fund_work || typeof snapshot.fund_work !== "object" || !snapshot.request || typeof snapshot.request !== "object" || !Array.isArray(snapshot.tasks) || !Array.isArray(snapshot.human_confirmation)) errors.push("SNAPSHOT_SCHEMA_INVALID");
   return [...new Set(errors)];
 }
 
 function relationErrors(snapshot) {
-  if (snapshot.fund_work?.master_match !== "EXACT_1" || snapshot.request?.fund_relation !== "EXACT_1") return ["RELATION_INVALID"];
+  if (snapshot.fund_work?.master_match !== "EXACT_1" || snapshot.request?.fund_relation !== "EXACT_1" || snapshot.relations?.fund_work_to_request !== "EXACT_1" || snapshot.relations?.request_to_tasks !== "EXACT_1") return ["RELATION_INVALID"];
   if (!snapshot.tasks.every((task) => task.lab === true && task.request_relation === "EXACT_1")) return ["RELATION_INVALID"];
+  return [];
+}
+
+function recordErrors(snapshot) {
+  const counts = snapshot.record_counts;
+  const records = snapshot.records;
+  if (counts?.fund_work !== 1 || counts?.request !== 1 || counts?.task !== 6) return ["RECORD_COUNT_INVALID"];
+  if (!records?.fund_work?.record_id || !records?.request?.record_id || !Array.isArray(records?.tasks) || records.tasks.length !== 6) return ["RECORD_COUNT_INVALID"];
+  if (records.tasks.some((record) => !record?.record_id || !record?.operational_task_id)) return ["RECORD_COUNT_INVALID"];
+  if (new Set(records.tasks.map((record) => record.operational_task_id)).size !== 6 || !TASK_IDS.every((id) => records.tasks.some((record) => record.operational_task_id === id))) return ["RECORD_COUNT_INVALID"];
+  if (snapshot.tasks.some((task) => !records.tasks.some((record) => record.operational_task_id === task.operational_task_id && record.record_id === task.record_id))) return ["RECORD_COUNT_INVALID"];
   return [];
 }
 
@@ -58,19 +69,21 @@ export function evaluateRuntimeSnapshot(snapshot, { transactionId } = {}) {
   if (!TEST_LAB_DATA_SOURCE_ALLOWLIST.has(snapshot.data_source_id)) return { ok: false, error_code: "DATA_SOURCE_NOT_ALLOWLISTED", actual_notion_write_count: 0, operational_write_count: 0 };
   if (!transactionId || transactionId !== snapshot.transaction_id) return { ok: false, error_code: "TRANSACTION_ID_MISMATCH", actual_notion_write_count: 0, operational_write_count: 0 };
   if (snapshot.fund_work.count !== 1 || snapshot.request.count !== 1 || snapshot.tasks.length !== 6 || new Set(snapshot.tasks.map((task) => task.operational_task_id)).size !== 6 || !TASK_IDS.every((id) => snapshot.tasks.some((task) => task.operational_task_id === id))) return { ok: false, error_code: "RECORD_COUNT_INVALID", actual_notion_write_count: 0, operational_write_count: 0 };
+  const record = recordErrors(snapshot);
+  if (record.length) return { ok: false, error_code: record[0], actual_notion_write_count: 0, operational_write_count: 0 };
   const relation = relationErrors(snapshot);
   if (relation.length) return { ok: false, error_code: relation[0], actual_notion_write_count: 0, operational_write_count: 0 };
-  if (hasForbiddenContent(snapshot)) return { ok: false, error_code: "SNAPSHOT_SANITIZATION_FAILED", actual_notion_write_count: 0, operational_write_count: 0 };
+  if (hasForbiddenSnapshotContent(snapshot)) return { ok: false, error_code: "SNAPSHOT_SANITIZATION_FAILED", actual_notion_write_count: 0, operational_write_count: 0 };
   if (calculateRuntimeSnapshotHash(snapshot) !== snapshot.snapshot_hash) return { ok: false, error_code: "SNAPSHOT_HASH_MISMATCH", actual_notion_write_count: 0, operational_write_count: 0 };
   const confirmation = snapshot.human_confirmation.map((item) => ({
     ...item,
-    canonical_question: HUMAN_RULES[item.operational_task_id]?.canonical_question ?? item.canonical_question,
-    priority: HUMAN_RULES[item.operational_task_id]?.priority ?? item.priority,
-    comparison: HUMAN_RULES[item.operational_task_id]?.comparison ?? "RULE_MISMATCH",
+    canonical_question: HUMAN_CONFIRMATION_RULES[item.operational_task_id]?.canonical_question ?? item.canonical_question,
+    priority: HUMAN_CONFIRMATION_RULES[item.operational_task_id]?.priority ?? item.priority,
+    comparison: HUMAN_CONFIRMATION_RULES[item.operational_task_id]?.comparison ?? "RULE_MISMATCH",
     completion_allowed: false,
     approval_required: true
   }));
-  if (confirmation.length !== 3 || confirmation.some((item) => !HUMAN_RULES[item.operational_task_id] || item.completion_allowed !== false || item.approval_required !== true)) return { ok: false, error_code: "HUMAN_CONFIRMATION_INVALID", actual_notion_write_count: 0, operational_write_count: 0 };
+  if (confirmation.length !== 3 || confirmation.some((item) => !HUMAN_CONFIRMATION_RULES[item.operational_task_id] || item.completion_allowed !== false || item.approval_required !== true)) return { ok: false, error_code: "HUMAN_CONFIRMATION_INVALID", actual_notion_write_count: 0, operational_write_count: 0 };
   return {
     ok: true,
     source: "RUNTIME_SNAPSHOT",

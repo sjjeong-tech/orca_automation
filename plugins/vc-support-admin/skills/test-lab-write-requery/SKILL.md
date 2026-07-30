@@ -13,4 +13,10 @@ Use `plugins/vc-support-admin/fixtures/growthbridge-actual-snapshot.json` for th
 node plugins/vc-support-admin/cli/test-lab-write-requery.mjs --snapshot plugins/vc-support-admin/fixtures/growthbridge-actual-snapshot.json --transaction GB-P03-001 --preview
 ```
 
+For an approved Session Tool read, pass only the sanitized read packet through `--session-snapshot`. The adapter validates TEST LAB, the data-source allowlist, one FUND Work, one Request, six related Tasks, safe content, and its derived snapshot hash before it replays. It does not call MCP from Node or persist the raw Tool response.
+
+```text
+node plugins/vc-support-admin/cli/test-lab-write-requery.mjs --session-snapshot plugins/vc-support-admin/fixtures/growthbridge-session-read-packet.json --transaction GB-P03-001 --preview
+```
+
 Ask the T03, T04, and T05 confirmation questions before any future TEST LAB write. T04 and T05 are P0; T03 is P1. Keep request completion false and all write counts zero in preview mode.

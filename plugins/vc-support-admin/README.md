@@ -140,3 +140,13 @@ node plugins/vc-support-admin/cli/test-lab-write-requery.mjs --runtime-snapshot 
 ```
 
 Use `--runtime-snapshot -` to read the same JSON from standard input. The bridge never calls Notion, creates records, completes a Request, or enables operating writes.
+
+### Session Snapshot Transport Adapter
+
+An approved Session Tool read may be supplied as a sanitized packet through the same Skill CLI. `kernel/session-snapshot-transport-adapter.mjs` maps only allowlisted record metadata and Task properties into the runtime snapshot contract. It rejects non-TEST-LAB or unknown data sources, unsafe content (including URLs, local paths, personal identifiers, and raw MCP payload fields), count or relation mismatches, and unknown Tasks. It computes the runtime snapshot hash locally; Node never calls MCP directly.
+
+```text
+node plugins/vc-support-admin/cli/test-lab-write-requery.mjs --session-snapshot plugins/vc-support-admin/fixtures/growthbridge-session-read-packet.json --transaction GB-P03-001 --preview
+```
+
+The output is `SESSION_TOOL_BRIDGE`, `sanitized=true`, and has zero Notion and operating write counts. The current fixture intentionally preserves the P03-T03 wording difference (`NEEDS_WORDING_FIX`); it is not normalized without a separately approved Actual handoff.

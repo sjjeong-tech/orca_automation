@@ -1,10 +1,25 @@
 {
   "version": "1.0",
   "source": "APPROVED_SESSION",
+  "sanitized": true,
   "environment": "TEST_LAB",
   "data_source_id": "collection://1d06db48-32b8-49d7-b4bb-27e822df87a1",
   "transaction_id": "GB-P03-001",
-  "snapshot_hash": "6486fb4160244e41ef49ad748ea83f32415ba6e85de3782156bc26a53d39dbe8",
+  "snapshot_hash": "94baf887ad0a142311a825b8acba9e71a2398cfd1cd7ac210ca6fbd16b7fdc43",
+  "record_counts": {"fund_work": 1, "request": 1, "task": 6},
+  "records": {
+    "fund_work": {"record_id": "TEST_LAB_FUND_WORK"},
+    "request": {"record_id": "TEST_LAB_REQUEST"},
+    "tasks": [
+      {"operational_task_id": "P03-T01", "record_id": "TEST_LAB_T01"},
+      {"operational_task_id": "P03-T02", "record_id": "TEST_LAB_T02"},
+      {"operational_task_id": "P03-T03", "record_id": "3ac72a41-d9d7-81af-bc14-f7f288d0bea4"},
+      {"operational_task_id": "P03-T04", "record_id": "3ac72a41-d9d7-8109-8a21-e3e238813027"},
+      {"operational_task_id": "P03-T05", "record_id": "3ac72a41-d9d7-81bf-9be9-d67cc351b649"},
+      {"operational_task_id": "P03-T06", "record_id": "TEST_LAB_T06"}
+    ]
+  },
+  "relations": {"fund_work_to_request": "EXACT_1", "request_to_tasks": "EXACT_1"},
   "fund_work": {"count": 1, "master_match": "EXACT_1"},
   "request": {"count": 1, "fund_relation": "EXACT_1", "completion_allowed": false},
   "tasks": [

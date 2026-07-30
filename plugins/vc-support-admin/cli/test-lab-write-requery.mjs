@@ -1,15 +1,26 @@
 import fs from "node:fs";
 import { evaluateRuntimeSnapshot } from "../kernel/runtime-snapshot-bridge.mjs";
+import { adaptSessionReadPacket } from "../kernel/session-snapshot-transport-adapter.mjs";
 
 const arg = (name) => {
   const index = process.argv.indexOf(name);
   return index >= 0 ? process.argv[index + 1] : undefined;
 };
 const runtimeFile = arg("--runtime-snapshot");
-const file = runtimeFile ?? arg("--snapshot") ?? arg("--fixture");
-if (!file || !process.argv.includes("--preview")) throw new Error("Use --snapshot <sanitized snapshot> or --runtime-snapshot <path|-> --transaction <id> --preview");
+const sessionFile = arg("--session-snapshot");
+const file = sessionFile ?? runtimeFile ?? arg("--snapshot") ?? arg("--fixture");
+if (!file || !process.argv.includes("--preview")) throw new Error("Use --snapshot <sanitized snapshot>, --runtime-snapshot <path|->, or --session-snapshot <sanitized read packet> with --transaction <id> --preview");
 const snapshot = JSON.parse((file === "-" ? fs.readFileSync(0, "utf8") : fs.readFileSync(file, "utf8")).replace(/^\uFEFF/, ""));
 const transaction = arg("--transaction");
+if (sessionFile) {
+  const adapted = adaptSessionReadPacket(snapshot, { transactionId: transaction });
+  const output = adapted.ok
+    ? { ...adapted.runtime_result, source: "SESSION_TOOL_BRIDGE", runtime_snapshot_source: adapted.runtime_snapshot.source, sanitized: true, session_transport: "READ_ONLY", actual_notion_write_count: 0, operational_write_count: 0 }
+    : adapted;
+  console.log(JSON.stringify(output, null, 2));
+  if (!adapted.ok) process.exitCode = 1;
+  process.exit();
+}
 if (runtimeFile) {
   const runtime = evaluateRuntimeSnapshot(snapshot, { transactionId: transaction });
   console.log(JSON.stringify(runtime, null, 2));

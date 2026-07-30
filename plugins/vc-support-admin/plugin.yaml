@@ -79,7 +79,8 @@
       "kernel/errors.mjs",
       "providers/bridge.mjs"
     ],
-    "runtime_snapshot_bridge": "kernel/runtime-snapshot-bridge.mjs"
+    "runtime_snapshot_bridge": "kernel/runtime-snapshot-bridge.mjs",
+    "session_snapshot_transport_adapter": "kernel/session-snapshot-transport-adapter.mjs"
   },
   "error_policy": {
     "on_fund_not_found": "NO_WRITE_AND_ASK",
@@ -117,7 +118,8 @@
     "provider": "node plugins/vc-support-admin/tests/provider.test.mjs",
     "live": "node plugins/vc-support-admin/tests/live.test.mjs",
     "security": "node plugins/vc-support-admin/tests/security.test.mjs"
-    ,"runtime_snapshot": "node plugins/vc-support-admin/tests/runtime-snapshot-bridge.test.mjs"
+    ,"runtime_snapshot": "node plugins/vc-support-admin/tests/runtime-snapshot-bridge.test.mjs",
+    "session_snapshot_transport": "node plugins/vc-support-admin/tests/session-snapshot-transport-adapter.test.mjs"
   },
   "security": {
     "typed_approval": true,

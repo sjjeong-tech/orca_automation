@@ -7,4 +7,5 @@ guards: [environment, approval, transaction_id, duplicate_exact_0, data_source_a
 sequence: [preview, approval, guard, duplicate_check, request_write, request_requery, relation_verify, task_writes, task_requery, expected_actual]
 fail_closed_codes: [PARTIAL_WRITE, PROVIDER_ERROR, REQUERY_FAILED, EXPECTED_ACTUAL_MISMATCH, BLOCKED_BY_GUARD]
 operational_write_count: 0
-runtime_snapshot: {source: APPROVED_SESSION, environment: TEST_LAB, data_source_allowlist: TEST_LAB_ONLY, required_checks: [schema, environment, allowlist, transaction, record_count, relation, sanitization, integrity]}
+runtime_snapshot: {source: [APPROVED_SESSION, SESSION_TOOL_BRIDGE], environment: TEST_LAB, data_source_allowlist: TEST_LAB_ONLY, required_checks: [schema, environment, allowlist, transaction, record_count, relation, sanitization, integrity]}
+session_snapshot: {input_schema: plugins/vc-support-admin/schemas/session-tool-read-packet.schema.json, source: SESSION_TOOL_READ, adapter: kernel/session-snapshot-transport-adapter.mjs, read_only: true, raw_mcp_storage: forbidden}

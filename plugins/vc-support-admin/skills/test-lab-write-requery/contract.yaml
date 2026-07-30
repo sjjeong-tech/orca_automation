@@ -2,6 +2,7 @@ skill_id: test-lab-write-requery
 mode: preview_only
 environment: TEST_LAB
 required: [transaction_id, snapshot, relation_pass]
-runtime_snapshot: {schema: plugins/vc-support-admin/schemas/runtime-test-lab-snapshot.schema.json, source: APPROVED_SESSION, environment: TEST_LAB, data_source_allowlist: TEST_LAB_ONLY, integrity: sha256, sanitization: required}
+runtime_snapshot: {schema: plugins/vc-support-admin/schemas/runtime-test-lab-snapshot.schema.json, source: [APPROVED_SESSION, SESSION_TOOL_BRIDGE], environment: TEST_LAB, data_source_allowlist: TEST_LAB_ONLY, integrity: sha256, sanitization: required}
+session_snapshot: {input_schema: plugins/vc-support-admin/schemas/session-tool-read-packet.schema.json, source: SESSION_TOOL_READ, adapter: kernel/session-snapshot-transport-adapter.mjs, transport: SESSION_TOOL_BRIDGE, read_only: true, raw_mcp_storage: forbidden}
 forbidden: [operational_write, auto_approval, auto_completion]
 result_on_duplicate: NO_OP_ALREADY_COMMITTED
