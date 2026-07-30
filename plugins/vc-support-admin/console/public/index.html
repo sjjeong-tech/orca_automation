@@ -3,70 +3,89 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>지원팀 행정업무 Console — PILOT v0.1</title>
+    <title>지원팀 행정업무 Console · PILOT v0.2</title>
     <link rel="stylesheet" href="/console.css">
   </head>
   <body>
     <main class="shell">
       <header class="header card">
         <div>
-          <p class="eyebrow">BACKEND_MODE=LOCAL_PREVIEW · NOTION_SCHEMA=REFERENCE_ONLY</p>
+          <p class="eyebrow">BACKEND_MODE=LOCAL_PREVIEW · NOTION_SCHEMA=VALIDATED_REFERENCE · NOTION_BACKEND=NOT_CONNECTED</p>
           <h1>지원팀 행정업무 Console</h1>
-          <p class="subhead">PILOT v0.1 · <strong>PREVIEW ONLY</strong> · 기존 Skill 결과를 읽기 쉽게 표시합니다.</p>
+          <p class="subhead">PILOT v0.2 · <strong>PREVIEW ONLY</strong> · 구현·검증된 Scenario 결과만 표시합니다.</p>
         </div>
         <dl class="header-facts">
-          <div><dt>Skill Commit</dt><dd id="skill-commit">504ca85</dd></div>
-          <div><dt>지원 범위</dt><dd>1 Scenario</dd></div>
+          <div><dt>Skill Commit</dt><dd id="skill-commit">799d369</dd></div>
+          <div><dt>지원 범위</dt><dd>3 / 6 Scenario</dd></div>
           <div><dt>Operational Write</dt><dd>0</dd></div>
         </dl>
       </header>
 
-      <section class="card intake" aria-labelledby="intake-title">
-        <div class="section-heading">
-          <div><p class="eyebrow">REQUEST INBOX</p><h2 id="intake-title">자연어 요청</h2></div>
-          <span class="badge">SINGLE-P03-02만 실제 실행</span>
+      <div class="workspace">
+        <aside class="inbox card" aria-labelledby="inbox-title">
+          <div class="section-heading compact-heading">
+            <div><p class="eyebrow">REQUEST INBOX</p><h2 id="inbox-title">요청 3건</h2></div>
+            <span class="badge">DEMO</span>
+          </div>
+          <p class="muted inbox-note">자연어 Preview 지원 여부와 Fixture 시연을 구분합니다.</p>
+          <div id="request-inbox" class="request-inbox" aria-live="polite"></div>
+          <section class="backend-note" aria-label="Backend mode">
+            <strong>LOCAL PREVIEW</strong>
+            <span>Notion Backend 미연결</span>
+          </section>
+        </aside>
+
+        <div class="main-content">
+          <section class="card request-runner" aria-labelledby="runner-title">
+            <div class="section-heading">
+              <div><p class="eyebrow">SELECTED REQUEST</p><h2 id="runner-title">선택한 요청 Preview</h2></div>
+              <span id="source-mode" class="badge">-</span>
+            </div>
+            <label for="request-text">요청 원문</label>
+            <textarea id="request-text" rows="3"></textarea>
+            <div class="controls">
+              <p id="mode-note" class="muted">선택한 Request의 처리 방식에 따라 Preview를 실행합니다.</p>
+              <button id="preview-button" type="button">Preview 실행</button>
+            </div>
+            <p id="run-status" class="status" role="status">Request Inbox에서 항목을 선택하면 현재 Task를 불러옵니다.</p>
+          </section>
+
+          <div id="empty-state" class="card empty-state">Request, Task, Evidence, Timeline을 불러오는 중입니다.</div>
+
+          <div id="console-content" hidden>
+            <div class="top-grid">
+              <section class="card" aria-labelledby="request-panel-title">
+                <div class="section-heading"><div><p class="eyebrow">REQUEST</p><h2 id="request-panel-title">Request Summary</h2></div><span id="overall-status" class="badge">-</span></div>
+                <dl id="request-panel" class="fact-grid summary-grid"></dl>
+                <details class="metadata"><summary>상세 Metadata</summary><dl id="metadata-panel" class="fact-grid compact"></dl></details>
+              </section>
+
+              <aside id="current-action-panel" class="card current-action" aria-labelledby="current-action-title">
+                <p class="eyebrow">CURRENT ACTION</p><h2 id="current-action-title">지금 해야 할 일</h2>
+                <div id="current-action-content"></div>
+              </aside>
+            </div>
+
+            <section class="kanban-section" aria-labelledby="kanban-title">
+              <div class="section-heading"><div><p class="eyebrow">CURRENT TASK</p><h2 id="kanban-title">현재 Task Kanban</h2></div><span class="badge">과거 상태는 Timeline에서 확인</span></div>
+              <div id="kanban" class="kanban" aria-live="polite"></div>
+              <div id="composite-summary" hidden></div>
+            </section>
+
+            <div class="details-grid">
+              <section class="card" aria-labelledby="interaction-title"><div class="section-heading"><div><p class="eyebrow">INTERACTION</p><h2 id="interaction-title">사람 확인</h2></div></div><div id="interaction-panel"></div></section>
+              <section class="card" aria-labelledby="evidence-title"><div class="section-heading"><div><p class="eyebrow">EVIDENCE</p><h2 id="evidence-title">Evidence 검토</h2></div></div><div id="evidence-panel"></div></section>
+              <section class="card" aria-labelledby="execution-title"><div class="section-heading"><div><p class="eyebrow">EXECUTION SAFETY</p><h2 id="execution-title">실행 안전</h2></div></div><dl id="execution-panel" class="fact-grid compact"></dl></section>
+            </div>
+
+            <section class="card" aria-labelledby="timeline-title">
+              <div class="section-heading"><div><p class="eyebrow">SNAPSHOT TIMELINE</p><h2 id="timeline-title">시점별 상태 이력</h2></div><span class="badge">Task가 현재 상태 Source of Truth</span></div>
+              <ol id="timeline" class="timeline"></ol>
+            </section>
+
+            <details class="card raw-json"><summary>기술 상세 보기</summary><pre id="raw-json"></pre></details>
+          </div>
         </div>
-        <label for="request-text">관리역 요청</label>
-        <textarea id="request-text" rows="4">DUMMY-FUND-B의 고유번호증 신청 건을 확인해줘.
-신청서 초안은 있지만 날인본 원본은 아직 준비되지 않았어.</textarea>
-        <div class="controls">
-          <label for="scenario-id">Scenario</label>
-          <select id="scenario-id"><option value="SINGLE-P03-02">SINGLE-P03-02 · P03 날인본 원본 누락</option></select>
-          <button id="preview-button" type="button">Preview 실행</button>
-        </div>
-        <p id="run-status" class="status" role="status">실행 전 — 이 Console은 로컬 Preview만 수행합니다.</p>
-      </section>
-
-      <section class="card unsupported-note" aria-label="지원 범위 안내">
-        <strong>현재 지원:</strong> P03 · 날인본 원본 누락 · 사람 확인 · Preview-only.
-        다른 요청은 결과를 추정하지 않고 “지원 범위 밖 / 확인 필요”로 안내합니다.
-      </section>
-
-      <div id="empty-state" class="card empty-state">Preview 실행 후 Request, Task, Evidence, Timeline을 표시합니다.</div>
-
-      <div id="console-content" hidden>
-        <section class="card" aria-labelledby="request-panel-title">
-          <div class="section-heading"><div><p class="eyebrow">REQUEST</p><h2 id="request-panel-title">Request Inbox</h2></div><span id="overall-status" class="badge status-blocked">-</span></div>
-          <dl id="request-panel" class="fact-grid"></dl>
-        </section>
-
-        <section class="kanban-section" aria-labelledby="kanban-title">
-          <div class="section-heading"><div><p class="eyebrow">TASK PROJECTION</p><h2 id="kanban-title">Task Kanban</h2></div><span class="badge">화면용 Column · Canonical Stage 유지</span></div>
-          <div id="kanban" class="kanban" aria-live="polite"></div>
-        </section>
-
-        <div class="details-grid">
-          <section class="card" aria-labelledby="interaction-title"><div class="section-heading"><div><p class="eyebrow">INTERACTION</p><h2 id="interaction-title">사람 확인</h2></div></div><div id="interaction-panel"></div></section>
-          <section class="card" aria-labelledby="evidence-title"><div class="section-heading"><div><p class="eyebrow">EVIDENCE</p><h2 id="evidence-title">Evidence 검토</h2></div></div><div id="evidence-panel"></div></section>
-          <section class="card" aria-labelledby="execution-title"><div class="section-heading"><div><p class="eyebrow">EXECUTION SAFETY</p><h2 id="execution-title">실행 안전</h2></div></div><dl id="execution-panel" class="fact-grid compact"></dl></section>
-        </div>
-
-        <section class="card" aria-labelledby="timeline-title">
-          <div class="section-heading"><div><p class="eyebrow">SNAPSHOT TIMELINE</p><h2 id="timeline-title">시점별 상태</h2></div><span class="badge">Task가 현재 상태 Source of Truth</span></div>
-          <ol id="timeline" class="timeline"></ol>
-        </section>
-
-        <details class="card raw-json"><summary>상세 Raw JSON 보기</summary><pre id="raw-json"></pre></details>
       </div>
     </main>
     <script type="module" src="/console.js"></script>

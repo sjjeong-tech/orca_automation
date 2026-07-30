@@ -1,22 +1,31 @@
-const stageLabels = Object.freeze({
+const canonicalStageLabels = Object.freeze({
   RECEIVED: "요청 접수",
-  INFORMATION_CHECK: "정보 확인",
-  EVIDENCE_REVIEW: "Evidence 검토",
-  HUMAN_CONFIRMATION: "사람 확인",
+  INFORMATION_CHECK: "확인 필요",
+  EVIDENCE_REVIEW: "확인 필요",
+  HUMAN_CONFIRMATION: "확인 필요",
   EXTERNAL_WAIT: "외부 대기",
-  RESULT_REVIEW: "결과 검토",
-  NEXT_PROCESS: "후속 Process",
+  RESULT_REVIEW: "진행 가능",
+  NEXT_PROCESS: "진행 가능",
   COMPLETION_CANDIDATE: "완료 후보",
   BLOCKED: "중단"
 });
 
-const kanbanStages = ["RECEIVED", "EVIDENCE_REVIEW", "HUMAN_CONFIRMATION", "BLOCKED", "COMPLETION_CANDIDATE"];
+const kanbanColumns = Object.freeze([
+  ["RECEIVED", "요청 접수"],
+  ["CHECK", "확인 필요"],
+  ["ACTIVE", "진행 가능"],
+  ["EXTERNAL_WAIT", "외부 대기"],
+  ["COMPLETION_CANDIDATE", "완료 후보"],
+  ["BLOCKED", "중단"]
+]);
+
 const input = document.querySelector("#request-text");
-const scenario = document.querySelector("#scenario-id");
 const runButton = document.querySelector("#preview-button");
 const runStatus = document.querySelector("#run-status");
 const emptyState = document.querySelector("#empty-state");
 const consoleContent = document.querySelector("#console-content");
+let demoRequests = [];
+let selectedRequest = null;
 
 function element(tag, text, className) {
   const node = document.createElement(tag);
@@ -25,82 +34,148 @@ function element(tag, text, className) {
   return node;
 }
 
-function factList(target, items) {
-  target.replaceChildren();
-  for (const [label, value] of items) {
-    const pair = document.createElement("div");
-    pair.append(element("dt", label), element("dd", value ?? "-"));
-    target.append(pair);
-  }
-}
-
 function bool(value) {
   return value ? "true" : "false";
 }
 
-function stageLabel(stage) {
-  return stageLabels[stage] ?? stage ?? "확인 필요";
+function valueOrDash(value) {
+  if (Array.isArray(value)) return value.length ? value.join(", ") : "-";
+  return value === undefined || value === null || value === "" ? "-" : value;
 }
 
-function taskCard(task, { history = false } = {}) {
-  const card = element("article", undefined, `task-card${history ? " history" : ""}`);
-  card.append(element("p", history ? "이전 Snapshot" : "현재 Task", "card-kicker"));
-  card.append(element("h4", `${task.process_id ?? "-"} 업무 · ${task.operational_task_id ?? "확인 필요"}`));
-  card.append(element("p", `${stageLabel(task.stage)} · ${task.operational_task_id ?? "-"}`, "task-meta"));
-  if (!history) {
-    const grid = document.createElement("dl");
-    grid.className = "task-facts";
-    const items = [
-      ["Actor", task.actor],
-      ["다음 Action", task.next_action],
-      ["Blocker", task.blocker || "없음"],
-      ["완료조건", task.completion_condition],
-      ["완료증빙", (task.completion_evidence ?? []).join(", ") || "미확정"],
-      ["Completion Candidate", bool(task.completion_candidate)],
-      ["Completion Allowed", bool(task.completion_allowed)]
-    ];
-    for (const [label, value] of items) {
-      const pair = document.createElement("div");
-      pair.append(element("dt", label), element("dd", value));
-      grid.append(pair);
-    }
-    card.append(grid);
+function factList(target, items) {
+  target.replaceChildren();
+  for (const [label, value] of items) {
+    const pair = document.createElement("div");
+    pair.append(element("dt", label), element("dd", valueOrDash(value)));
+    target.append(pair);
   }
+}
+
+function displayColumn(stage) {
+  if (["INFORMATION_CHECK", "EVIDENCE_REVIEW", "HUMAN_CONFIRMATION"].includes(stage)) return "CHECK";
+  if (["RESULT_REVIEW", "NEXT_PROCESS"].includes(stage)) return "ACTIVE";
+  return stage ?? "CHECK";
+}
+
+function currentTask(payload) {
+  const tasks = payload.tasks ?? [];
+  if (payload.scenario_id === "COMPOSITE-01") {
+    return tasks.find((task) => task.process_id === "P07" && task.stage === "BLOCKED") ?? tasks.find((task) => task.stage === "BLOCKED") ?? tasks.at(-1);
+  }
+  return tasks[0];
+}
+
+function taskCard(task) {
+  const card = element("article", undefined, "task-card");
+  card.append(element("p", "현재 Task", "card-kicker"));
+  card.append(element("h3", `${task.process_id ?? "-"} · ${task.operational_task_id ?? "확인 필요"}`));
+  card.append(element("p", `${canonicalStageLabels[task.stage] ?? task.stage} · ${task.stage ?? "-"}`, "task-meta"));
+  const facts = document.createElement("dl");
+  facts.className = "task-facts";
+  for (const [label, value] of [
+    ["Actor", task.actor],
+    ["다음 Action", task.next_action],
+    ["Blocker", task.blocker || "없음"],
+    ["완료조건", task.completion_condition],
+    ["완료증빙", task.completion_evidence],
+    ["Completion Candidate", bool(task.completion_candidate)],
+    ["Completion Allowed", bool(task.completion_allowed)]
+  ]) {
+    const pair = document.createElement("div");
+    pair.append(element("dt", label), element("dd", valueOrDash(value)));
+    facts.append(pair);
+  }
+  card.append(facts);
   return card;
+}
+
+function renderInbox() {
+  const inbox = document.querySelector("#request-inbox");
+  inbox.replaceChildren();
+  for (const demo of demoRequests) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `inbox-item${selectedRequest?.request_id === demo.request_id ? " selected" : ""}`;
+    button.setAttribute("aria-pressed", String(selectedRequest?.request_id === demo.request_id));
+    button.append(element("span", demo.request_id, "inbox-id"));
+    button.append(element("strong", demo.title));
+    button.append(element("span", `${demo.dummy_fund_id} · ${demo.display_status}`, "inbox-meta"));
+    button.append(element("span", `Actor ${demo.current_actor} · Blocker ${demo.has_blocker ? "있음" : "없음"}`, "inbox-meta"));
+    button.append(element("span", demo.source_mode, "mode-label"));
+    button.addEventListener("click", () => selectRequest(demo));
+    inbox.append(button);
+  }
 }
 
 function renderKanban(payload) {
   const board = document.querySelector("#kanban");
   board.replaceChildren();
-  const task = payload.tasks?.[0];
-  const timelineStages = new Set((payload.snapshot_timeline ?? []).map((snapshot) => snapshot.stage));
-  for (const stage of kanbanStages) {
+  const task = currentTask(payload);
+  const activeColumn = displayColumn(task?.stage);
+  for (const [columnId, label] of kanbanColumns) {
     const column = element("section", undefined, "kanban-column");
-    column.append(element("h3", stageLabel(stage)));
-    const active = task && task.stage === stage;
-    const reached = timelineStages.has(stage);
-    if (active) {
+    column.append(element("h3", label));
+    if (task && activeColumn === columnId) {
       column.append(taskCard(task));
-    } else if (reached && task) {
-      column.append(taskCard({ ...task, stage }, { history: true }));
     } else {
-      column.append(element("p", stage === "COMPLETION_CANDIDATE" ? "완료 후보 없음" : "표시할 Task 없음", "empty-column"));
+      column.append(element("p", columnId === "COMPLETION_CANDIDATE" ? "현재 완료 후보 없음" : "현재 Task 없음", "empty-column"));
     }
     board.append(column);
   }
+}
+
+function renderCurrentAction(payload) {
+  const panel = document.querySelector("#current-action-content");
+  panel.replaceChildren();
+  const task = currentTask(payload) ?? {};
+  const interaction = payload.interaction ?? {};
+  const rows = [
+    ["현재 Actor", task.actor],
+    ["지금 해야 할 일", task.next_action],
+    ["Blocker", task.blocker || "없음"],
+    ["사람 확인 질문", interaction.human_confirmation_required ? interaction.questions?.[0] : "없음"],
+    ["Task 완료 가능", bool(task.completion_allowed)],
+    ["운영 Write", `${bool(payload.execution?.operational_write_allowed)} · Count ${payload.execution?.operational_write_count ?? 0}`]
+  ];
+  for (const [label, value] of rows) {
+    const row = element("div", undefined, "action-row");
+    row.append(element("span", label), element("strong", valueOrDash(value)));
+    panel.append(row);
+  }
+}
+
+function renderCompositeSummary(payload) {
+  const container = document.querySelector("#composite-summary");
+  container.replaceChildren();
+  const composite = payload.scenario_id === "COMPOSITE-01";
+  container.hidden = !composite;
+  if (!composite) return;
+  const heading = element("h3", "복합 Process 상태");
+  const note = element("p", "P03·P04 결과는 보존하고 P07만 제출서류 미확보로 중단됩니다.", "muted");
+  const list = document.createElement("ul");
+  list.className = "process-summary";
+  for (const task of payload.tasks ?? []) {
+    const label = task.stage === "BLOCKED" ? "중단" : "보존";
+    list.append(element("li", `${task.process_id} · ${task.operational_task_id} · ${label} · ${canonicalStageLabels[task.stage] ?? task.stage}`));
+  }
+  container.append(heading, note, list);
 }
 
 function renderInteraction(payload) {
   const panel = document.querySelector("#interaction-panel");
   panel.replaceChildren();
   const interaction = payload.interaction ?? {};
-  const status = element("p", interaction.human_confirmation_required ? "사람 확인 필요" : "사람 확인 불필요", "callout");
-  panel.append(status);
-  panel.append(element("h3", "질문"));
-  const questions = interaction.questions?.length ? interaction.questions : [payload.request?.clarification_question ?? "없음"];
-  const list = document.createElement("ul");
-  for (const question of questions) list.append(element("li", question));
-  panel.append(list);
+  panel.append(element("p", interaction.human_confirmation_required ? "사람 확인 필요" : "사람 확인 없음", interaction.human_confirmation_required ? "callout" : "callout neutral"));
+  const questions = interaction.questions?.filter(Boolean) ?? [];
+  panel.append(element("h3", "확인 질문"));
+  if (questions.length) {
+    const list = document.createElement("ul");
+    for (const question of questions) list.append(element("li", question));
+    panel.append(list);
+  } else {
+    panel.append(element("p", "현재 사람 확인 질문 없음", "muted"));
+  }
   panel.append(element("p", `Clarification: ${bool(interaction.clarification_required)}`, "muted"));
 }
 
@@ -108,7 +183,10 @@ function renderEvidence(payload) {
   const panel = document.querySelector("#evidence-panel");
   panel.replaceChildren();
   const table = document.createElement("table");
-  table.innerHTML = "<thead><tr><th>Evidence Type</th><th>Result</th><th>Legacy Compatibility</th></tr></thead>";
+  const head = document.createElement("thead");
+  const headerRow = document.createElement("tr");
+  for (const label of ["Evidence Type", "Result", "Legacy Compatibility"]) headerRow.append(element("th", label));
+  head.append(headerRow);
   const body = document.createElement("tbody");
   for (const item of payload.evidence ?? payload.evidence_decisions ?? []) {
     const row = document.createElement("tr");
@@ -119,24 +197,26 @@ function renderEvidence(payload) {
     );
     body.append(row);
   }
-  table.append(body);
+  table.append(head, body);
   panel.append(table);
 }
 
 function renderTimeline(payload) {
   const timeline = document.querySelector("#timeline");
   timeline.replaceChildren();
-  const task = payload.tasks?.[0] ?? {};
+  const task = currentTask(payload) ?? {};
   for (const snapshot of payload.snapshot_timeline ?? []) {
     const item = document.createElement("li");
     item.className = `timeline-item ${snapshot.stage === task.stage ? "current" : ""}`;
-    item.append(element("strong", stageLabel(snapshot.stage)));
+    item.append(element("strong", canonicalStageLabels[snapshot.stage] ?? snapshot.stage));
+    item.append(element("span", snapshot.stage, "canonical-stage"));
     const detail = snapshot.question
       ? `질문: ${snapshot.question}`
       : snapshot.evidence_type
         ? `Evidence: ${snapshot.evidence_type} / ${snapshot.evidence_result}`
-        : `Request: ${payload.request?.dummy_fund_id ?? "확인 필요"} · ${task.process_id ?? "-"}`;
+        : `Process: ${snapshot.process_id ?? task.process_id ?? "-"}`;
     item.append(element("p", detail));
+    if (snapshot.actor) item.append(element("p", `Actor: ${snapshot.actor}`));
     if (snapshot.blocker) item.append(element("p", `Blocker: ${snapshot.blocker}`, "timeline-blocker"));
     if (snapshot.next_action) item.append(element("p", `다음 Action: ${snapshot.next_action}`));
     timeline.append(item);
@@ -146,22 +226,30 @@ function renderTimeline(payload) {
 function renderPayload(payload) {
   emptyState.hidden = true;
   consoleContent.hidden = false;
-  document.querySelector("#skill-commit").textContent = payload.manifest?.manifest_hash?.slice(0, 7) ?? "504ca85";
+  document.querySelector("#skill-commit").textContent = payload.manifest?.manifest_hash?.slice(0, 7) ?? "799d369";
   const request = payload.request ?? {};
-  const status = request.overall_status ?? "확인 필요";
+  const status = selectedRequest?.display_status ?? request.overall_status ?? "확인 필요";
   const statusBadge = document.querySelector("#overall-status");
   statusBadge.textContent = status;
-  statusBadge.className = `badge ${status === "BLOCKED" ? "status-blocked" : ""}`;
+  statusBadge.className = `badge ${status.includes("중단") ? "status-blocked" : ""}`;
   factList(document.querySelector("#request-panel"), [
-    ["요청 원문", request.request_text],
+    ["Request ID", payload.request_id],
+    ["요청명", selectedRequest?.title],
     ["조합", request.dummy_fund_id],
-    ["Process", (request.process_ids ?? []).join(", ")],
-    ["Scenario", request.scenario_id ?? payload.scenario_id],
-    ["Transaction ID", request.transaction_id ?? payload.transaction_id],
+    ["Process", request.process_ids],
     ["전체 상태", status],
+    ["처리 방식", payload.source_mode],
     ["Preview-only", bool(request.preview_only)]
   ]);
+  factList(document.querySelector("#metadata-panel"), [
+    ["Transaction ID", request.transaction_id ?? payload.transaction_id],
+    ["Scenario ID", request.scenario_id ?? payload.scenario_id],
+    ["Skill Manifest", payload.manifest?.manifest_id],
+    ["Skill Commit", payload.manifest?.manifest_hash?.slice(0, 7)]
+  ]);
+  renderCurrentAction(payload);
   renderKanban(payload);
+  renderCompositeSummary(payload);
   renderInteraction(payload);
   renderEvidence(payload);
   factList(document.querySelector("#execution-panel"), [
@@ -180,19 +268,25 @@ function renderError(payload) {
   consoleContent.hidden = true;
   emptyState.replaceChildren(
     element("strong", "지원 범위 밖 / 확인 필요"),
-    element("p", payload.message ?? "현재 요청을 안전하게 실행할 수 없습니다."),
-    element("p", `현재 지원 Scenario: ${(payload.supported_scenarios ?? ["SINGLE-P03-02"]).join(", ")}`)
+    element("p", payload.message ?? "현재 요청은 안전하게 Preview할 수 없습니다."),
+    element("p", `현재 지원 Scenario: ${(payload.supported_scenarios ?? []).join(", ")}`)
   );
 }
 
 async function runPreview() {
+  if (!selectedRequest) return;
   runButton.disabled = true;
-  runStatus.textContent = "기존 Skill을 Preview-only로 실행 중입니다…";
+  runStatus.textContent = "기존 Skill을 Preview-only로 실행 중입니다.";
   try {
+    const inputPayload = {
+      request_id: selectedRequest.request_id,
+      scenario_id: selectedRequest.scenario_id
+    };
+    if (selectedRequest.source_mode === "NATURAL_LANGUAGE_PREVIEW") inputPayload.request_text = input.value;
     const response = await fetch("/api/preview", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ request_text: input.value, scenario_id: scenario.value })
+      body: JSON.stringify(inputPayload)
     });
     const payload = await response.json();
     if (!response.ok || payload.ok === false) {
@@ -210,4 +304,32 @@ async function runPreview() {
   }
 }
 
+async function selectRequest(demo) {
+  selectedRequest = demo;
+  input.value = demo.request_text ?? "";
+  input.readOnly = demo.source_mode !== "NATURAL_LANGUAGE_PREVIEW";
+  input.placeholder = demo.source_mode === "NATURAL_LANGUAGE_PREVIEW" ? "자연어 요청을 입력하세요." : "Fixture Preset은 검증된 Scenario 결과를 표시합니다.";
+  document.querySelector("#source-mode").textContent = demo.source_mode;
+  document.querySelector("#mode-note").textContent = demo.source_mode === "NATURAL_LANGUAGE_PREVIEW"
+    ? "자연어 요청을 기존 Skill에 전달합니다. 지원 범위 밖 입력은 안전하게 중단합니다."
+    : "FIXTURE_PRESET: 자연어 Parser 결과가 아니라 검증된 Fixture Scenario를 표시합니다.";
+  renderInbox();
+  await runPreview();
+}
+
+async function initialize() {
+  try {
+    const response = await fetch("/api/demo-requests");
+    const payload = await response.json();
+    if (!response.ok || payload.ok === false) throw new Error(payload.message ?? "Demo Request 목록을 불러오지 못했습니다.");
+    demoRequests = payload.demo_requests ?? [];
+    renderInbox();
+    await selectRequest(demoRequests[0]);
+  } catch (error) {
+    renderError({ message: `Console 초기화 오류: ${error.message}`, supported_scenarios: [] });
+    runStatus.textContent = "Demo Request 목록을 불러오지 못했습니다.";
+  }
+}
+
 runButton.addEventListener("click", runPreview);
+initialize();
