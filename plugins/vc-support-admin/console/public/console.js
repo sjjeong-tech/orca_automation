@@ -29,8 +29,29 @@ const mappingSection = document.querySelector("#mapping-section");
 const approvalDrawer = document.querySelector("#approval-drawer");
 let demoRequests = [];
 let selectedRequest = null;
+let selectedRequestId = null;
 let activePreview = null;
 let activeMapping = null;
+let selectionSequence = 0;
+
+function findDemoRequest(requestId) {
+  return demoRequests.find((demo) => demo.request_id === requestId) ?? null;
+}
+
+function selectionIsCurrent(requestId, sequence) {
+  return selectedRequestId === requestId && selectionSequence === sequence;
+}
+
+function resetRequestScopedUi() {
+  activePreview = null;
+  activeMapping = null;
+  mappingSection.hidden = true;
+  mappingButton.disabled = true;
+  if (approvalDrawer.open) approvalDrawer.close();
+  document.querySelector("#approval-status").textContent = "승인 상태: NOT_REVIEWED · Write Count 0";
+  document.querySelector("#mapping-write-badge").textContent = "WRITE NOT EXECUTED";
+  document.querySelector("#drawer-write-badge").textContent = "WRITE NOT EXECUTED";
+}
 
 function element(tag, text, className) {
   const node = document.createElement(tag);
@@ -98,14 +119,14 @@ function renderInbox() {
   for (const demo of demoRequests) {
     const button = document.createElement("button");
     button.type = "button";
-    button.className = `inbox-item${selectedRequest?.request_id === demo.request_id ? " selected" : ""}`;
-    button.setAttribute("aria-pressed", String(selectedRequest?.request_id === demo.request_id));
+    button.dataset.requestId = demo.request_id;
+    button.className = `inbox-item${selectedRequestId === demo.request_id ? " selected" : ""}`;
+    button.setAttribute("aria-pressed", String(selectedRequestId === demo.request_id));
     button.append(element("span", demo.request_id, "inbox-id"));
     button.append(element("strong", demo.title));
     button.append(element("span", `${demo.dummy_fund_id} · ${demo.display_status}`, "inbox-meta"));
     button.append(element("span", `Actor ${demo.current_actor} · Blocker ${demo.has_blocker ? "있음" : "없음"}`, "inbox-meta"));
     button.append(element("span", demo.source_mode, "mode-label"));
-    button.addEventListener("click", () => selectRequest(demo));
     inbox.append(button);
   }
 }
@@ -303,63 +324,86 @@ function renderMapping(mapping) {
   document.querySelector("#raw-json").textContent = JSON.stringify({ preview: activePreview, mapping_preview: mapping }, null, 2);
 }
 
-async function runPreview() {
-  if (!selectedRequest) return;
+async function runPreview(sequence = selectionSequence) {
+  const requestId = selectedRequestId;
+  const demo = selectedRequest;
+  if (!requestId || !demo) return;
   runButton.disabled = true; mappingButton.disabled = true; mappingSection.hidden = true; activeMapping = null;
   runStatus.textContent = "기존 Skill을 Preview-only로 실행 중입니다.";
   try {
-    const body = { request_id: selectedRequest.request_id, scenario_id: selectedRequest.scenario_id };
-    if (selectedRequest.source_mode === "NATURAL_LANGUAGE_PREVIEW") body.request_text = input.value;
+    const body = { request_id: demo.request_id, scenario_id: demo.scenario_id };
+    if (demo.source_mode === "NATURAL_LANGUAGE_PREVIEW") body.request_text = input.value;
     const response = await fetch("/api/preview", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
     const payload = await response.json();
+    if (!selectionIsCurrent(requestId, sequence)) return;
     if (!response.ok || payload.ok === false) { renderError(payload); runStatus.textContent = `실행 중단: ${payload.error_code ?? "확인 필요"} · Write 0`; return; }
     renderPayload(payload); runStatus.textContent = `Preview 완료 · ${payload.request?.dummy_fund_id ?? "-"} · Notion Write 0`;
-  } catch (error) { renderError({ message: "로컬 Console 서버와 통신하지 못했습니다." }); runStatus.textContent = `통신 오류: ${error.message}`; }
-  finally { runButton.disabled = false; }
+  } catch (error) {
+    if (selectionIsCurrent(requestId, sequence)) { renderError({ message: "로컬 Console 서버와 통신하지 못했습니다." }); runStatus.textContent = `통신 오류: ${error.message}`; }
+  } finally { if (selectionIsCurrent(requestId, sequence)) runButton.disabled = false; }
 }
 
-async function runMappingPreview() {
-  if (!selectedRequest || !activePreview) return;
+async function runMappingPreview(sequence = selectionSequence) {
+  const requestId = selectedRequestId;
+  const demo = selectedRequest;
+  const preview = activePreview;
+  if (!requestId || !demo || !preview) return;
   mappingButton.disabled = true; runStatus.textContent = "기존 TEST LAB Schema에 대한 Mapping Preview를 생성 중입니다.";
   try {
-    const response = await fetch("/api/mapping-preview", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ request_id: selectedRequest.request_id, scenario_id: selectedRequest.scenario_id, preview_output: activePreview }) });
+    const response = await fetch("/api/mapping-preview", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ request_id: demo.request_id, scenario_id: demo.scenario_id, preview_output: preview }) });
     const payload = await response.json();
+    if (!selectionIsCurrent(requestId, sequence)) return;
     if (!response.ok || payload.ok === false) throw new Error(payload.message ?? payload.error_code ?? "Mapping Preview 실패");
     renderMapping(payload); runStatus.textContent = `DB Mapping Preview 완료 · Task ${payload.task_record_previews.length}건 · Notion Write 0`;
-  } catch (error) { runStatus.textContent = `Mapping Preview 오류: ${error.message}`; }
-  finally { mappingButton.disabled = false; }
+  } catch (error) { if (selectionIsCurrent(requestId, sequence)) runStatus.textContent = `Mapping Preview 오류: ${error.message}`; }
+  finally { if (selectionIsCurrent(requestId, sequence)) mappingButton.disabled = false; }
 }
 
 async function simulateApproval(action) {
-  if (!selectedRequest || !activePreview || !activeMapping) return;
-  const response = await fetch("/api/approval-preview", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ request_id: selectedRequest.request_id, scenario_id: selectedRequest.scenario_id, preview_output: activePreview, action }) });
+  const requestId = selectedRequestId;
+  const sequence = selectionSequence;
+  const demo = selectedRequest;
+  const preview = activePreview;
+  const mapping = activeMapping;
+  if (!requestId || !demo || !preview || !mapping) return;
+  const response = await fetch("/api/approval-preview", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ request_id: demo.request_id, scenario_id: demo.scenario_id, preview_output: preview, action }) });
   const approval = await response.json();
+  if (!selectionIsCurrent(requestId, sequence)) return;
   if (!response.ok || approval.ok === false) { document.querySelector("#approval-status").textContent = `승인 시뮬레이션 오류: ${approval.error_code ?? "확인 필요"}`; return; }
-  activeMapping = { ...activeMapping, approval_state: approval.approval_status, approval_preview: approval, audit: approval.audit };
+  activeMapping = { ...mapping, approval_state: approval.approval_status, approval_preview: approval, audit: approval.audit };
   renderMapping(activeMapping);
   document.querySelector("#approval-status").textContent = `승인 상태: ${approval.approval_status} · Approved By: ${approval.approved_by} · Write Count ${approval.write_count}`;
   runStatus.textContent = `${approval.approval_status} · Notion Write 0 · 다음 단계: ${approval.next_step}`;
 }
 
-async function selectRequest(demo) {
-  selectedRequest = demo; activePreview = null; activeMapping = null; mappingSection.hidden = true; mappingButton.disabled = true;
+async function selectRequest(requestId) {
+  const demo = findDemoRequest(requestId);
+  if (!demo) return;
+  const sequence = ++selectionSequence;
+  selectedRequestId = demo.request_id;
+  selectedRequest = demo;
+  resetRequestScopedUi();
   input.value = demo.request_text ?? ""; input.readOnly = demo.source_mode !== "NATURAL_LANGUAGE_PREVIEW";
   input.placeholder = demo.source_mode === "NATURAL_LANGUAGE_PREVIEW" ? "자연어 요청을 입력하세요." : "FIXTURE_PRESET은 검증된 Scenario 결과를 표시합니다.";
   document.querySelector("#source-mode").textContent = demo.source_mode;
   document.querySelector("#mode-note").textContent = demo.source_mode === "NATURAL_LANGUAGE_PREVIEW" ? "자연어 요청을 기존 Skill에 전달합니다. 지원 범위 밖 입력은 안전하게 중단합니다." : "FIXTURE_PRESET: 자연어 Parser 결과가 아니라 검증된 Fixture Scenario를 표시합니다.";
-  renderInbox(); await runPreview();
+  renderInbox(); await runPreview(sequence);
 }
 
 async function initialize() {
   try {
     const response = await fetch("/api/demo-requests"); const payload = await response.json();
     if (!response.ok || payload.ok === false) throw new Error(payload.message ?? "Demo Request 목록을 불러오지 못했습니다.");
-    demoRequests = payload.demo_requests ?? []; renderInbox(); await selectRequest(demoRequests[0]);
+    demoRequests = payload.demo_requests ?? []; renderInbox(); await selectRequest(demoRequests[0]?.request_id);
   } catch (error) { renderError({ message: `Console 초기화 오류: ${error.message}`, supported_scenarios: [] }); runStatus.textContent = "Demo Request 목록을 불러오지 못했습니다."; }
 }
 
-runButton.addEventListener("click", runPreview);
-mappingButton.addEventListener("click", runMappingPreview);
+runButton.addEventListener("click", () => void runPreview());
+mappingButton.addEventListener("click", () => void runMappingPreview());
+document.querySelector("#request-inbox").addEventListener("click", (event) => {
+  const button = event.target.closest("button[data-request-id]");
+  if (button) void selectRequest(button.dataset.requestId);
+});
 document.querySelector("#open-approval-drawer").addEventListener("click", () => approvalDrawer.showModal());
 document.querySelector("#close-approval-drawer").addEventListener("click", () => approvalDrawer.close());
 document.querySelector("#approval-button").addEventListener("click", () => simulateApproval("approve"));

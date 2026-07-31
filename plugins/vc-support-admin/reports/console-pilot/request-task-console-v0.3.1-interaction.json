@@ -1,0 +1,51 @@
+{
+  "tap": "A-CP25-G23R1-CONSOLE-V03-INTERACTION-REGRESSION-REPAIR",
+  "tested_at_kst": "2026-07-31 10:16:31 KST",
+  "browser": "chrome.exe headless via Chrome DevTools Protocol",
+  "control": "actual DOM mouse click with Input.dispatchMouseEvent",
+  "post_discovery_reclassification": {
+    "v03_visible_artifact_gate": "PARTIAL_INITIAL_RENDER_ONLY",
+    "interaction_validation": "INVALIDATED_BY_USER_REPRODUCTION"
+  },
+  "root_cause": [
+    "The public demo-request payload omitted the one supported natural-language request text, so the initial REQ-DEMO-001 Preview stopped with REQUEST_TEXT_REQUIRED.",
+    "The v0.3 standalone export was an initial static capture and had no Inbox selection handler.",
+    "The server selection path had no request-sequence guard, so an older asynchronous Preview or Mapping response could overwrite a later selection."
+  ],
+  "server_mode": {
+    "url": "http://127.0.0.1:<ephemeral-port>",
+    "click_sequence": ["REQ-DEMO-002", "REQ-DEMO-003", "REQ-DEMO-001", "REQ-DEMO-003", "REQ-DEMO-002"],
+    "panel_assertions": {
+      "selected_inbox": "PASS",
+      "request_summary": "PASS",
+      "current_task": "PASS",
+      "kanban": "PASS",
+      "current_action": "PASS",
+      "mapping_preview": "PASS",
+      "raw_json": "PASS",
+      "write_count": 0
+    },
+    "approval_isolation": {
+      "approved_request": "REQ-DEMO-001",
+      "after_selection": "REQ-DEMO-002",
+      "actual_status": "NOT_REVIEWED",
+      "result": "PASS"
+    },
+    "rapid_selection": {
+      "click_sequence": ["REQ-DEMO-001", "REQ-DEMO-003", "REQ-DEMO-002"],
+      "actual_final_request": "REQ-DEMO-002",
+      "result": "PASS"
+    }
+  },
+  "standalone_file_mode": {
+    "url": "file:///.../request-task-console-v0.3.1.html",
+    "click_sequence": ["REQ-DEMO-002", "REQ-DEMO-003", "REQ-DEMO-001"],
+    "panel_assertions": "PASS",
+    "approval_reset_after_selection": "PASS"
+  },
+  "console_errors": [],
+  "unhandled_promise_rejections": [],
+  "result": "PASS",
+  "notion_write_count": 0,
+  "operational_write_count": 0
+}

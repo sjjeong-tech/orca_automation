@@ -1,0 +1,65 @@
+{
+  "console_version": "PILOT v0.3.1",
+  "backend_mode": "LOCAL_PREVIEW",
+  "notion_backend": "NOT_CONNECTED",
+  "notion_write_enabled": false,
+  "operational_write_count": 0,
+  "selection_contract": {
+    "source_of_truth": "selectedRequestId",
+    "request_change": "reset mapping and approval state before preview",
+    "async_guard": "selection sequence drops stale preview and mapping responses",
+    "approval_isolation": "NOT_REVIEWED for each newly selected request"
+  },
+  "demo_requests": [
+    {
+      "request_id": "REQ-DEMO-001",
+      "scenario_id": "SINGLE-P03-02",
+      "dummy_fund_id": "DUMMY-FUND-B",
+      "source_mode": "NATURAL_LANGUAGE_PREVIEW",
+      "current_actor": "사람 확인",
+      "current_stage": "BLOCKED",
+      "task_count": 1
+    },
+    {
+      "request_id": "REQ-DEMO-002",
+      "scenario_id": "SINGLE-P03-01",
+      "dummy_fund_id": "DUMMY-FUND-A",
+      "source_mode": "FIXTURE_PRESET",
+      "current_actor": "지원팀",
+      "current_stage": "COMPLETION_CANDIDATE",
+      "completion_candidate": true,
+      "completion_allowed": false,
+      "task_count": 1
+    },
+    {
+      "request_id": "REQ-DEMO-003",
+      "scenario_id": "COMPOSITE-01",
+      "dummy_fund_id": "DUMMY-FUND-E",
+      "source_mode": "FIXTURE_PRESET",
+      "current_actor": "지원팀",
+      "current_task_process_id": "P07",
+      "current_stage": "BLOCKED",
+      "p03_preserved": true,
+      "p04_preserved": true,
+      "p07_blocked": true,
+      "task_count": 3
+    }
+  ],
+  "selected_request": "REQ-DEMO-001",
+  "mapping_preview": {
+    "expected": "planned request/task payload",
+    "actual": "NOT_WRITTEN",
+    "duplicate_check": "NOT_RUN_PERSISTENT_STORE",
+    "write_count": 0
+  },
+  "interaction_validation": {
+    "server_mode": "PASS",
+    "standalone_file_mode": "PASS",
+    "sequential_selection": "PASS",
+    "round_trip_selection": "PASS",
+    "rapid_selection_last_request": "REQ-DEMO-002",
+    "approval_state_isolation": "PASS",
+    "browser_console_error_count": 0,
+    "unhandled_rejection_count": 0
+  }
+}

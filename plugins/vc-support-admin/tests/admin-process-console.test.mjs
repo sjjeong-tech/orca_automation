@@ -21,6 +21,10 @@ const cssSource = fs.readFileSync("plugins/vc-support-admin/console/public/conso
 const standaloneHtml = fs.readFileSync("plugins/vc-support-admin/reports/console-pilot/request-task-console-v0.3.html", "utf8");
 const outputSample = JSON.parse(fs.readFileSync("plugins/vc-support-admin/reports/console-pilot/request-task-console-v0.3-output.json", "utf8"));
 const demoGuide = fs.readFileSync("plugins/vc-support-admin/reports/console-pilot/request-task-console-v0.3-demo.md", "utf8");
+const repairedStandaloneHtml = fs.readFileSync("plugins/vc-support-admin/reports/console-pilot/request-task-console-v0.3.1.html", "utf8");
+const repairedOutputSample = JSON.parse(fs.readFileSync("plugins/vc-support-admin/reports/console-pilot/request-task-console-v0.3.1-output.json", "utf8"));
+const repairedInteractionEvidence = JSON.parse(fs.readFileSync("plugins/vc-support-admin/reports/console-pilot/request-task-console-v0.3.1-interaction.json", "utf8"));
+const repairedDemoGuide = fs.readFileSync("plugins/vc-support-admin/reports/console-pilot/request-task-console-v0.3.1-demo.md", "utf8");
 
 const humanActor = "\uC0AC\uB78C \uD655\uC778";
 const humanBlocker = "\uB0A0\uC778\uBCF8 \uC6D0\uBCF8 \uBBF8\uD655\uBCF4";
@@ -29,7 +33,7 @@ const supportActor = "\uC9C0\uC6D0\uD300";
 const p07Blocker = "P07 \uC81C\uCD9C\uC11C\uB958 \uBBF8\uD655\uBCF4";
 const p07NextAction = "\uACC4\uC88C\uAC1C\uC124 \uC81C\uCD9C\uC11C\uB958 \uC218\uC9D1";
 
-assert.equal(CONSOLE_VERSION, "PILOT v0.3");
+assert.equal(CONSOLE_VERSION, "PILOT v0.3.1");
 assert.equal(BATCH_ID, "A-CP25-B23");
 assert.equal(SCHEMA_SOURCE, "LIVE_READ_ONLY_SCHEMA_2026-07-31");
 assert.equal(plugin.entry_points.admin_process_console, "console/admin-process-console-server.mjs");
@@ -48,6 +52,13 @@ assert.match(htmlSource, /NOTION_BACKEND=NOT_CONNECTED/);
 assert.match(jsSource, /\/api\/mapping-preview/);
 assert.match(jsSource, /\/api\/approval-preview/);
 assert.match(jsSource, /function renderMapping\(/);
+assert.match(jsSource, /let selectedRequestId = null/);
+assert.match(jsSource, /let selectionSequence = 0/);
+assert.match(jsSource, /function selectionIsCurrent\(/);
+assert.match(jsSource, /resetRequestScopedUi\(/);
+assert.match(jsSource, /button\[data-request-id\]/);
+assert.match(jsSource, /\+\+selectionSequence/);
+assert.match(jsSource, /NOT_REVIEWED/);
 assert.match(cssSource, /\.mapping-section/);
 assert.match(cssSource, /\.drawer-content/);
 assert.ok(standaloneHtml.length > 0);
@@ -61,6 +72,18 @@ assert.equal(outputSample.execution.operational_write_count, 0);
 assert.equal(outputSample.mapping_preview.validation_summary.duplicate_check, "NOT_RUN_PERSISTENT_STORE");
 assert.match(demoGuide, /SINGLE-P03-02/);
 assert.match(demoGuide, /Write Count 0/);
+assert.doesNotMatch(repairedStandaloneHtml, /https?:\/\//i);
+assert.match(repairedStandaloneHtml, /data-request-id/);
+assert.match(repairedStandaloneHtml, /selectedRequestId/);
+assert.match(repairedStandaloneHtml, /approvalStatus="NOT_REVIEWED"/);
+assert.equal(repairedOutputSample.console_version, "PILOT v0.3.1");
+assert.equal(repairedOutputSample.interaction_validation.rapid_selection_last_request, "REQ-DEMO-002");
+assert.equal(repairedOutputSample.interaction_validation.browser_console_error_count, 0);
+assert.equal(repairedInteractionEvidence.result, "PASS");
+assert.equal(repairedInteractionEvidence.server_mode.rapid_selection.actual_final_request, "REQ-DEMO-002");
+assert.equal(repairedInteractionEvidence.operational_write_count, 0);
+assert.match(repairedDemoGuide, /Static mode/);
+assert.match(repairedDemoGuide, /NOT_REVIEWED/);
 
 const human = await buildConsolePreview({
   request_id: "REQ-DEMO-001",
@@ -163,6 +186,8 @@ const demoPayload = await demos.json();
 assert.equal(demoPayload.demo_requests.length, 3);
 assert.equal(demoPayload.notion_backend, "NOT_CONNECTED");
 assert.equal(demoPayload.execution.operational_write_count, 0);
+assert.equal(demoPayload.demo_requests[0].request_text, DEFAULT_REQUEST_TEXT);
+assert.equal(demoPayload.demo_requests[1].request_text, undefined);
 
 const previewResponse = await fetch(`${origin}/api/preview`, {
   method: "POST",
@@ -208,4 +233,4 @@ const serverSource = fs.readFileSync("plugins/vc-support-admin/console/admin-pro
 assert.doesNotMatch(serverSource, /mcp__codex_apps__notion|notion_create_pages|notion_update_page/i);
 
 await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
-console.log("admin-process-console-v0.3: PASS");
+console.log("admin-process-console-v0.3.1: PASS");

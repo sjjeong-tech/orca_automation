@@ -19,7 +19,7 @@ const fixturePaths = Object.freeze({
   "COMPOSITE-01": path.resolve(here, "../fixtures/prototype-composite-p03-p04-p07.json")
 });
 
-export const CONSOLE_VERSION = "PILOT v0.3";
+export const CONSOLE_VERSION = "PILOT v0.3.1";
 export const SUPPORTED_SCENARIOS = Object.freeze(Object.keys(fixturePaths));
 export const DEFAULT_SCENARIO_ID = "SINGLE-P03-02";
 export const DEFAULT_REQUEST_TEXT = "DUMMY-FUND-B의 고유번호증 신청 건을 확인해줘.\n신청서 초안은 있지만 날인본 원본은 아직 준비되지 않았어.";
@@ -83,8 +83,13 @@ const contentTypes = Object.freeze({
 });
 
 function publicDemoRequest(demo) {
-  const { request_text: _requestText, ...publicDemo } = demo;
-  return publicDemo;
+  const { request_text, ...publicDemo } = demo;
+  return {
+    ...publicDemo,
+    // This pilot's one supported natural-language request is non-sensitive fixture text.
+    // The client needs it to initialize the Preview without inventing missing evidence.
+    request_text: demo.source_mode === "NATURAL_LANGUAGE_PREVIEW" ? request_text : undefined
+  };
 }
 
 function findDemoRequest(requestId) {
@@ -497,6 +502,11 @@ export function createConsoleServer() {
   return createServer(async (request, response) => {
     const url = new URL(request.url ?? "/", "http://127.0.0.1");
     try {
+      if (request.method === "GET" && url.pathname === "/favicon.ico") {
+        response.writeHead(204, { "cache-control": "no-store" });
+        response.end();
+        return;
+      }
       if (request.method === "GET" && Object.hasOwn(contentTypes, url.pathname)) {
         response.writeHead(200, { "content-type": contentTypes[url.pathname], "cache-control": "no-store" });
         response.end(await readStatic(url.pathname));
