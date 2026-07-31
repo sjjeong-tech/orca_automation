@@ -1,0 +1,128 @@
+{
+  "console_version": "PILOT v0.3",
+  "schema_source": "LIVE_READ_ONLY_SCHEMA_2026-07-31",
+  "backend_mode": "LOCAL_PREVIEW",
+  "notion_schema": "VALIDATED_REFERENCE",
+  "notion_backend": "NOT_CONNECTED",
+  "request": {
+    "request_id": "REQ-DEMO-001",
+    "request_text": "DUMMY-FUND-B의 고유번호증 신청 건을 확인해줘.\n신청서 초안은 있지만 날인본 원본은 아직 준비되지 않았어.",
+    "transaction_id": "PROTO-SINGLE-P03-02",
+    "scenario_id": "SINGLE-P03-02",
+    "dummy_fund_id": "DUMMY-FUND-B",
+    "process_ids": ["P03"],
+    "overall_status": "BLOCKED",
+    "preview_only": true
+  },
+  "tasks": [
+    {
+      "operational_task_id": "P03-T03",
+      "process_id": "P03",
+      "stage": "BLOCKED",
+      "actor": "사람 확인",
+      "next_action": "유효한 날인본 원본 재수집",
+      "blocker": "날인본 원본 미확보",
+      "completion_condition": "날인본 원본과 필수 날인 위치가 확인됐나요?",
+      "completion_evidence": ["EV-P03-SUBMISSION"],
+      "completion_candidate": false,
+      "completion_allowed": false
+    }
+  ],
+  "mapping_preview": {
+    "request_record_preview": {
+      "target_db": "[TEST LAB] 지원팀 업무요청",
+      "planned_record_count": 1,
+      "record_title": "고유번호증 신청 — 날인본 확인 필요",
+      "transaction_id": "PROTO-SINGLE-P03-02",
+      "properties": {
+        "요청명": "고유번호증 신청 — 날인본 확인 필요",
+        "요청 배경": "DUMMY-FUND-B의 고유번호증 신청 건을 확인해줘. 신청서 초안은 있지만 날인본 원본은 아직 준비되지 않았어.",
+        "현재 요약": "Transaction ID: PROTO-SINGLE-P03-02 | UI 상태: 확인 필요 | Process: P03",
+        "Process ID": "P03",
+        "요청 업무 유형": "고유번호증 신청",
+        "요청 상태": "진행 중",
+        "LAB 여부": true,
+        "FUND 업무": "NOT_WRITTEN"
+      },
+      "write_status": "NOT_WRITTEN"
+    },
+    "task_record_previews": [
+      {
+        "target_db": "[TEST LAB] 지원팀 Task",
+        "planned_record_count": 1,
+        "record_title": "P03 · P03-T03",
+        "operational_task_id": "P03-T03",
+        "process_id": "P03",
+        "canonical_stage": "BLOCKED",
+        "ui_status": "중단",
+        "actor": "사람 확인",
+        "next_action": "유효한 날인본 원본 재수집",
+        "blocker": "날인본 원본 미확보",
+        "completion_condition": "날인본 원본과 필수 날인 위치가 확인됐나요?",
+        "completion_evidence": ["EV-P03-SUBMISSION"],
+        "completion_candidate": false,
+        "completion_allowed": false,
+        "parent_request_transaction_id": "PROTO-SINGLE-P03-02",
+        "write_status": "NOT_WRITTEN"
+      }
+    ],
+    "property_mappings": [
+      {"console_field":"request_title","source_value":"고유번호증 신청 — 날인본 확인 필요","target_db":"[TEST LAB] 지원팀 업무요청","target_property":"요청명","mapping_rule":"기존 Title Property","validation":"PASS","write_value":"고유번호증 신청 — 날인본 확인 필요","gap":""},
+      {"console_field":"request_text","source_value":"사용자 요청 원문","target_db":"[TEST LAB] 지원팀 업무요청","target_property":"요청 배경","mapping_rule":"기존 Text Property","validation":"PASS","write_value":"사용자 요청 원문","gap":""},
+      {"console_field":"transaction_id","source_value":"PROTO-SINGLE-P03-02","target_db":"[TEST LAB] 지원팀 업무요청","target_property":"현재 요약","mapping_rule":"전용 Property 부재: 기존 현재 요약에 Preview 식별자로 조합","validation":"CONFIRM_REQUIRED","write_value":"Transaction ID: PROTO-SINGLE-P03-02 | UI 상태: 확인 필요 | Process: P03","gap":"전용 Transaction ID Property가 없어 Persistent Store 중복 조회 전 확인 필요"},
+      {"console_field":"dummy_fund_id","source_value":"DUMMY-FUND-B","target_db":"[TEST LAB] 지원팀 업무요청","target_property":"FUND 업무","mapping_rule":"기존 Relation의 TEST LAB FUND Work를 별도 Exact Match로 선택","validation":"CONFIRM_REQUIRED","write_value":"NOT_WRITTEN","gap":"DUMMY Fund Key만으로 Relation Page를 자동 선택하지 않음"},
+      {"console_field":"process_ids","source_value":"P03","target_db":"[TEST LAB] 지원팀 업무요청","target_property":"Process ID","mapping_rule":"기존 Select Option","validation":"PASS","write_value":"P03","gap":""},
+      {"console_field":"overall_status","source_value":"확인 필요","target_db":"[TEST LAB] 지원팀 업무요청","target_property":"요청 상태","mapping_rule":"기존 진행 중 Status; UI 상태 상세는 현재 요약에 보존","validation":"PASS","write_value":"진행 중","gap":""},
+      {"console_field":"preview_only","source_value":true,"target_db":"[TEST LAB] 지원팀 업무요청","target_property":"LAB 여부","mapping_rule":"TEST LAB Checkbox","validation":"PASS","write_value":true,"gap":""},
+      {"console_field":"operational_task_id","source_value":"P03-T03","target_db":"[TEST LAB] 지원팀 Task","target_property":"Operational Task ID","mapping_rule":"기존 Text Property","validation":"PASS","write_value":"P03-T03","gap":""},
+      {"console_field":"canonical_stage","source_value":"BLOCKED","target_db":"[TEST LAB] 지원팀 Task","target_property":"UNMAPPED","mapping_rule":"Canonical Stage는 Console/Skill Vocabulary; 새 Property 생성 금지","validation":"UNMAPPED","write_value":"NOT_WRITTEN","gap":"Task 상태와 UI Label로만 표시"},
+      {"console_field":"ui_status","source_value":"중단","target_db":"[TEST LAB] 지원팀 Task","target_property":"Task 상태","mapping_rule":"기존 Status 중 진행 중; 완료 후보도 완료로 쓰지 않음","validation":"PASS","write_value":"진행 중","gap":""},
+      {"console_field":"actor","source_value":"사람 확인","target_db":"[TEST LAB] 지원팀 Task","target_property":"현재 Actor","mapping_rule":"기존 Select Option","validation":"PASS","write_value":"사람 확인","gap":""},
+      {"console_field":"next_action","source_value":"유효한 날인본 원본 재수집","target_db":"[TEST LAB] 지원팀 Task","target_property":"다음 Action","mapping_rule":"기존 Text Property","validation":"PASS","write_value":"유효한 날인본 원본 재수집","gap":""},
+      {"console_field":"blocker","source_value":"날인본 원본 미확보","target_db":"[TEST LAB] 지원팀 Task","target_property":"Blocker","mapping_rule":"기존 Text Property","validation":"PASS","write_value":"날인본 원본 미확보","gap":""},
+      {"console_field":"completion_condition","source_value":"날인본 원본과 필수 날인 위치가 확인됐나요?","target_db":"[TEST LAB] 지원팀 Task","target_property":"완료조건","mapping_rule":"기존 Text Property","validation":"PASS","write_value":"날인본 원본과 필수 날인 위치가 확인됐나요?","gap":""},
+      {"console_field":"completion_evidence","source_value":"EV-P03-SUBMISSION","target_db":"[TEST LAB] 지원팀 Task","target_property":"완료증빙","mapping_rule":"기존 Text Property","validation":"PASS","write_value":"EV-P03-SUBMISSION","gap":""},
+      {"console_field":"parent_request_transaction","source_value":"PROTO-SINGLE-P03-02","target_db":"[TEST LAB] 지원팀 Task","target_property":"상위 요청","mapping_rule":"생성 예정 Request와 기존 Relation 연결","validation":"PASS_PLANNED_RELATION","write_value":"PLANNED_REQUEST:PROTO-SINGLE-P03-02","gap":""}
+    ],
+    "validation_summary": {
+      "status": "READY_FOR_APPROVAL",
+      "required_mapping": 25,
+      "passed": 22,
+      "gaps": 3,
+      "blocking_gaps": 0,
+      "duplicate_check": "NOT_RUN_PERSISTENT_STORE",
+      "request_task_relation": "PASS_PLANNED_RELATION",
+      "write_allowed": false,
+      "notion_write_enabled": false
+    }
+  },
+  "approval_preview": {
+    "approval_status": "APPROVED_FOR_TEST_WRITE",
+    "approved_by": "LOCAL_DEMO_USER",
+    "next_step": "SEPARATE_TEST_WRITE_TAP",
+    "write_count": 0
+  },
+  "expected_actual": {
+    "expected": "생성 예정 Request 1건과 Task 1건 Payload",
+    "actual": "NOT_WRITTEN",
+    "result": "PREVIEW_ONLY"
+  },
+  "audit": {
+    "preview_generated_at_kst": "2026-07-31 09:31:27 KST",
+    "skill_commit": "976b582d61ceaad27eb10569d774593bf3eb6907",
+    "console_version": "PILOT v0.3",
+    "manifest_id": "PROTOTYPE-SCENARIO-CONTRACT-V0.1",
+    "batch_id": "A-CP25-B23",
+    "transaction_id": "PROTO-SINGLE-P03-02",
+    "approval_status": "APPROVED_FOR_TEST_WRITE",
+    "approved_by": "LOCAL_DEMO_USER",
+    "write_count": 0
+  },
+  "execution": {
+    "notion_write_enabled": false,
+    "operational_write_allowed": false,
+    "operational_write_count": 0,
+    "request_completion_allowed": false,
+    "downstream_auto_completion": false
+  }
+}
