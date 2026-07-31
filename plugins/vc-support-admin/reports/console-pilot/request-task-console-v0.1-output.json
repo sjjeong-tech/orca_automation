@@ -1,0 +1,65 @@
+{
+  "sample_type": "LOCAL_PREVIEW_API_RESPONSE",
+  "console_version": "PILOT v0.1",
+  "backend_mode": "LOCAL_PREVIEW",
+  "notion_schema": "REFERENCE_ONLY",
+  "scenario_id": "SINGLE-P03-02",
+  "transaction_id": "PROTO-SINGLE-P03-02",
+  "manifest": {
+    "contract_id": "PROTOTYPE-SCENARIO-CONTRACT-V0.1",
+    "manifest_hash": "3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d",
+    "batch_id": "A-CP25-B18",
+    "implemented_scenario_coverage": 3,
+    "contract_scenario_coverage": 6
+  },
+  "request": {
+    "request_text": "DUMMY-FUND-B의 고유번호증 신청 건을 확인해줘. 신청서 초안은 있지만 날인본 원본은 아직 준비되지 않았어.",
+    "dummy_fund_id": "DUMMY-FUND-B",
+    "process_ids": ["P03"],
+    "scenario_id": "SINGLE-P03-02",
+    "overall_status": "BLOCKED",
+    "preview_only": true
+  },
+  "tasks": [
+    {
+      "operational_task_id": "P03-T03",
+      "process_id": "P03",
+      "stage": "BLOCKED",
+      "actor": "사람 확인",
+      "next_action": "유효한 날인본 원본 재수집",
+      "blocker": "날인본 원본 미확보",
+      "completion_condition": "날인본 원본과 필수 날인 위치가 확인됐나요?",
+      "completion_evidence": ["EV-P03-SUBMISSION"],
+      "completion_candidate": false,
+      "completion_allowed": false
+    }
+  ],
+  "interaction": {
+    "clarification_required": false,
+    "human_confirmation_required": true,
+    "questions": ["날인본 원본과 필수 날인 위치가 확인됐나요?"]
+  },
+  "evidence": [
+    {
+      "evidence_id": "EV-P03-STAMPED",
+      "evidence_type": "STAMPED_ORIGINAL",
+      "evidence_result": "MISSING",
+      "legacy_evidence_type": "STAMPED_DOCUMENT",
+      "legacy_fixture_state": "ABSENT"
+    }
+  ],
+  "snapshot_timeline": [
+    { "stage": "RECEIVED" },
+    { "stage": "EVIDENCE_REVIEW" },
+    { "stage": "HUMAN_CONFIRMATION", "actor": "사람 확인" },
+    { "stage": "BLOCKED", "error_code": "MISSING_REQUIRED_EVIDENCE" }
+  ],
+  "execution": {
+    "request_completion_allowed": false,
+    "downstream_auto_completion": false,
+    "operational_write_allowed": false,
+    "operational_write_count": 0
+  },
+  "write_count": 0,
+  "operational_write_count": 0
+}

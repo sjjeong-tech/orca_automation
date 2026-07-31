@@ -1,0 +1,49 @@
+{
+  "schema_version": "prototype-replay/1",
+  "scenario_id": "COMPOSITE-01",
+  "transaction_id": "PROTO-COMPOSITE-01",
+  "mode": "composite",
+  "lanes": [
+    {
+      "lane_id": "COMPOSITE-01/P03",
+      "process_id": "P03",
+      "mapping_status": "CONFIRMED",
+      "depends_on": [],
+      "operational_task_id": "P03-T05",
+      "task_projection": { "actor": "지원팀", "next_action": "P03 결과물 확인 기록 유지", "blocker": "" },
+      "evidence": [
+        { "evidence_id": "EV-P03-RESULT", "evidence_type": "RESULT_DOCUMENT", "fixture_state": "PRESENT_VALID", "required_for_completion": true }
+      ]
+    },
+    {
+      "lane_id": "COMPOSITE-01/P04",
+      "process_id": "P04",
+      "mapping_status": "CANDIDATE_CONFIRMATION_REQUIRED",
+      "depends_on": ["COMPOSITE-01/P03"],
+      "operational_task_id": "P04-T01",
+      "task_projection": { "actor": "지원팀", "next_action": "보안카드·홈택스 필요 여부 사람 확인", "blocker": "" },
+      "evidence": [
+        { "evidence_id": "EV-P04-REQUEST", "evidence_type": "REQUEST_INFO", "fixture_state": "PRESENT_VALID", "required_for_completion": false }
+      ],
+      "decision_markers": [{ "marker_kind": "REQUIREMENT_DECISION", "decision": "REQUIRED", "mapping_status": "CANDIDATE_CONFIRMATION_REQUIRED" }]
+    },
+    {
+      "lane_id": "COMPOSITE-01/P07",
+      "process_id": "P07",
+      "mapping_status": "CANDIDATE_CONFIRMATION_REQUIRED",
+      "depends_on": ["COMPOSITE-01/P04"],
+      "operational_task_id": "P07-T01",
+      "task_projection": { "actor": "지원팀", "next_action": "계좌개설 제출서류 수집", "blocker": "P07 제출서류 미확보" },
+      "evidence": [
+        { "evidence_id": "EV-P07-SUBMISSION", "evidence_type": "SUBMISSION_PACKAGE", "fixture_state": "ABSENT", "required_for_completion": true }
+      ]
+    }
+  ],
+  "expectations": {
+    "lanes": {
+      "COMPOSITE-01/P03": { "stage": "RESULT_REVIEW", "completion_candidate": false, "request_completion_allowed": false },
+      "COMPOSITE-01/P04": { "stage": "NEXT_PROCESS", "completion_candidate": false, "request_completion_allowed": false },
+      "COMPOSITE-01/P07": { "stage": "BLOCKED", "completion_candidate": false, "request_completion_allowed": false, "task.next_action": "계좌개설 제출서류 수집" }
+    }
+  }
+}

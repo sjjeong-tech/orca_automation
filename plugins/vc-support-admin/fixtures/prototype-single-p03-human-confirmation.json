@@ -1,0 +1,26 @@
+{
+  "schema_version": "prototype-replay/1",
+  "scenario_id": "SINGLE-P03-02",
+  "transaction_id": "PROTO-SINGLE-P03-02",
+  "mode": "single",
+  "lanes": [
+    {
+      "lane_id": "SINGLE-P03-02/P03",
+      "process_id": "P03",
+      "mapping_status": "CONFIRMED",
+      "depends_on": [],
+      "operational_task_id": "P03-T03",
+      "human_confirmation_question": "날인본 원본과 필수 날인 위치가 확인됐나요?",
+      "task_projection": { "actor": "사람 확인", "next_action": "유효한 날인본 원본 재수집", "blocker": "날인본 원본 미확보" },
+      "evidence": [
+        { "evidence_id": "EV-P03-SUBMISSION", "evidence_type": "SUBMISSION_PACKAGE", "fixture_state": "PRESENT_VALID", "required_for_completion": true },
+        { "evidence_id": "EV-P03-STAMPED", "evidence_type": "STAMPED_DOCUMENT", "fixture_state": "ABSENT", "required_for_completion": true }
+      ]
+    }
+  ],
+  "expectations": {
+    "lanes": {
+      "SINGLE-P03-02/P03": { "stage": "BLOCKED", "completion_candidate": false, "request_completion_allowed": false }
+    }
+  }
+}
