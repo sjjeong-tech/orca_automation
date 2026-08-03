@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>지원팀 행정업무 Console · PILOT v0.3.1</title>
+    <title>지원팀 행정업무 Console · PILOT v0.4</title>
     <link rel="stylesheet" href="/console.css">
   </head>
   <body>
     <main class="shell">
       <header class="header card">
         <div>
-          <p class="eyebrow">BACKEND_MODE=LOCAL_PREVIEW · NOTION_SCHEMA=VALIDATED_REFERENCE · NOTION_BACKEND=NOT_CONNECTED</p>
+          <p class="eyebrow">BACKEND_MODE=NOTION_LIVE_READ_PREVIEW · NOTION_SCHEMA=LIVE_READ_ONLY_SESSION_SNAPSHOT · NOTION_BACKEND=READ_ONLY</p>
           <h1>지원팀 행정업무 Console</h1>
-          <p class="subhead">PILOT v0.3.1 · <strong>PREVIEW ONLY</strong> · Request 선택·승인 상태는 요청별로 분리되며 기존 TEST LAB Schema Mapping만 표시합니다.</p>
+          <p class="subhead">PILOT v0.4 · <strong>READ-ONLY · PREVIEW ONLY</strong> · 실제 Schema Snapshot, Duplicate Lookup과 TEST Write Payload 후보만 표시합니다.</p>
         </div>
         <dl class="header-facts">
-          <div><dt>Skill Baseline</dt><dd id="skill-commit">976b582</dd></div>
+          <div><dt>Skill Baseline</dt><dd id="skill-commit">2814ce0</dd></div>
           <div><dt>지원 범위</dt><dd>3 / 6 Scenario</dd></div>
-          <div><dt>Notion Write</dt><dd>NOTION_WRITE_ENABLED=false</dd></div>
+          <div><dt>Notion Write</dt><dd>NOTION_WRITE_ENABLED=false · 0</dd></div>
         </dl>
       </header>
 
@@ -36,6 +36,11 @@
             <textarea id="request-text" rows="3"></textarea>
             <div class="controls"><p id="mode-note" class="muted">선택한 Request의 처리 방식에 따라 Preview를 실행합니다.</p><div class="button-row"><button id="preview-button" type="button">실행 Preview</button><button id="mapping-preview-button" type="button" class="secondary" disabled>DB Mapping Preview</button></div></div>
             <p id="run-status" class="status" role="status">Request Inbox에서 항목을 선택하면 현재 Task를 불러옵니다.</p>
+          </section>
+
+          <section class="card" aria-labelledby="backend-status-title">
+            <div class="section-heading"><div><p class="eyebrow">BACKEND STATUS</p><h2 id="backend-status-title">Notion Live Readiness</h2></div><span class="badge status-preview">READ ONLY</span></div>
+            <dl id="backend-status-panel" class="fact-grid compact"></dl>
           </section>
 
           <div id="empty-state" class="card empty-state">Request, Task, Evidence, Timeline을 불러오는 중입니다.</div>
@@ -64,13 +69,14 @@
             <section id="mapping-section" class="mapping-section" hidden aria-labelledby="mapping-title">
               <div class="section-heading"><div><p class="eyebrow">NOTION MAPPING PREVIEW</p><h2 id="mapping-title">DB Mapping Preview</h2></div><span id="mapping-write-badge" class="badge status-preview">WRITE NOT EXECUTED</span></div>
               <div id="mapping-summary" class="mapping-summary"></div>
-              <div class="mapping-actions"><p class="muted">시뮬레이션 승인은 UI 상태만 변경합니다. Notion API와 파일 쓰기는 호출하지 않습니다.</p><button id="open-approval-drawer" type="button" class="secondary">Notion 반영 Preview 열기</button></div>
+              <div class="mapping-actions"><p class="muted">승인 시뮬레이션은 UI 상태만 변경합니다. 실제 Read-only Snapshot에서 확인된 Blocking Gap은 승인으로 우회할 수 없습니다.</p><button id="open-approval-drawer" type="button" class="secondary">Notion 반영 Preview 열기</button></div>
               <div class="mapping-grid">
                 <section class="card inset"><p class="eyebrow">PLANNED REQUEST RECORD</p><h3>생성 예정 Request 1건</h3><div id="request-record-preview"></div></section>
                 <section class="card inset"><p class="eyebrow">VALIDATION</p><h3>Validation Summary</h3><div id="validation-summary"></div></section>
               </div>
               <section class="card inset"><p class="eyebrow">PLANNED TASK RECORDS</p><h3>생성 예정 Task</h3><div id="task-record-previews" class="planned-tasks"></div></section>
-              <section class="card inset table-card"><p class="eyebrow">PROPERTY MAPPING</p><h3>Property Mapping Table</h3><div class="table-wrap"><table id="property-mappings"><thead><tr><th>Console Field</th><th>Source Value</th><th>Target DB</th><th>Target Property</th><th>Mapping Rule</th><th>Validation</th><th>Write Value</th><th>Gap</th></tr></thead><tbody></tbody></table></div></section>
+              <section class="card inset table-card"><p class="eyebrow">EXACT PROPERTY MAPPING</p><h3>Property Mapping Table</h3><div class="table-wrap"><table id="property-mappings"><thead><tr><th>Console Field</th><th>Source Value</th><th>Target DB</th><th>Actual Property</th><th>Type</th><th>Mapping Rule</th><th>Validation</th><th>Write Value</th><th>Gap</th></tr></thead><tbody></tbody></table></div></section>
+              <div class="mapping-grid"><section class="card inset"><p class="eyebrow">DUMMY FUND RELATION</p><h3>Exact Match</h3><div id="relation-preview-panel"></div></section><section class="card inset"><p class="eyebrow">TRANSACTION DUPLICATE</p><h3>Read-only Lookup</h3><div id="duplicate-preview-panel"></div></section></div>
               <div class="mapping-grid">
                 <section class="card inset"><p class="eyebrow">EXPECTED — ACTUAL</p><h3>생성 전후 비교</h3><div id="expected-actual"></div></section>
                 <section class="card inset"><p class="eyebrow">AUDIT</p><h3>Preview Audit</h3><dl id="audit-panel" class="fact-grid compact"></dl></section>
@@ -85,7 +91,7 @@
     </main>
 
     <dialog id="approval-drawer" aria-labelledby="approval-title">
-      <section class="drawer-content"><div class="section-heading"><div><p class="eyebrow">SIMULATION ONLY</p><h2 id="approval-title">Notion 반영 Preview</h2></div><button id="close-approval-drawer" type="button" class="icon-button" aria-label="닫기">×</button></div><span id="drawer-write-badge" class="badge status-preview">WRITE NOT EXECUTED</span><div id="approval-drawer-content"></div><div class="drawer-actions"><button id="approval-button" type="button">승인 시뮬레이션</button><button id="needs-changes-button" type="button" class="secondary">수정 필요</button><button id="cancel-approval-button" type="button" class="ghost">취소</button></div><p id="approval-status" class="status">승인 상태: PENDING_LOCAL_SIMULATION · Write Count 0</p></section>
+      <section class="drawer-content"><div class="section-heading"><div><p class="eyebrow">SIMULATION ONLY</p><h2 id="approval-title">Notion 반영 Preview</h2></div><button id="close-approval-drawer" type="button" class="icon-button" aria-label="닫기">×</button></div><span id="drawer-write-badge" class="badge status-preview">WRITE NOT EXECUTED</span><div id="approval-drawer-content"></div><div class="drawer-actions"><button id="approval-button" type="button">TEST Write 범위 승인</button><button id="needs-changes-button" type="button" class="secondary">수정 필요</button><button id="cancel-approval-button" type="button" class="ghost">취소</button></div><p id="approval-status" class="status">승인 상태: NOT_REVIEWED · Write Count 0</p></section>
     </dialog>
     <script type="module" src="/console.js"></script>
   </body>

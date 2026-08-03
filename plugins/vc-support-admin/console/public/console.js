@@ -53,6 +53,21 @@ function resetRequestScopedUi() {
   document.querySelector("#drawer-write-badge").textContent = "WRITE NOT EXECUTED";
 }
 
+function renderBackendStatus(payload) {
+  factList(document.querySelector("#backend-status-panel"), [
+    ["Backend Mode", payload.backend_mode],
+    ["Schema Requery KST", payload.schema_requery_kst],
+    ["Read Transport", payload.schema_source],
+    ["Request DB", payload.request_db],
+    ["Task DB", payload.task_db],
+    ["Dummy Fund DB", payload.dummy_fund_db],
+    ["Notion Read Enabled", bool(payload.notion_read_enabled)],
+    ["Notion Write Enabled", bool(payload.notion_write_enabled)],
+    ["Notion Write Count", payload.notion_write_count ?? 0],
+    ["Operational Write Count", payload.operational_write_count ?? 0]
+  ]);
+}
+
 function element(tag, text, className) {
   const node = document.createElement(tag);
   if (text !== undefined && text !== null) node.textContent = String(text);
@@ -290,9 +305,28 @@ function renderPropertyMappings(mappings) {
   body.replaceChildren();
   for (const mapping of mappings) {
     const row = document.createElement("tr");
-    for (const field of ["console_field", "source_value", "target_db", "target_property", "mapping_rule", "validation", "write_value", "gap"]) row.append(element("td", valueOrDash(mapping[field])));
+    for (const field of ["console_field", "source_value", "target_db", "target_property", "property_type", "mapping_rule", "validation", "write_value", "gap"]) row.append(element("td", valueOrDash(mapping[field])));
     body.append(row);
   }
+}
+
+function renderReadOnlyValidation(mapping) {
+  factList(document.querySelector("#relation-preview-panel"), [
+    ["Dummy Fund", mapping.relation_preview?.dummy_fund_id],
+    ["Exact Match", mapping.relation_preview?.result],
+    ["Match Count", mapping.relation_preview?.exact_match_count],
+    ["Matched Record", mapping.relation_preview?.matched_record],
+    ["Relation Ready", bool(mapping.relation_preview?.relation_ready)],
+    ["Write Count", mapping.relation_preview?.write_count ?? 0]
+  ]);
+  factList(document.querySelector("#duplicate-preview-panel"), [
+    ["Transaction ID", mapping.duplicate_preview?.transaction_id],
+    ["Request Match Count", mapping.duplicate_preview?.request_match_count],
+    ["Task Match Count", mapping.duplicate_preview?.task_match_count],
+    ["Result", mapping.duplicate_preview?.result],
+    ["Proposed Action", mapping.duplicate_preview?.proposed_action],
+    ["Semantic Gap", mapping.duplicate_preview?.semantic_gap]
+  ]);
 }
 
 function renderExpectedActual(mapping) {
@@ -318,9 +352,9 @@ function renderApprovalDrawer(mapping) {
 function renderMapping(mapping) {
   activeMapping = mapping;
   mappingSection.hidden = false;
-  document.querySelector("#mapping-write-badge").textContent = mapping.approval_state === "PENDING_LOCAL_SIMULATION" ? "WRITE NOT EXECUTED" : mapping.approval_state;
+  document.querySelector("#mapping-write-badge").textContent = mapping.approval_state === "NOT_REVIEWED" ? "WRITE NOT EXECUTED" : mapping.approval_state;
   document.querySelector("#drawer-write-badge").textContent = document.querySelector("#mapping-write-badge").textContent;
-  renderMappingSummary(mapping); renderRecordPreview(document.querySelector("#request-record-preview"), mapping.request_record_preview); renderTaskRecordPreviews(mapping.task_record_previews); renderPropertyMappings(mapping.property_mappings); renderExpectedActual(mapping); renderAudit(mapping); renderApprovalDrawer(mapping);
+  renderMappingSummary(mapping); renderRecordPreview(document.querySelector("#request-record-preview"), mapping.request_record_preview); renderTaskRecordPreviews(mapping.task_record_previews); renderPropertyMappings(mapping.property_mappings); renderReadOnlyValidation(mapping); renderExpectedActual(mapping); renderAudit(mapping); renderApprovalDrawer(mapping);
   document.querySelector("#raw-json").textContent = JSON.stringify({ preview: activePreview, mapping_preview: mapping }, null, 2);
 }
 
@@ -350,7 +384,7 @@ async function runMappingPreview(sequence = selectionSequence) {
   if (!requestId || !demo || !preview) return;
   mappingButton.disabled = true; runStatus.textContent = "기존 TEST LAB Schema에 대한 Mapping Preview를 생성 중입니다.";
   try {
-    const response = await fetch("/api/mapping-preview", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ request_id: demo.request_id, scenario_id: demo.scenario_id, preview_output: preview }) });
+    const response = await fetch("/api/notion/test-write-payload-preview", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ request_id: demo.request_id, scenario_id: demo.scenario_id, preview_output: preview }) });
     const payload = await response.json();
     if (!selectionIsCurrent(requestId, sequence)) return;
     if (!response.ok || payload.ok === false) throw new Error(payload.message ?? payload.error_code ?? "Mapping Preview 실패");
@@ -392,7 +426,11 @@ async function selectRequest(requestId) {
 
 async function initialize() {
   try {
-    const response = await fetch("/api/demo-requests"); const payload = await response.json();
+    const [readinessResponse, response] = await Promise.all([fetch("/api/notion/schema-readiness"), fetch("/api/demo-requests")]);
+    const readiness = await readinessResponse.json();
+    if (!readinessResponse.ok || readiness.ok === false) throw new Error(readiness.message ?? "Notion Read-only readiness를 불러오지 못했습니다.");
+    renderBackendStatus(readiness);
+    const payload = await response.json();
     if (!response.ok || payload.ok === false) throw new Error(payload.message ?? "Demo Request 목록을 불러오지 못했습니다.");
     demoRequests = payload.demo_requests ?? []; renderInbox(); await selectRequest(demoRequests[0]?.request_id);
   } catch (error) { renderError({ message: `Console 초기화 오류: ${error.message}`, supported_scenarios: [] }); runStatus.textContent = "Demo Request 목록을 불러오지 못했습니다."; }

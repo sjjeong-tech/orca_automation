@@ -9,7 +9,7 @@ import { startConsoleServer } from "../console/admin-process-console-server.mjs"
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const pluginRoot = path.resolve(here, "..");
-const standaloneHtml = path.join(pluginRoot, "reports", "console-pilot", "request-task-console-v0.3.1.html");
+const standaloneHtml = path.join(pluginRoot, "reports", "console-pilot", "request-task-console-v0.4.html");
 const chromeCandidates = [
   path.join(process.env.ProgramFiles ?? "C:\\Program Files", "Google", "Chrome", "Application", "chrome.exe"),
   path.join(process.env["ProgramFiles(x86)"] ?? "C:\\Program Files (x86)", "Microsoft", "Edge", "Application", "msedge.exe")
@@ -253,7 +253,7 @@ async function exerciseServer(cdp, screenshotPaths) {
   await clickSelector(cdp, "#open-approval-drawer");
   await waitFor(() => cdp.evaluate("document.querySelector('#approval-drawer')?.open === true"), "approval drawer");
   await clickSelector(cdp, "#approval-button");
-  await waitFor(() => cdp.evaluate("document.querySelector('#approval-status')?.textContent.includes('APPROVED_FOR_TEST_WRITE')"), "approval simulation");
+  await waitFor(() => cdp.evaluate("document.querySelector('#approval-status')?.textContent.includes('APPROVAL_BLOCKED')"), "blocked approval simulation");
   await clickSelector(cdp, "#close-approval-drawer");
   await waitFor(() => cdp.evaluate("document.querySelector('#approval-drawer')?.open === false"), "approval drawer close");
   await clickRequest(cdp, "REQ-DEMO-002");
@@ -265,6 +265,8 @@ async function exerciseServer(cdp, screenshotPaths) {
   const rapidSnapshot = await waitForSelection(cdp, "REQ-DEMO-002");
   assertSelection(rapidSnapshot, "REQ-DEMO-002");
 
+  await clickSelector(cdp, "#mapping-preview-button");
+  await waitForSelection(cdp, "REQ-DEMO-002", { requireMapping: true });
   if (screenshotPaths?.server) await fs.writeFile(screenshotPaths.server, await cdp.screenshot());
   return { sequence: evidence, approval_reset: resetSnapshot, rapid_selection: rapidSnapshot };
 }
@@ -281,7 +283,7 @@ async function exerciseStandalone(cdp, screenshotPaths) {
     if (screenshotPaths?.[requestId]) await fs.writeFile(screenshotPaths[requestId], await cdp.screenshot());
   }
   await clickSelector(cdp, "#static-approval-button");
-  await waitFor(() => cdp.evaluate("window.__consoleDiagnostics.approvalStatus === 'APPROVED_FOR_TEST_WRITE'"), "standalone approval simulation");
+  await waitFor(() => cdp.evaluate("window.__consoleDiagnostics.approvalStatus === 'APPROVAL_BLOCKED'"), "standalone blocked approval simulation");
   await clickRequest(cdp, "REQ-DEMO-002");
   const resetSnapshot = await waitForSelection(cdp, "REQ-DEMO-002", { requireMapping: true });
   assert.match(resetSnapshot.approval_state, /NOT_REVIEWED/);

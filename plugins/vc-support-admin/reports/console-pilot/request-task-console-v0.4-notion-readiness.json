@@ -1,0 +1,136 @@
+{
+  "ok": true,
+  "console_version": "PILOT v0.4",
+  "schema_source": "APPROVED_SESSION_TOOL_READ_ONLY",
+  "readiness": {
+    "snapshot_id": "A-CP25-G25-NOTION-LIVE-READ-2026-08-03",
+    "schema_requery_kst": "2026-08-03 10:17:07 KST",
+    "source": "APPROVED_SESSION_TOOL_READ_ONLY",
+    "backend_mode": "NOTION_LIVE_READ_PREVIEW",
+    "notion_read_enabled": true,
+    "notion_write_enabled": false,
+    "operational_write_count": 0,
+    "databases": {
+      "request": {
+        "label": "[TEST LAB] 지원팀 업무요청",
+        "data_source_id": "2f564502-66aa-41d8-b95f-55d7b03d5f91",
+        "properties": {
+          "요청명": "title",
+          "요청 상태": "status",
+          "요청 배경": "text",
+          "FUND 업무": "relation",
+          "Process ID": "select",
+          "LAB 여부": "checkbox",
+          "요청 업무 유형": "select",
+          "테스트 케이스 ID": "text",
+          "현재 요약": "text"
+        },
+        "unavailable_required_fields": [
+          "Transaction ID",
+          "Preview 여부",
+          "Task Relation"
+        ]
+      },
+      "task": {
+        "label": "[TEST LAB] 지원팀 Task",
+        "data_source_id": "1d06db48-32b8-49d7-b4bb-27e822df87a1",
+        "properties": {
+          "Task명": "title",
+          "Task 상태": "status",
+          "현재 Actor": "select",
+          "다음 Action": "text",
+          "Blocker": "text",
+          "완료조건": "text",
+          "완료증빙": "text",
+          "상위 요청": "relation",
+          "Operational Task ID": "text",
+          "Process ID": "select",
+          "Evidence 판정": "select",
+          "Evidence Source": "text",
+          "Evidence 확인사항": "text",
+          "LAB 여부": "checkbox"
+        }
+      },
+      "fund_work": {
+        "label": "[TEST LAB] TO DO LIST (FUND)",
+        "data_source_id": "3526c8ab-b9b0-4c39-bcdd-1a60d3c4b988",
+        "relation_target": "[TEST LAB] 전체관리조합",
+        "relation_target_data_source_id": "c8a8c5e3-17be-44b3-a2cb-5cc346583a7e",
+        "identifier_property": "조합명"
+      }
+    },
+    "dummy_fund_exact_matches": {
+      "DUMMY-FUND-A": {
+        "result": "NO_MATCH",
+        "exact_match_count": 0,
+        "matched_record": "NOT_FOUND",
+        "relation_ready": false
+      },
+      "DUMMY-FUND-B": {
+        "result": "NO_MATCH",
+        "exact_match_count": 0,
+        "matched_record": "NOT_FOUND",
+        "relation_ready": false
+      },
+      "DUMMY-FUND-E": {
+        "result": "NO_MATCH",
+        "exact_match_count": 0,
+        "matched_record": "NOT_FOUND",
+        "relation_ready": false
+      }
+    },
+    "transaction_duplicate_lookup": {
+      "lookup_properties": {
+        "request": [
+          "테스트 케이스 ID",
+          "현재 요약"
+        ],
+        "task": [
+          "테스트 케이스 ID",
+          "Operational Task ID"
+        ]
+      },
+      "semantic_gap": "No dedicated Transaction ID property exists in the live Request or Task schema.",
+      "results": {
+        "PROTO-SINGLE-P03-02": {
+          "request_match_count": 0,
+          "task_match_count": 0,
+          "result": "LOOKUP_AVAILABLE_WITH_PROXY",
+          "proposed_action": "BLOCK_TEST_WRITE_UNTIL_TRANSACTION_ID_MAPPING_IS_CONFIRMED"
+        },
+        "PROTO-SINGLE-P03-01": {
+          "request_match_count": 0,
+          "task_match_count": 0,
+          "result": "LOOKUP_AVAILABLE_WITH_PROXY",
+          "proposed_action": "BLOCK_TEST_WRITE_UNTIL_TRANSACTION_ID_MAPPING_IS_CONFIRMED"
+        },
+        "PROTO-COMPOSITE-01": {
+          "request_match_count": 0,
+          "task_match_count": 0,
+          "result": "LOOKUP_AVAILABLE_WITH_PROXY",
+          "proposed_action": "BLOCK_TEST_WRITE_UNTIL_TRANSACTION_ID_MAPPING_IS_CONFIRMED"
+        }
+      }
+    }
+  },
+  "snapshot_id": "A-CP25-G25-NOTION-LIVE-READ-2026-08-03",
+  "schema_requery_kst": "2026-08-03 10:17:07 KST",
+  "backend_mode": "NOTION_LIVE_READ_PREVIEW",
+  "notion_read_enabled": true,
+  "notion_write_enabled": false,
+  "notion_write_count": 0,
+  "operational_write_count": 0,
+  "notion_schema": "LIVE_READ_ONLY_SESSION_SNAPSHOT",
+  "notion_backend": "READ_ONLY",
+  "request_db": "[TEST LAB] 지원팀 업무요청",
+  "task_db": "[TEST LAB] 지원팀 Task",
+  "dummy_fund_db": "[TEST LAB] TO DO LIST (FUND)",
+  "execution": {
+    "notion_write_enabled": false,
+    "notion_write_count": 0,
+    "operational_write_allowed": false,
+    "operational_write_count": 0,
+    "request_completion_allowed": false,
+    "downstream_auto_completion": false
+  }
+}

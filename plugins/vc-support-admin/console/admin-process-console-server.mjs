@@ -10,6 +10,10 @@ import {
   normalizePrototypeRequest,
   replayAdminProcessPrototype
 } from "../kernel/admin-process-prototype-replay.mjs";
+import {
+  NOTION_READINESS_SNAPSHOT,
+  notionReadinessMetadata
+} from "./notion-readiness-snapshot.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.join(here, "public");
@@ -19,13 +23,13 @@ const fixturePaths = Object.freeze({
   "COMPOSITE-01": path.resolve(here, "../fixtures/prototype-composite-p03-p04-p07.json")
 });
 
-export const CONSOLE_VERSION = "PILOT v0.3.1";
+export const CONSOLE_VERSION = "PILOT v0.4";
 export const SUPPORTED_SCENARIOS = Object.freeze(Object.keys(fixturePaths));
 export const DEFAULT_SCENARIO_ID = "SINGLE-P03-02";
 export const DEFAULT_REQUEST_TEXT = "DUMMY-FUND-B의 고유번호증 신청 건을 확인해줘.\n신청서 초안은 있지만 날인본 원본은 아직 준비되지 않았어.";
-export const SKILL_BASELINE_COMMIT = "976b582d61ceaad27eb10569d774593bf3eb6907";
-export const SCHEMA_SOURCE = "LIVE_READ_ONLY_SCHEMA_2026-07-31";
-export const BATCH_ID = "A-CP25-B23";
+export const SKILL_BASELINE_COMMIT = "2814ce0c067bf448e35ca6c14fddd0d38123fa07";
+export const SCHEMA_SOURCE = "APPROVED_SESSION_TOOL_READ_ONLY_2026-08-03";
+export const BATCH_ID = "A-CP25-B25";
 
 const requestDb = "[TEST LAB] 지원팀 업무요청";
 const taskDb = "[TEST LAB] 지원팀 Task";
@@ -113,10 +117,22 @@ function kstNow() {
 function safeExecution() {
   return {
     notion_write_enabled: false,
+    notion_write_count: 0,
     operational_write_allowed: false,
     operational_write_count: 0,
     request_completion_allowed: false,
     downstream_auto_completion: false
+  };
+}
+
+function backendStatus() {
+  return {
+    ...notionReadinessMetadata(),
+    notion_schema: "LIVE_READ_ONLY_SESSION_SNAPSHOT",
+    notion_backend: "READ_ONLY",
+    request_db: NOTION_READINESS_SNAPSHOT.databases.request.label,
+    task_db: NOTION_READINESS_SNAPSHOT.databases.task.label,
+    dummy_fund_db: NOTION_READINESS_SNAPSHOT.databases.fund_work.label
   };
 }
 
@@ -135,9 +151,7 @@ function sendError(response, status, errorCode, message, extra = {}) {
     message,
     supported_scenarios: [...SUPPORTED_SCENARIOS],
     schema_source: SCHEMA_SOURCE,
-    backend_mode: "LOCAL_PREVIEW",
-    notion_schema: "VALIDATED_REFERENCE",
-    notion_backend: "NOT_CONNECTED",
+    ...backendStatus(),
     execution: safeExecution(),
     write_count: 0,
     operational_write_count: 0,
@@ -202,12 +216,10 @@ function enrichPreview(output, demo) {
     evidence: output.evidence_decisions,
     manifest: output.conformance_claim,
     schema_source: SCHEMA_SOURCE,
-    backend_mode: "LOCAL_PREVIEW",
-    notion_schema: "VALIDATED_REFERENCE",
-    notion_backend: "NOT_CONNECTED",
+    ...backendStatus(),
     display_mapping: stageDisplayMapping,
     console_version: CONSOLE_VERSION,
-    execution: { ...output.execution, notion_write_enabled: false, operational_write_count: 0 }
+    execution: { ...output.execution, notion_write_enabled: false, notion_write_count: 0, operational_write_count: 0 }
   };
 }
 
@@ -256,12 +268,10 @@ export async function buildConsolePreview({ request_id: requestId, request_text:
           questions: [normalizedRequest.clarification_question]
         },
         schema_source: SCHEMA_SOURCE,
+        ...backendStatus(),
         execution: safeExecution(),
         write_count: 0,
         operational_write_count: 0,
-        backend_mode: "LOCAL_PREVIEW",
-        notion_schema: "VALIDATED_REFERENCE",
-        notion_backend: "NOT_CONNECTED",
         console_version: CONSOLE_VERSION
       };
     }
@@ -278,16 +288,18 @@ export async function buildConsolePreview({ request_id: requestId, request_text:
   }), demo);
 }
 
-function mappingRow({ consoleField, sourceValue, targetDb, targetProperty, mappingRule, validation = "PASS", writeValue = "NOT_WRITTEN", gap = "" }) {
+function mappingRow({ consoleField, sourceValue, targetDb, targetProperty, mappingRule, propertyType = "UNMAPPED", validation = "PASS", writeValue = "NOT_WRITTEN", gap = "", blocking = false }) {
   return {
     console_field: consoleField,
     source_value: sourceValue,
     target_db: targetDb,
     target_property: targetProperty,
+    property_type: propertyType,
     mapping_rule: mappingRule,
     validation,
     write_value: writeValue,
-    gap
+    gap,
+    blocking
   };
 }
 
@@ -314,21 +326,47 @@ function evidenceSource(taskEvidence) {
   return [...new Set(taskEvidence.map((item) => item.source).filter(Boolean))].join(", ") || "NOT_WRITTEN";
 }
 
+function propertyType(database, property) {
+  return NOTION_READINESS_SNAPSHOT.databases[database]?.properties?.[property] ?? "UNMAPPED";
+}
+
+function duplicatePreviewFor(transactionId) {
+  const result = NOTION_READINESS_SNAPSHOT.transaction_duplicate_lookup.results[transactionId];
+  return {
+    transaction_id: transactionId,
+    ...(result ?? { request_match_count: 0, task_match_count: 0, result: "LOOKUP_UNAVAILABLE", proposed_action: "BLOCK_TEST_WRITE" }),
+    lookup_properties: NOTION_READINESS_SNAPSHOT.transaction_duplicate_lookup.lookup_properties,
+    semantic_gap: NOTION_READINESS_SNAPSHOT.transaction_duplicate_lookup.semantic_gap,
+    write_count: 0
+  };
+}
+
+function relationPreviewFor(dummyFundId) {
+  const result = NOTION_READINESS_SNAPSHOT.dummy_fund_exact_matches[dummyFundId];
+  return {
+    dummy_fund_id: dummyFundId,
+    ...(result ?? { result: "NO_MATCH", exact_match_count: 0, matched_record: "NOT_FOUND", relation_ready: false }),
+    target_property: "FUND 업무",
+    target_data_source_id: NOTION_READINESS_SNAPSHOT.databases.fund_work.data_source_id,
+    write_count: 0
+  };
+}
+
 function requestMapping(preview, demo) {
   const request = preview.request;
   const processIds = request.process_ids ?? [];
   const requestType = requestTypeFor(processIds);
-  const currentSummary = `Transaction ID: ${request.transaction_id} | UI 상태: ${demo.display_status} | Process: ${processIds.join(", ")}`;
+  const relationPreview = relationPreviewFor(request.dummy_fund_id);
   const mappings = [
-    mappingRow({ consoleField: "request_title", sourceValue: demo.title, targetDb: requestDb, targetProperty: "요청명", mappingRule: "기존 Title Property", writeValue: demo.title }),
-    mappingRow({ consoleField: "request_text", sourceValue: request.request_text, targetDb: requestDb, targetProperty: "요청 배경", mappingRule: "기존 Text Property", writeValue: request.request_text }),
-    mappingRow({ consoleField: "transaction_id", sourceValue: request.transaction_id, targetDb: requestDb, targetProperty: "현재 요약", mappingRule: "전용 Transaction ID Property 부재: 기존 현재 요약에 Preview 식별자로 조합", validation: "CONFIRM_REQUIRED", writeValue: currentSummary, gap: "전용 Transaction ID Property가 없어 Persistent Store 중복 조회 전 확인 필요" }),
-    mappingRow({ consoleField: "dummy_fund_id", sourceValue: request.dummy_fund_id, targetDb: requestDb, targetProperty: "FUND 업무", mappingRule: "기존 Relation의 TEST LAB FUND Work를 별도 Exact Match로 선택", validation: "CONFIRM_REQUIRED", writeValue: "NOT_WRITTEN", gap: "DUMMY Fund Key만으로 Relation Page를 자동 선택하지 않음" }),
-    mappingRow({ consoleField: "process_ids", sourceValue: processIds.join(", "), targetDb: requestDb, targetProperty: "Process ID", mappingRule: "기존 Select; 단일 Process는 직접, 복합은 대표 P03과 현재 요약으로 보조", validation: processIds.length === 1 ? "PASS" : "CONFIRM_REQUIRED", writeValue: processIds[0] ?? "NOT_WRITTEN", gap: processIds.length === 1 ? "" : "기존 Select가 복수 Process를 직접 표현하지 못함" }),
-    mappingRow({ consoleField: "request_type", sourceValue: requestType ?? processIds.join(", "), targetDb: requestDb, targetProperty: "요청 업무 유형", mappingRule: "기존 Select 옵션 재사용", validation: requestType ? "PASS" : "CONFIRM_REQUIRED", writeValue: requestType ?? "NOT_WRITTEN", gap: requestType ? "" : "복합 요청은 하나의 요청 업무 유형으로 자동 축약하지 않음" }),
-    mappingRow({ consoleField: "overall_status", sourceValue: demo.display_status, targetDb: requestDb, targetProperty: "요청 상태", mappingRule: "기존 Status 옵션 중 진행 중만 사용; UI 상태 상세는 현재 요약에 보존", writeValue: "진행 중" }),
-    mappingRow({ consoleField: "preview_only", sourceValue: true, targetDb: requestDb, targetProperty: "LAB 여부", mappingRule: "TEST LAB Checkbox", writeValue: true }),
-    mappingRow({ consoleField: "request_task_relation", sourceValue: `${preview.tasks?.length ?? 0} Task`, targetDb: taskDb, targetProperty: "상위 요청", mappingRule: "Request 생성 Preview를 Relation 대상으로 참조", validation: "PASS_PLANNED_RELATION", writeValue: `PLANNED_REQUEST:${request.transaction_id}` })
+    mappingRow({ consoleField: "request_title", sourceValue: demo.title, targetDb: requestDb, targetProperty: "요청명", propertyType: propertyType("request", "요청명"), mappingRule: "Live title property", writeValue: demo.title }),
+    mappingRow({ consoleField: "request_text", sourceValue: request.request_text, targetDb: requestDb, targetProperty: "요청 배경", propertyType: propertyType("request", "요청 배경"), mappingRule: "Live text property", writeValue: request.request_text }),
+    mappingRow({ consoleField: "transaction_id", sourceValue: request.transaction_id, targetDb: requestDb, targetProperty: "UNMAPPED", propertyType: "UNMAPPED", mappingRule: "No dedicated live Transaction ID property; do not overload another property without approval.", validation: "BLOCKING_GAP", gap: "Durable transaction duplicate protection cannot be established.", blocking: true }),
+    mappingRow({ consoleField: "dummy_fund_id", sourceValue: request.dummy_fund_id, targetDb: requestDb, targetProperty: "FUND 업무", propertyType: propertyType("request", "FUND 업무"), mappingRule: "Live relation requires one exact matched target record.", validation: relationPreview.relation_ready ? "PASS" : "BLOCKING_GAP", gap: relationPreview.relation_ready ? "" : `${relationPreview.result}: exact matched Dummy Fund relation is required.`, blocking: !relationPreview.relation_ready }),
+    mappingRow({ consoleField: "process_ids", sourceValue: processIds.join(", "), targetDb: requestDb, targetProperty: "Process ID", propertyType: propertyType("request", "Process ID"), mappingRule: "Live select supports a single process only.", validation: processIds.length === 1 ? "PASS" : "BLOCKING_GAP", writeValue: processIds.length === 1 ? processIds[0] : "NOT_WRITTEN", gap: processIds.length === 1 ? "" : "Composite request cannot be reduced to one process without a confirmed mapping.", blocking: processIds.length !== 1 }),
+    mappingRow({ consoleField: "request_type", sourceValue: requestType ?? processIds.join(", "), targetDb: requestDb, targetProperty: "요청 업무 유형", propertyType: propertyType("request", "요청 업무 유형"), mappingRule: "Live select option reused only when a single process maps exactly.", validation: requestType ? "PASS" : "CONFIRM_REQUIRED", writeValue: requestType ?? "NOT_WRITTEN", gap: requestType ? "" : "Composite request type needs a user-confirmed mapping." }),
+    mappingRow({ consoleField: "overall_status", sourceValue: demo.display_status, targetDb: requestDb, targetProperty: "요청 상태", propertyType: propertyType("request", "요청 상태"), mappingRule: "Use live in-progress status; never map a candidate to complete.", writeValue: "진행 중" }),
+    mappingRow({ consoleField: "preview_only", sourceValue: true, targetDb: requestDb, targetProperty: "UNMAPPED", propertyType: "UNMAPPED", mappingRule: "The live Request schema has no Preview flag; no new property is proposed.", validation: "UNMAPPED", gap: "Preview-only remains console metadata, not a Notion property." }),
+    mappingRow({ consoleField: "request_task_relation", sourceValue: `${preview.tasks?.length ?? 0} Task`, targetDb: taskDb, targetProperty: "상위 요청", propertyType: propertyType("task", "상위 요청"), mappingRule: "Task-side live relation is populated only after the Request create/requery step.", validation: "PASS_SEQUENTIAL_RELATION", writeValue: "POST_CREATE_REQUEST_PAGE_ID" })
   ];
   return {
     mappings,
@@ -340,13 +378,13 @@ function requestMapping(preview, demo) {
       properties: {
         "요청명": demo.title,
         "요청 배경": request.request_text,
-        "현재 요약": currentSummary,
-        "Process ID": processIds[0] ?? "NOT_WRITTEN",
+        "Process ID": processIds.length === 1 ? processIds[0] : "NOT_WRITTEN",
         "요청 업무 유형": requestType ?? "NOT_WRITTEN",
         "요청 상태": "진행 중",
         "LAB 여부": true,
-        "FUND 업무": "NOT_WRITTEN"
+        "FUND 업무": relationPreview.relation_ready ? relationPreview.matched_record : "NOT_WRITTEN"
       },
+      unmapped_properties: ["transaction_id", "preview_only"],
       write_status: "NOT_WRITTEN"
     }
   };
@@ -357,22 +395,22 @@ function taskMapping(preview, task, requestTransactionId) {
   const confirmation = task.actor === "사람 확인" ? preview.interaction?.questions?.[0] ?? "NOT_WRITTEN" : "NOT_WRITTEN";
   const title = `${task.process_id} · ${task.operational_task_id}`;
   const mappings = [
-    mappingRow({ consoleField: "task_title", sourceValue: title, targetDb: taskDb, targetProperty: "Task명", mappingRule: "기존 Process ID + Operational Task ID로 결정적 Preview Title", writeValue: title }),
-    mappingRow({ consoleField: "operational_task_id", sourceValue: task.operational_task_id, targetDb: taskDb, targetProperty: "Operational Task ID", mappingRule: "기존 Text Property", writeValue: task.operational_task_id }),
-    mappingRow({ consoleField: "process_id", sourceValue: task.process_id, targetDb: taskDb, targetProperty: "Process ID", mappingRule: "기존 Select Option", writeValue: task.process_id }),
+    mappingRow({ consoleField: "task_title", sourceValue: title, targetDb: taskDb, targetProperty: "Task명", propertyType: propertyType("task", "Task명"), mappingRule: "Live title property", writeValue: title }),
+    mappingRow({ consoleField: "operational_task_id", sourceValue: task.operational_task_id, targetDb: taskDb, targetProperty: "Operational Task ID", propertyType: propertyType("task", "Operational Task ID"), mappingRule: "Live text property", writeValue: task.operational_task_id }),
+    mappingRow({ consoleField: "process_id", sourceValue: task.process_id, targetDb: taskDb, targetProperty: "Process ID", propertyType: propertyType("task", "Process ID"), mappingRule: "Live select option", writeValue: task.process_id }),
     mappingRow({ consoleField: "canonical_stage", sourceValue: task.stage, targetDb: taskDb, targetProperty: "UNMAPPED", mappingRule: "Canonical Stage는 Console/Skill Vocabulary; Notion에는 새 Property를 만들지 않음", validation: "UNMAPPED", writeValue: "NOT_WRITTEN", gap: "Task 상태와 UI Label로만 표시" }),
-    mappingRow({ consoleField: "ui_status", sourceValue: stageDisplayMapping[task.stage] ?? task.stage, targetDb: taskDb, targetProperty: "Task 상태", mappingRule: "기존 Status 옵션 중 진행 중 사용; 완료 후보도 완료로 쓰지 않음", writeValue: taskStatusForStage(task.stage) }),
-    mappingRow({ consoleField: "actor", sourceValue: task.actor, targetDb: taskDb, targetProperty: "현재 Actor", mappingRule: "기존 Select Option", writeValue: task.actor }),
-    mappingRow({ consoleField: "next_action", sourceValue: task.next_action, targetDb: taskDb, targetProperty: "다음 Action", mappingRule: "기존 Text Property", writeValue: task.next_action }),
-    mappingRow({ consoleField: "blocker", sourceValue: task.blocker || "", targetDb: taskDb, targetProperty: "Blocker", mappingRule: "기존 Text Property", writeValue: task.blocker || "" }),
-    mappingRow({ consoleField: "completion_condition", sourceValue: task.completion_condition, targetDb: taskDb, targetProperty: "완료조건", mappingRule: "기존 Text Property", writeValue: task.completion_condition }),
-    mappingRow({ consoleField: "completion_evidence", sourceValue: task.completion_evidence?.join(", ") || "", targetDb: taskDb, targetProperty: "완료증빙", mappingRule: "기존 Text Property", writeValue: task.completion_evidence?.join(", ") || "" }),
-    mappingRow({ consoleField: "evidence_judgment", sourceValue: evidenceJudgment(evidence), targetDb: taskDb, targetProperty: "Evidence 판정", mappingRule: "기존 Select Option", writeValue: evidenceJudgment(evidence) }),
-    mappingRow({ consoleField: "evidence_source", sourceValue: evidenceSource(evidence), targetDb: taskDb, targetProperty: "Evidence Source", mappingRule: "기존 Text Property", writeValue: evidenceSource(evidence) }),
-    mappingRow({ consoleField: "evidence_confirmation", sourceValue: confirmation, targetDb: taskDb, targetProperty: "Evidence 확인사항", mappingRule: "사람 확인 질문이 있는 경우만 기존 Text Property에 표시", validation: confirmation === "NOT_WRITTEN" ? "NOT_WRITTEN" : "PASS", writeValue: confirmation }),
-    mappingRow({ consoleField: "related_fund", sourceValue: preview.request?.dummy_fund_id, targetDb: taskDb, targetProperty: "관련 조합", mappingRule: "기존 Text Property에 Dummy Fund Key 표시", writeValue: preview.request?.dummy_fund_id }),
-    mappingRow({ consoleField: "parent_request_transaction", sourceValue: requestTransactionId, targetDb: taskDb, targetProperty: "상위 요청", mappingRule: "생성 예정 Request Record와 기존 Relation 연결", validation: "PASS_PLANNED_RELATION", writeValue: `PLANNED_REQUEST:${requestTransactionId}` }),
-    mappingRow({ consoleField: "preview_only", sourceValue: true, targetDb: taskDb, targetProperty: "LAB 여부", mappingRule: "TEST LAB Checkbox", writeValue: true })
+    mappingRow({ consoleField: "ui_status", sourceValue: stageDisplayMapping[task.stage] ?? task.stage, targetDb: taskDb, targetProperty: "Task 상태", propertyType: propertyType("task", "Task 상태"), mappingRule: "Use live in-progress status; never complete a candidate.", writeValue: taskStatusForStage(task.stage) }),
+    mappingRow({ consoleField: "actor", sourceValue: task.actor, targetDb: taskDb, targetProperty: "현재 Actor", propertyType: propertyType("task", "현재 Actor"), mappingRule: "Live select option", writeValue: task.actor }),
+    mappingRow({ consoleField: "next_action", sourceValue: task.next_action, targetDb: taskDb, targetProperty: "다음 Action", propertyType: propertyType("task", "다음 Action"), mappingRule: "Live text property", writeValue: task.next_action }),
+    mappingRow({ consoleField: "blocker", sourceValue: task.blocker || "", targetDb: taskDb, targetProperty: "Blocker", propertyType: propertyType("task", "Blocker"), mappingRule: "Live text property", writeValue: task.blocker || "" }),
+    mappingRow({ consoleField: "completion_condition", sourceValue: task.completion_condition, targetDb: taskDb, targetProperty: "완료조건", propertyType: propertyType("task", "완료조건"), mappingRule: "Live text property", writeValue: task.completion_condition }),
+    mappingRow({ consoleField: "completion_evidence", sourceValue: task.completion_evidence?.join(", ") || "", targetDb: taskDb, targetProperty: "완료증빙", propertyType: propertyType("task", "완료증빙"), mappingRule: "Live text property", writeValue: task.completion_evidence?.join(", ") || "" }),
+    mappingRow({ consoleField: "evidence_judgment", sourceValue: evidenceJudgment(evidence), targetDb: taskDb, targetProperty: "Evidence 판정", propertyType: propertyType("task", "Evidence 판정"), mappingRule: "Live select option", writeValue: evidenceJudgment(evidence) }),
+    mappingRow({ consoleField: "evidence_source", sourceValue: evidenceSource(evidence), targetDb: taskDb, targetProperty: "Evidence Source", propertyType: propertyType("task", "Evidence Source"), mappingRule: "Live text property", writeValue: evidenceSource(evidence) }),
+    mappingRow({ consoleField: "evidence_confirmation", sourceValue: confirmation, targetDb: taskDb, targetProperty: "Evidence 확인사항", propertyType: propertyType("task", "Evidence 확인사항"), mappingRule: "Human question only when present.", validation: confirmation === "NOT_WRITTEN" ? "NOT_WRITTEN" : "PASS", writeValue: confirmation }),
+    mappingRow({ consoleField: "related_fund", sourceValue: preview.request?.dummy_fund_id, targetDb: taskDb, targetProperty: "관련 조합", propertyType: "text", mappingRule: "Live text field retains the non-sensitive fixture key.", writeValue: preview.request?.dummy_fund_id }),
+    mappingRow({ consoleField: "parent_request_transaction", sourceValue: requestTransactionId, targetDb: taskDb, targetProperty: "상위 요청", propertyType: propertyType("task", "상위 요청"), mappingRule: "Bind the actual Request page ID only after the Request create/requery step.", validation: "PASS_SEQUENTIAL_RELATION", writeValue: "POST_CREATE_REQUEST_PAGE_ID" }),
+    mappingRow({ consoleField: "preview_only", sourceValue: true, targetDb: taskDb, targetProperty: "LAB 여부", propertyType: propertyType("task", "LAB 여부"), mappingRule: "Live TEST LAB checkbox", writeValue: true })
   ];
   return {
     mappings,
@@ -424,21 +462,26 @@ export async function buildMappingPreview({ request_id: requestId, scenario_id: 
   const requestPreview = requestMapping(preview, demo);
   const taskPreviews = (preview.tasks ?? []).map((task) => taskMapping(preview, task, preview.request.transaction_id));
   const propertyMappings = [...requestPreview.mappings, ...taskPreviews.flatMap((task) => task.mappings)];
-  const gaps = propertyMappings.filter((mapping) => ["UNMAPPED", "CONFIRM_REQUIRED"].includes(mapping.validation));
+  const relationPreview = relationPreviewFor(preview.request.dummy_fund_id);
+  const duplicatePreview = duplicatePreviewFor(preview.request.transaction_id);
+  const gaps = propertyMappings.filter((mapping) => ["UNMAPPED", "CONFIRM_REQUIRED", "BLOCKING_GAP"].includes(mapping.validation));
+  const blockingGaps = propertyMappings.filter((mapping) => mapping.blocking || mapping.validation === "BLOCKING_GAP");
   const passed = propertyMappings.filter((mapping) => mapping.validation.startsWith("PASS")).length;
   const validationSummary = {
-    status: "READY_FOR_APPROVAL",
+    status: blockingGaps.length === 0 ? "READY_FOR_TEST_WRITE_APPROVAL" : "APPROVAL_BLOCKED",
     required_mapping: propertyMappings.length,
     passed,
     gaps: gaps.length,
-    blocking_gaps: 0,
+    blocking_gaps: blockingGaps.length,
     gap_details: gaps.map((mapping) => ({ console_field: mapping.console_field, target_property: mapping.target_property, validation: mapping.validation, gap: mapping.gap })),
-    duplicate_check: "NOT_RUN_PERSISTENT_STORE",
-    duplicate_check_plan: `Transaction ID '${preview.request.transaction_id}' is reviewed in the planned Request summary before a separate TEST Write TAP.`,
-    request_task_relation: "PASS_PLANNED_RELATION",
+    duplicate_check: duplicatePreview.result,
+    duplicate_check_plan: duplicatePreview.proposed_action,
+    request_task_relation: "PASS_SEQUENTIAL_RELATION",
     write_allowed: false,
     notion_write_enabled: false,
-    note: "READY_FOR_APPROVAL means local approval simulation only; CONFIRM_REQUIRED fields remain a separate TEST Write gate."
+    note: blockingGaps.length === 0
+      ? "This is a local approval simulation. A separate TEST Write TAP remains required."
+      : "TEST Write is blocked: live schema relation and/or durable transaction mapping need confirmation."
   };
   const audit = {
     preview_generated_at_kst: kstNow(),
@@ -447,7 +490,7 @@ export async function buildMappingPreview({ request_id: requestId, scenario_id: 
     manifest_id: preview.manifest?.manifest_id ?? "PROTOTYPE-SCENARIO-CONTRACT-V0.1",
     batch_id: BATCH_ID,
     transaction_id: preview.request.transaction_id,
-    approval_status: "PENDING_LOCAL_SIMULATION",
+    approval_status: validationSummary.status === "APPROVAL_BLOCKED" ? "APPROVAL_BLOCKED" : "NOT_REVIEWED",
     approved_by: "NOT_WRITTEN",
     write_count: 0
   };
@@ -455,17 +498,39 @@ export async function buildMappingPreview({ request_id: requestId, scenario_id: 
     ok: true,
     console_version: CONSOLE_VERSION,
     schema_source: SCHEMA_SOURCE,
+    ...backendStatus(),
     request_id: demo.request_id,
     scenario_id: preview.scenario_id,
     preview_output: preview,
     request_record_preview: requestPreview.record_preview,
     task_record_previews: taskPreviews.map((task) => task.record_preview),
     property_mappings: propertyMappings,
+    relation_preview: relationPreview,
+    duplicate_preview: duplicatePreview,
+    notion_readiness: NOTION_READINESS_SNAPSHOT,
+    request_payload_preview: requestPreview.record_preview,
+    task_payload_previews: taskPreviews.map((task) => task.record_preview),
+    write_plan: [
+      "Duplicate requery using the confirmed transaction mapping.",
+      "Confirm one exact Dummy Fund relation target.",
+      "Create one TEST Request record, then requery its page ID.",
+      "Create Tasks sequentially with the Task-side 상위 요청 relation.",
+      "Requery relations and compare Expected–Actual.",
+      "Stop later Task creation on any failure; never auto-complete.",
+      "Replay the same transaction only after durable duplicate protection is confirmed."
+    ],
+    atomicity_preview: {
+      composite_request: preview.scenario_id === "COMPOSITE-01",
+      task_create_order: (preview.tasks ?? []).map((task) => task.process_id),
+      failure_policy: "STOP_AFTER_FIRST_TASK_FAILURE",
+      existing_record_mutation: "PROHIBITED",
+      automatic_completion: false
+    },
     validation_summary: validationSummary,
-    approval_state: "PENDING_LOCAL_SIMULATION",
+    approval_state: audit.approval_status,
     approval_preview: {
-      approval_status: "PENDING_LOCAL_SIMULATION",
-      next_step: "REVIEW_MAPPING_THEN_SEPARATE_TEST_WRITE_TAP",
+      approval_status: audit.approval_status,
+      next_step: validationSummary.status === "APPROVAL_BLOCKED" ? "RESOLVE_BLOCKING_SCHEMA_GAPS" : "SEPARATE_TEST_WRITE_TAP",
       write_count: 0
     },
     expected_actual: {
@@ -482,18 +547,89 @@ export async function buildMappingPreview({ request_id: requestId, scenario_id: 
 
 export async function buildApprovalPreview({ request_id: requestId, scenario_id: scenarioId, action = "approve", preview_output: previewOutput } = {}) {
   const mappingPreview = await buildMappingPreview({ request_id: requestId, scenario_id: scenarioId, preview_output: previewOutput });
-  const approvalStatus = action === "approve" ? "APPROVED_FOR_TEST_WRITE" : action === "needs_changes" ? "NEEDS_USER_CHANGES" : "CANCELLED_LOCAL_SIMULATION";
+  const approvalStatus = action === "approve" && mappingPreview.validation_summary.blocking_gaps === 0
+    ? "APPROVED_FOR_SEPARATE_TEST_WRITE_TAP"
+    : action === "approve" ? "APPROVAL_BLOCKED" : action === "needs_changes" ? "NEEDS_USER_CHANGES" : "CANCELLED_LOCAL_SIMULATION";
   return {
     ok: true,
     request_id: mappingPreview.request_id,
     scenario_id: mappingPreview.scenario_id,
     approval_status: approvalStatus,
-    approved_by: action === "approve" ? "LOCAL_DEMO_USER" : "NOT_WRITTEN",
-    next_step: action === "approve" ? "SEPARATE_TEST_WRITE_TAP" : "REVIEW_MAPPING_PREVIEW",
+    approved_by: approvalStatus === "APPROVED_FOR_SEPARATE_TEST_WRITE_TAP" ? "LOCAL_DEMO_USER" : "NOT_WRITTEN",
+    next_step: approvalStatus === "APPROVAL_BLOCKED" ? "RESOLVE_BLOCKING_SCHEMA_GAPS" : approvalStatus === "APPROVED_FOR_SEPARATE_TEST_WRITE_TAP" ? "SEPARATE_TEST_WRITE_TAP" : "REVIEW_MAPPING_PREVIEW",
     validation_summary: mappingPreview.validation_summary,
-    audit: { ...mappingPreview.audit, approval_status: approvalStatus, approved_by: action === "approve" ? "LOCAL_DEMO_USER" : "NOT_WRITTEN" },
+    audit: { ...mappingPreview.audit, approval_status: approvalStatus, approved_by: approvalStatus === "APPROVED_FOR_SEPARATE_TEST_WRITE_TAP" ? "LOCAL_DEMO_USER" : "NOT_WRITTEN" },
     execution: safeExecution(),
     write_count: 0,
+    operational_write_count: 0
+  };
+}
+
+export function buildNotionSchemaReadiness() {
+  return {
+    ok: true,
+    console_version: CONSOLE_VERSION,
+    schema_source: SCHEMA_SOURCE,
+    readiness: NOTION_READINESS_SNAPSHOT,
+    ...backendStatus(),
+    execution: safeExecution(),
+    notion_write_count: 0,
+    operational_write_count: 0
+  };
+}
+
+async function previewForNotionInput({ request_id: requestId, scenario_id: scenarioId, preview_output: previewOutput } = {}) {
+  const demo = findDemoRequest(requestId);
+  if (!demo) {
+    const error = new Error("The requested demo request is not available in this pilot.");
+    error.code = "UNSUPPORTED_DEMO_REQUEST";
+    throw error;
+  }
+  return buildConsolePreview({
+    request_id: demo.request_id,
+    scenario_id: scenarioId ?? demo.scenario_id,
+    request_text: demo.source_mode === "NATURAL_LANGUAGE_PREVIEW" ? previewOutput?.request?.request_text ?? demo.request_text : undefined
+  });
+}
+
+export async function buildDuplicatePreview(input = {}) {
+  const preview = await previewForNotionInput(input);
+  return {
+    ok: true,
+    request_id: preview.request_id,
+    scenario_id: preview.scenario_id,
+    duplicate_preview: duplicatePreviewFor(preview.request.transaction_id),
+    ...backendStatus(),
+    execution: safeExecution(),
+    notion_write_count: 0,
+    operational_write_count: 0
+  };
+}
+
+export async function buildRelationPreview(input = {}) {
+  const preview = await previewForNotionInput(input);
+  return {
+    ok: true,
+    request_id: preview.request_id,
+    scenario_id: preview.scenario_id,
+    relation_preview: relationPreviewFor(preview.request.dummy_fund_id),
+    ...backendStatus(),
+    execution: safeExecution(),
+    notion_write_count: 0,
+    operational_write_count: 0
+  };
+}
+
+export async function buildTestWritePayloadPreview(input = {}) {
+  const mapping = await buildMappingPreview(input);
+  return {
+    ok: true,
+    ...mapping,
+    request_payload_preview: mapping.request_record_preview,
+    task_payload_previews: mapping.task_record_previews,
+    ...backendStatus(),
+    execution: safeExecution(),
+    notion_write_count: 0,
     operational_write_count: 0
   };
 }
@@ -519,11 +655,13 @@ export function createConsoleServer() {
           demo_requests: DEMO_REQUESTS.map(publicDemoRequest),
           supported_scenarios: [...SUPPORTED_SCENARIOS],
           schema_source: SCHEMA_SOURCE,
-          backend_mode: "LOCAL_PREVIEW",
-          notion_schema: "VALIDATED_REFERENCE",
-          notion_backend: "NOT_CONNECTED",
+          ...backendStatus(),
           execution: safeExecution()
         });
+        return;
+      }
+      if (request.method === "GET" && url.pathname === "/api/notion/schema-readiness") {
+        sendJson(response, 200, buildNotionSchemaReadiness());
         return;
       }
       if (request.method === "POST" && url.pathname === "/api/preview") {
@@ -535,6 +673,18 @@ export function createConsoleServer() {
       if (request.method === "POST" && url.pathname === "/api/mapping-preview") {
         const preview = await buildMappingPreview(await readJsonBody(request));
         sendJson(response, 200, preview);
+        return;
+      }
+      if (request.method === "POST" && url.pathname === "/api/notion/duplicate-preview") {
+        sendJson(response, 200, await buildDuplicatePreview(await readJsonBody(request)));
+        return;
+      }
+      if (request.method === "POST" && url.pathname === "/api/notion/relation-preview") {
+        sendJson(response, 200, await buildRelationPreview(await readJsonBody(request)));
+        return;
+      }
+      if (request.method === "POST" && url.pathname === "/api/notion/test-write-payload-preview") {
+        sendJson(response, 200, await buildTestWritePayloadPreview(await readJsonBody(request)));
         return;
       }
       if (request.method === "POST" && url.pathname === "/api/approval-preview") {
@@ -573,7 +723,7 @@ export async function startConsoleServer({ port = configuredPort, host = "127.0.
 async function main() {
   const running = await startConsoleServer();
   console.log(`Admin process console ready: ${running.url}`);
-  console.log("BACKEND_MODE=LOCAL_PREVIEW | NOTION_SCHEMA=VALIDATED_REFERENCE | NOTION_BACKEND=NOT_CONNECTED | NOTION_WRITE_ENABLED=false | OPERATIONAL_WRITE_COUNT=0");
+  console.log("BACKEND_MODE=NOTION_LIVE_READ_PREVIEW | NOTION_SCHEMA=LIVE_READ_ONLY_SESSION_SNAPSHOT | NOTION_BACKEND=READ_ONLY | NOTION_WRITE_ENABLED=false | OPERATIONAL_WRITE_COUNT=0");
 }
 
 const invokedAsScript = typeof globalThis.process !== "undefined" && globalThis.process.argv[1] && path.resolve(globalThis.process.argv[1]) === fileURLToPath(import.meta.url);
