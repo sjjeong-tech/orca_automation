@@ -249,7 +249,9 @@ G-A~G-C 해소는 Record Write를 수반하므로 **이번 TAP 범위 밖**이�
 
 | 항목 | 값 |
 |---|---|
-| Notion Read | 6 (data source fetch 3 · SQL 3 · search 1 · page fetch 1 중 성공 6, 한도초과 실패 2) |
+| Notion Read 시도 | 10 (data source fetch 3 · SQL 5 · search 1 · page fetch 1) |
+| Notion Read 성공 | 8 |
+| Notion Read 실패 | 2 (multi-source 쿼리 Enterprise 미보유 1 · Query Data Source 사용량 한도 1) |
 | Notion Write | **0** |
 | 운영 Record 변경 | **0** |
 | Schema 변경 | **0** |
