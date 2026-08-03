@@ -1,0 +1,40 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import { once } from "node:events";
+import { createConsoleServer } from "../console/admin-process-console-server.mjs";
+import { buildGapResolutionPreview, GAP_RESOLUTION_VERSION } from "../console/notion-gap-resolution-preview.mjs";
+
+const outputPath = "plugins/vc-support-admin/reports/console-pilot/request-task-console-v0.4.2-output.json";
+const gapPath = "plugins/vc-support-admin/reports/console-pilot/request-task-console-v0.4.2-gap-analysis.json";
+const htmlPath = "plugins/vc-support-admin/reports/console-pilot/request-task-console-v0.4.2.html";
+const local = buildGapResolutionPreview({ requestId: "REQ-DEMO-003", scenarioId: "COMPOSITE-01", preview: { request: { dummy_fund_id: "DUMMY-FUND-E" } } });
+assert.equal(GAP_RESOLUTION_VERSION, "PILOT v0.4.2");
+assert.equal(local.fund_relation.match_count, 0);
+assert.equal(local.fund_relation.recommendation, "NEW_TEST_RECORD_REQUIRED");
+assert.equal(local.durable_duplicate_result, "NOT_READY_PROXY_ONLY");
+assert.equal(local.composite_process_recommendation, "TASK_LEVEL_PROCESS_SOURCE_OF_TRUTH");
+assert.equal(local.composite_process_candidates.find((candidate) => candidate.id === "task_level_process").data_loss, false);
+assert.equal(local.notion_write_count, 0);
+assert.equal(local.operational_write_count, 0);
+const output = JSON.parse(fs.readFileSync(outputPath, "utf8"));
+const gap = JSON.parse(fs.readFileSync(gapPath, "utf8"));
+const html = fs.readFileSync(htmlPath, "utf8");
+assert.equal(output.console_version, "PILOT v0.4.2");
+assert.equal(gap.notion_write_count, 0);
+assert.equal(gap.operational_write_count, 0);
+for (const text of ["REQ-DEMO-001", "REQ-DEMO-002", "REQ-DEMO-003", "FUND RELATION", "DURABLE DUPLICATE", "COMPOSITE PROCESS", "WRITE NOT EXECUTED"]) assert.ok(html.includes(text));
+assert.doesNotMatch(html, /https?:\/\//i);
+const server = createConsoleServer();
+server.listen({ host: "127.0.0.1", port: 0 });
+await once(server, "listening");
+try {
+  const origin = `http://127.0.0.1:${server.address().port}`;
+  const response = await fetch(`${origin}/api/notion/gap-resolution-preview`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ request_id: "REQ-DEMO-003", scenario_id: "COMPOSITE-01" }) });
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.composite_process_recommendation, "TASK_LEVEL_PROCESS_SOURCE_OF_TRUTH");
+  assert.equal(body.test_write_readiness, "TEST_WRITE_BLOCKED");
+  assert.equal(body.notion_write_count, 0);
+  assert.equal(body.operational_write_count, 0);
+} finally { await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve())); }
+console.log("notion-gap-resolution-preview-v0.4.2: PASS");

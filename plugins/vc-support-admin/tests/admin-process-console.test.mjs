@@ -11,6 +11,7 @@ import {
   buildApprovalPreview,
   buildConsolePreview,
   buildDuplicatePreview,
+  buildGapResolutionPreview,
   buildMappingPreview,
   buildNotionSchemaReadiness,
   buildRelationPreview,
@@ -84,6 +85,15 @@ assert.equal(duplicate.duplicate_preview.task_match_count, 0);
 const relation = await buildRelationPreview({ request_id: "REQ-DEMO-003", scenario_id: "COMPOSITE-01" });
 assert.equal(relation.relation_preview.dummy_fund_id, "DUMMY-FUND-E");
 assert.equal(relation.relation_preview.relation_ready, false);
+const gapResolution = await buildGapResolutionPreview({ request_id: "REQ-DEMO-003", scenario_id: "COMPOSITE-01" });
+assert.equal(gapResolution.console_version, "PILOT v0.4.2");
+assert.equal(gapResolution.fund_relation.match_count, 0);
+assert.equal(gapResolution.fund_relation.recommendation, "NEW_TEST_RECORD_REQUIRED");
+assert.equal(gapResolution.durable_duplicate_result, "NOT_READY_PROXY_ONLY");
+assert.equal(gapResolution.composite_process_recommendation, "TASK_LEVEL_PROCESS_SOURCE_OF_TRUTH");
+assert.equal(gapResolution.composite_process_candidates.find((candidate) => candidate.id === "task_level_process").schema_change_required, false);
+assert.equal(gapResolution.notion_write_count, 0);
+assert.equal(gapResolution.operational_write_count, 0);
 const payload = await buildTestWritePayloadPreview({ request_id: "REQ-DEMO-003", scenario_id: "COMPOSITE-01" });
 assert.equal(payload.task_payload_previews.length, 3);
 assert.equal(payload.atomicity_preview.failure_policy, "STOP_AFTER_FIRST_TASK_FAILURE");

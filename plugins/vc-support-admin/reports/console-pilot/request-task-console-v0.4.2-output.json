@@ -1,0 +1,3974 @@
+{
+  "console_version": "PILOT v0.4.2",
+  "selected_request": "REQ-DEMO-001",
+  "demo_requests": [
+    {
+      "request_id": "REQ-DEMO-001",
+      "title": "고유번호증 신청 — 날인본 확인 필요",
+      "scenario_id": "SINGLE-P03-02",
+      "dummy_fund_id": "DUMMY-FUND-B",
+      "display_status": "확인 필요",
+      "source_mode": "NATURAL_LANGUAGE_PREVIEW",
+      "current_actor": "사람 확인",
+      "has_blocker": true,
+      "request_text": "DUMMY-FUND-B의 고유번호증 신청 건을 확인해줘.\n신청서 초안은 있지만 날인본 원본은 아직 준비되지 않았어."
+    },
+    {
+      "request_id": "REQ-DEMO-002",
+      "title": "고유번호증 신청 — 결과물 검토",
+      "scenario_id": "SINGLE-P03-01",
+      "dummy_fund_id": "DUMMY-FUND-A",
+      "display_status": "완료 후보",
+      "source_mode": "FIXTURE_PRESET",
+      "current_actor": "지원팀",
+      "has_blocker": false
+    },
+    {
+      "request_id": "REQ-DEMO-003",
+      "title": "고유번호증·홈택스·계좌개설 복합 요청",
+      "scenario_id": "COMPOSITE-01",
+      "dummy_fund_id": "DUMMY-FUND-E",
+      "display_status": "부분 중단",
+      "source_mode": "FIXTURE_PRESET",
+      "current_actor": "지원팀",
+      "has_blocker": true
+    }
+  ],
+  "request": {
+    "request_text": "DUMMY-FUND-B의 고유번호증 신청 건을 확인해줘.\n신청서 초안은 있지만 날인본 원본은 아직 준비되지 않았어.",
+    "transaction_id": "PROTO-SINGLE-P03-02",
+    "scenario_id": "SINGLE-P03-02",
+    "dummy_fund_id": "DUMMY-FUND-B",
+    "process_ids": [
+      "P03"
+    ],
+    "preview_only": true,
+    "missing_information": [],
+    "clarification_question": null,
+    "overall_status": "BLOCKED"
+  },
+  "gap_analysis": {
+    "ok": true,
+    "console_version": "PILOT v0.4.2",
+    "schema_read_at_kst": "2026-08-03 11:10:02 KST",
+    "schema_source": "APPROVED_SESSION_TOOL_READ_ONLY",
+    "request_id": "REQ-DEMO-001",
+    "scenario_id": "SINGLE-P03-02",
+    "fund_relation": {
+      "dummy_fund_id": "DUMMY-FUND-B",
+      "candidate_db": "[TEST LAB] 전체관리조합",
+      "candidate_property": "조합명 / 테스트 케이스 ID",
+      "match_query": "Exact match only",
+      "match_count": 0,
+      "matched_page_id": "NOT_FOUND",
+      "candidates": [
+        {
+          "id": "existing_exact",
+          "label": "기존 TEST Record Exact Match",
+          "result": "NO_MATCH",
+          "relation_safe": false,
+          "schema_change_required": false,
+          "write_required": false
+        },
+        {
+          "id": "test_identifier",
+          "label": "기존 테스트 식별 Property",
+          "result": "CONFIRM_REQUIRED",
+          "relation_safe": false,
+          "schema_change_required": false,
+          "write_required": false,
+          "note": "추가 SQL 조회는 workspace usage limit으로 미실행"
+        },
+        {
+          "id": "text_only",
+          "label": "Relation 없이 Text Snapshot",
+          "result": "TEXT_ONLY_FALLBACK_CANDIDATE",
+          "relation_safe": false,
+          "schema_change_required": false,
+          "write_required": false,
+          "note": "Relation 검증 완료를 의미하지 않음"
+        },
+        {
+          "id": "new_test_record",
+          "label": "새 TEST Dummy Fund Record",
+          "result": "NEW_TEST_RECORD_REQUIRED",
+          "relation_safe": true,
+          "schema_change_required": false,
+          "write_required": true,
+          "note": "사용자 승인 전 생성 금지"
+        }
+      ],
+      "recommendation": "NEW_TEST_RECORD_REQUIRED",
+      "blocking": true,
+      "required_approval": "TEST Dummy Fund Record 생성 및 Exact Relation 대상 승인"
+    },
+    "transaction_candidates": [
+      {
+        "id": "test_case_id",
+        "property": "Request/Task 테스트 케이스 ID",
+        "type": "text",
+        "result": "CONFIRM_REQUIRED",
+        "durable": false,
+        "reason": "기존 Text지만 Transaction ID 용도로 확정되지 않음",
+        "schema_change_required": false
+      },
+      {
+        "id": "title_prefix",
+        "property": "Request 요청명",
+        "type": "title",
+        "result": "TITLE_PREFIX_FALLBACK",
+        "durable": false,
+        "reason": "표시명 수정으로 손상될 수 있어 durable key가 아님",
+        "schema_change_required": false
+      },
+      {
+        "id": "task_proxy",
+        "property": "Operational Task ID + 상위 요청",
+        "type": "text + relation",
+        "result": "COMPOSITE_PROXY_ONLY",
+        "durable": false,
+        "reason": "Request 재실행을 단일 키로 Exact query할 수 없음",
+        "schema_change_required": false
+      },
+      {
+        "id": "new_transaction_id",
+        "property": "전용 Transaction ID",
+        "type": "text",
+        "result": "NEW_PROPERTY_REQUIRED",
+        "durable": true,
+        "reason": "Persistent exact query 및 Request-Task 추적에 필요한 전용 식별자",
+        "schema_change_required": true
+      }
+    ],
+    "durable_duplicate_result": "NOT_READY_PROXY_ONLY",
+    "composite_process_candidates": [
+      {
+        "id": "representative_process",
+        "result": "BLOCKED",
+        "request_process": "대표 Process 1개",
+        "task_process": "P03/P04/P07",
+        "data_loss": true,
+        "schema_change_required": true,
+        "reason": "Request Process ID는 단일 Select이고 복합 Option이 확인되지 않음"
+      },
+      {
+        "id": "task_level_process",
+        "result": "TASK_LEVEL_PROCESS_SOURCE_OF_TRUTH",
+        "request_process": "NOT_WRITTEN; 요청명/요약에 복합 업무 표기",
+        "task_process": "P03/P04/P07 each on Task Process ID",
+        "data_loss": false,
+        "schema_change_required": false,
+        "reason": "Task Process ID와 상위 요청 Relation을 기존 구조로 재사용"
+      },
+      {
+        "id": "text_snapshot",
+        "result": "TEXT_SNAPSHOT_FALLBACK",
+        "request_process": "요청 배경 Text",
+        "task_process": "P03/P04/P07",
+        "data_loss": true,
+        "schema_change_required": false,
+        "reason": "필터·집계의 구조적 Process 값은 보장하지 않음"
+      },
+      {
+        "id": "new_multiselect",
+        "result": "NEW_PROPERTY_REQUIRED",
+        "request_process": "새 Multi-select",
+        "task_process": "P03/P04/P07",
+        "data_loss": false,
+        "schema_change_required": true,
+        "reason": "이번 TAP에서는 생성 금지"
+      }
+    ],
+    "composite_process_recommendation": "TASK_LEVEL_PROCESS_SOURCE_OF_TRUTH",
+    "composite_data_loss_result": "REQUEST_LEVEL_DIRECT_PROCESS_FILTER_NOT_AVAILABLE",
+    "candidate_comparison": [
+      {
+        "gap": "Fund Relation",
+        "candidate": "NEW_TEST_RECORD_REQUIRED",
+        "existing_structure_reused": "Relation target DB only",
+        "data_loss": "None after new TEST record",
+        "duplicate_safety": "N/A",
+        "relation_safety": "BLOCKED",
+        "schema_change_required": false,
+        "write_required": true,
+        "operational_risk": "Low TEST-only after approval",
+        "recommendation": "NEW_TEST_RECORD_REQUIRED",
+        "user_approval_required": true
+      },
+      {
+        "gap": "Durable Duplicate",
+        "candidate": "전용 Transaction ID",
+        "existing_structure_reused": "No",
+        "data_loss": "None",
+        "duplicate_safety": "DURABLE_READY only after property",
+        "relation_safety": "Request-Task relation reusable",
+        "schema_change_required": true,
+        "write_required": true,
+        "operational_risk": "Schema semantic decision",
+        "recommendation": "NEW_PROPERTY_REQUIRED",
+        "user_approval_required": true
+      },
+      {
+        "gap": "Composite Process",
+        "candidate": "Task-level Process source of truth",
+        "existing_structure_reused": "Task Process ID + 상위 요청 Relation",
+        "data_loss": "Request-level direct Process filter unavailable",
+        "duplicate_safety": "N/A",
+        "relation_safety": "PASS_PLANNED_RELATION",
+        "schema_change_required": false,
+        "write_required": false,
+        "operational_risk": "User decision required",
+        "recommendation": "TASK_LEVEL_PROCESS_SOURCE_OF_TRUTH",
+        "user_approval_required": false
+      }
+    ],
+    "required_approvals": [
+      "TEST Dummy Fund Record 생성 및 Exact Relation 대상 승인",
+      "전용 Transaction ID Property 생성 승인"
+    ],
+    "blocking_gaps": [
+      "fund_relation",
+      "durable_duplicate"
+    ],
+    "blocking_gap_count": 2,
+    "approval_status": "MAPPING_DECISION_REQUIRED",
+    "test_write_readiness": "TEST_WRITE_BLOCKED",
+    "proposed_decisions": {
+      "fund_relation": "DECISION_PENDING",
+      "durable_duplicate": "DECISION_PENDING",
+      "composite_process": "NOT_APPLICABLE"
+    },
+    "write_count": 0,
+    "notion_write_count": 0,
+    "operational_write_count": 0,
+    "operational_write_allowed": false,
+    "preview_output": {
+      "ok": true,
+      "skill_id": "admin-process-prototype-replay",
+      "schema_version": "prototype-replay/1",
+      "scenario_id": "SINGLE-P03-02",
+      "transaction_id": "PROTO-SINGLE-P03-02",
+      "mode": "single",
+      "conformance_claim": {
+        "contract_id": "PROTOTYPE-SCENARIO-CONTRACT-V0.1",
+        "manifest_hash": "3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d",
+        "batch_id": "A-CP25-B18",
+        "contract_scenario_coverage": 6,
+        "implemented_scenario_coverage": 3,
+        "implemented_scenarios": [
+          "SINGLE-P03-01",
+          "SINGLE-P03-02",
+          "COMPOSITE-01"
+        ],
+        "not_implemented_scenarios": [
+          "SINGLE-P07-01",
+          "SINGLE-P08-01",
+          "COMPOSITE-02"
+        ],
+        "reference_recorded_for_traceability": true,
+        "prototype_scope": 3,
+        "claimed": false,
+        "reason": "Three of six contract scenarios are implemented; the manifest reference is traceability metadata, not a conformance certification."
+      },
+      "ui_auxiliary_state": {
+        "notion_status_values": [
+          "진행 중"
+        ],
+        "notion_status_classification": "TASK_OR_UI_AUXILIARY_STATE",
+        "is_canonical_skill_stage": false
+      },
+      "process_instances": [
+        {
+          "lane_id": "SINGLE-P03-02/P03",
+          "process_id": "P03",
+          "stage": "BLOCKED",
+          "mapping_status": "CONFIRMED",
+          "operational_relation": "NONE",
+          "completion_candidate": false,
+          "candidate_reason": null
+        }
+      ],
+      "request": {
+        "request_text": "DUMMY-FUND-B의 고유번호증 신청 건을 확인해줘.\n신청서 초안은 있지만 날인본 원본은 아직 준비되지 않았어.",
+        "transaction_id": "PROTO-SINGLE-P03-02",
+        "scenario_id": "SINGLE-P03-02",
+        "dummy_fund_id": "DUMMY-FUND-B",
+        "process_ids": [
+          "P03"
+        ],
+        "preview_only": true,
+        "missing_information": [],
+        "clarification_question": null,
+        "overall_status": "BLOCKED"
+      },
+      "request_instances": [
+        {
+          "lane_id": "SINGLE-P03-02/P03",
+          "process_id": "P03",
+          "request_completion_allowed": false
+        }
+      ],
+      "task_instances": [
+        {
+          "lane_id": "SINGLE-P03-02/P03",
+          "process_id": "P03",
+          "operational_task_id": "P03-T03",
+          "actor": "사람 확인",
+          "next_action": "유효한 날인본 원본 재수집",
+          "blocker": "날인본 원본 미확보",
+          "stage": "BLOCKED",
+          "completion_allowed": false
+        }
+      ],
+      "tasks": [
+        {
+          "operational_task_id": "P03-T03",
+          "process_id": "P03",
+          "stage": "BLOCKED",
+          "actor": "사람 확인",
+          "next_action": "유효한 날인본 원본 재수집",
+          "blocker": "날인본 원본 미확보",
+          "completion_condition": "날인본 원본과 필수 날인 위치가 확인됐나요?",
+          "completion_evidence": [
+            "EV-P03-SUBMISSION"
+          ],
+          "completion_candidate": false,
+          "completion_allowed": false
+        }
+      ],
+      "evidence_decisions": [
+        {
+          "lane_id": "SINGLE-P03-02/P03",
+          "evidence_id": "EV-P03-SUBMISSION",
+          "evidence_type": "SUBMISSION_PACKAGE",
+          "evidence_result": "VALID",
+          "legacy_evidence_type": "SUBMISSION_PACKAGE",
+          "legacy_fixture_state": "PRESENT_VALID",
+          "required_for_completion": true,
+          "evidence_judgment": "확인됨",
+          "validity": "VALID",
+          "human_confirmation_required": false,
+          "source": "SYNTHETIC_FIXTURE"
+        },
+        {
+          "lane_id": "SINGLE-P03-02/P03",
+          "evidence_id": "EV-P03-STAMPED",
+          "evidence_type": "STAMPED_ORIGINAL",
+          "evidence_result": "MISSING",
+          "legacy_evidence_type": "STAMPED_DOCUMENT",
+          "legacy_fixture_state": "ABSENT",
+          "required_for_completion": true,
+          "evidence_judgment": "MISSING",
+          "validity": "MISSING",
+          "human_confirmation_required": true,
+          "source": "SYNTHETIC_FIXTURE"
+        }
+      ],
+      "evidence_validity": [
+        {
+          "lane_id": "SINGLE-P03-02/P03",
+          "evidence_id": "EV-P03-SUBMISSION",
+          "validity": "VALID"
+        },
+        {
+          "lane_id": "SINGLE-P03-02/P03",
+          "evidence_id": "EV-P03-STAMPED",
+          "validity": "MISSING"
+        }
+      ],
+      "human_confirmation": [
+        {
+          "lane_id": "SINGLE-P03-02/P03",
+          "operational_task_id": "P03-T03",
+          "question": "날인본 원본과 필수 날인 위치가 확인됐나요?",
+          "actor": "사람 확인",
+          "approval_required": true,
+          "completion_allowed": false
+        }
+      ],
+      "interaction": {
+        "clarification_required": false,
+        "human_confirmation_required": true,
+        "questions": [
+          "날인본 원본과 필수 날인 위치가 확인됐나요?"
+        ]
+      },
+      "actor_transitions": [
+        {
+          "lane_id": "SINGLE-P03-02/P03",
+          "actor": "사람 확인",
+          "stage": "BLOCKED"
+        }
+      ],
+      "next_actions": [
+        {
+          "lane_id": "SINGLE-P03-02/P03",
+          "next_action": "유효한 날인본 원본 재수집"
+        }
+      ],
+      "blockers": [
+        {
+          "lane_id": "SINGLE-P03-02/P03",
+          "blocker": "날인본 원본 미확보"
+        }
+      ],
+      "snapshot_timeline": [
+        {
+          "stage": "RECEIVED",
+          "lane_id": "SINGLE-P03-02/P03"
+        },
+        {
+          "stage": "EVIDENCE_REVIEW",
+          "lane_id": "SINGLE-P03-02/P03"
+        },
+        {
+          "stage": "HUMAN_CONFIRMATION",
+          "lane_id": "SINGLE-P03-02/P03",
+          "actor": "사람 확인",
+          "question": "날인본 원본과 필수 날인 위치가 확인됐나요?",
+          "blocker": "날인본 원본 미확보",
+          "next_action": "유효한 날인본 원본 재수집",
+          "completion_candidate": false,
+          "completion_allowed": false,
+          "request_completion_allowed": false
+        },
+        {
+          "stage": "BLOCKED",
+          "lane_id": "SINGLE-P03-02/P03",
+          "error_code": "MISSING_REQUIRED_EVIDENCE"
+        }
+      ],
+      "expected_actual": {
+        "source": "SYNTHETIC_FIXTURE_EXPECTATIONS",
+        "expected_source": "scenario.expectations",
+        "comparison_ready": true,
+        "entries": [
+          {
+            "check_id": "SINGLE-P03-02/P03:stage",
+            "lane_id": "SINGLE-P03-02/P03",
+            "property": "stage",
+            "expected": "BLOCKED",
+            "actual": "BLOCKED",
+            "comparison_mode": "EXACT",
+            "result": "EXACT_MATCH"
+          },
+          {
+            "check_id": "SINGLE-P03-02/P03:completion_candidate",
+            "lane_id": "SINGLE-P03-02/P03",
+            "property": "completion_candidate",
+            "expected": false,
+            "actual": false,
+            "comparison_mode": "EXACT",
+            "result": "EXACT_MATCH"
+          },
+          {
+            "check_id": "SINGLE-P03-02/P03:request_completion_allowed",
+            "lane_id": "SINGLE-P03-02/P03",
+            "property": "request_completion_allowed",
+            "expected": false,
+            "actual": false,
+            "comparison_mode": "EXACT",
+            "result": "EXACT_MATCH"
+          }
+        ],
+        "mismatch_count": 0
+      },
+      "completion_candidate": false,
+      "completion_allowed": false,
+      "request_completion_allowed": false,
+      "downstream_auto_completion": false,
+      "operational_write_allowed": false,
+      "next_process_candidates": [],
+      "duplicate_result": {
+        "replay_key": "PROTO-SINGLE-P03-02",
+        "result": "NO_NEW_RECORDS_PREVIEW_ONLY",
+        "validation_scope": "PASS_IN_PREVIEW_FIXTURE",
+        "persistent_store_duplicate_observation": "PERSISTENT_STORE_DUPLICATE_OBSERVATION_NOT_RUN",
+        "duplicates_created": 0,
+        "new_records": 0,
+        "new_duplicates": 0,
+        "limitation": "Pure preview reducer does not observe a persistent record store."
+      },
+      "resume_contract": [
+        {
+          "lane_id": "SINGLE-P03-02/P03",
+          "resume_scope": "SINGLE-P03-02/P03",
+          "allowed": true,
+          "reason": "MISSING_REQUIRED_EVIDENCE"
+        }
+      ],
+      "errors": [
+        {
+          "lane_id": "SINGLE-P03-02/P03",
+          "code": "MISSING_REQUIRED_EVIDENCE",
+          "evidence_id": "EV-P03-STAMPED"
+        }
+      ],
+      "execution": {
+        "operational_write_allowed": false,
+        "operational_write_count": 0,
+        "request_completion_allowed": false,
+        "downstream_auto_completion": false,
+        "notion_write_enabled": false,
+        "notion_write_count": 0
+      },
+      "write_plan": {
+        "mode": "preview_only",
+        "approval_required_for_future_write": true,
+        "operations": [],
+        "actual_write_count": 0
+      },
+      "write_counts": {
+        "notion": 0,
+        "drive": 0,
+        "slack": 0,
+        "file": 0,
+        "total": 0
+      },
+      "connector_calls": {
+        "notion": 0,
+        "drive": 0,
+        "slack": 0,
+        "total": 0
+      },
+      "write_count": 0,
+      "operational_write_count": 0,
+      "request_id": "REQ-DEMO-001",
+      "demo_request": {
+        "request_id": "REQ-DEMO-001",
+        "title": "고유번호증 신청 — 날인본 확인 필요",
+        "scenario_id": "SINGLE-P03-02",
+        "dummy_fund_id": "DUMMY-FUND-B",
+        "display_status": "확인 필요",
+        "source_mode": "NATURAL_LANGUAGE_PREVIEW",
+        "current_actor": "사람 확인",
+        "has_blocker": true,
+        "request_text": "DUMMY-FUND-B의 고유번호증 신청 건을 확인해줘.\n신청서 초안은 있지만 날인본 원본은 아직 준비되지 않았어."
+      },
+      "source_mode": "NATURAL_LANGUAGE_PREVIEW",
+      "evidence": [
+        {
+          "lane_id": "SINGLE-P03-02/P03",
+          "evidence_id": "EV-P03-SUBMISSION",
+          "evidence_type": "SUBMISSION_PACKAGE",
+          "evidence_result": "VALID",
+          "legacy_evidence_type": "SUBMISSION_PACKAGE",
+          "legacy_fixture_state": "PRESENT_VALID",
+          "required_for_completion": true,
+          "evidence_judgment": "확인됨",
+          "validity": "VALID",
+          "human_confirmation_required": false,
+          "source": "SYNTHETIC_FIXTURE"
+        },
+        {
+          "lane_id": "SINGLE-P03-02/P03",
+          "evidence_id": "EV-P03-STAMPED",
+          "evidence_type": "STAMPED_ORIGINAL",
+          "evidence_result": "MISSING",
+          "legacy_evidence_type": "STAMPED_DOCUMENT",
+          "legacy_fixture_state": "ABSENT",
+          "required_for_completion": true,
+          "evidence_judgment": "MISSING",
+          "validity": "MISSING",
+          "human_confirmation_required": true,
+          "source": "SYNTHETIC_FIXTURE"
+        }
+      ],
+      "manifest": {
+        "contract_id": "PROTOTYPE-SCENARIO-CONTRACT-V0.1",
+        "manifest_hash": "3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d",
+        "batch_id": "A-CP25-B18",
+        "contract_scenario_coverage": 6,
+        "implemented_scenario_coverage": 3,
+        "implemented_scenarios": [
+          "SINGLE-P03-01",
+          "SINGLE-P03-02",
+          "COMPOSITE-01"
+        ],
+        "not_implemented_scenarios": [
+          "SINGLE-P07-01",
+          "SINGLE-P08-01",
+          "COMPOSITE-02"
+        ],
+        "reference_recorded_for_traceability": true,
+        "prototype_scope": 3,
+        "claimed": false,
+        "reason": "Three of six contract scenarios are implemented; the manifest reference is traceability metadata, not a conformance certification."
+      },
+      "schema_source": "APPROVED_SESSION_TOOL_READ_ONLY",
+      "snapshot_id": "A-CP25-G25-NOTION-LIVE-READ-2026-08-03",
+      "schema_requery_kst": "2026-08-03 10:17:07 KST",
+      "backend_mode": "NOTION_LIVE_READ_PREVIEW",
+      "notion_read_enabled": true,
+      "notion_write_enabled": false,
+      "notion_write_count": 0,
+      "notion_schema": "LIVE_READ_ONLY_SESSION_SNAPSHOT",
+      "notion_backend": "READ_ONLY",
+      "request_db": "[TEST LAB] 지원팀 업무요청",
+      "task_db": "[TEST LAB] 지원팀 Task",
+      "dummy_fund_db": "[TEST LAB] TO DO LIST (FUND)",
+      "display_mapping": {
+        "RECEIVED": "요청 접수",
+        "INFORMATION_CHECK": "확인 필요",
+        "EVIDENCE_REVIEW": "확인 필요",
+        "HUMAN_CONFIRMATION": "확인 필요",
+        "EXTERNAL_WAIT": "외부 대기",
+        "RESULT_REVIEW": "진행 가능",
+        "NEXT_PROCESS": "진행 가능",
+        "COMPLETION_CANDIDATE": "완료 후보",
+        "BLOCKED": "중단"
+      },
+      "console_version": "PILOT v0.4.1"
+    },
+    "snapshot_id": "A-CP25-G25-NOTION-LIVE-READ-2026-08-03",
+    "schema_requery_kst": "2026-08-03 10:17:07 KST",
+    "backend_mode": "NOTION_LIVE_READ_PREVIEW",
+    "notion_read_enabled": true,
+    "notion_write_enabled": false,
+    "notion_schema": "LIVE_READ_ONLY_SESSION_SNAPSHOT",
+    "notion_backend": "READ_ONLY",
+    "request_db": "[TEST LAB] 지원팀 업무요청",
+    "task_db": "[TEST LAB] 지원팀 Task",
+    "dummy_fund_db": "[TEST LAB] TO DO LIST (FUND)",
+    "execution": {
+      "notion_write_enabled": false,
+      "notion_write_count": 0,
+      "operational_write_allowed": false,
+      "operational_write_count": 0,
+      "request_completion_allowed": false,
+      "downstream_auto_completion": false
+    }
+  },
+  "payloads": {
+    "REQ-DEMO-001": {
+      "preview": {
+        "ok": true,
+        "skill_id": "admin-process-prototype-replay",
+        "schema_version": "prototype-replay/1",
+        "scenario_id": "SINGLE-P03-02",
+        "transaction_id": "PROTO-SINGLE-P03-02",
+        "mode": "single",
+        "conformance_claim": {
+          "contract_id": "PROTOTYPE-SCENARIO-CONTRACT-V0.1",
+          "manifest_hash": "3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d",
+          "batch_id": "A-CP25-B18",
+          "contract_scenario_coverage": 6,
+          "implemented_scenario_coverage": 3,
+          "implemented_scenarios": [
+            "SINGLE-P03-01",
+            "SINGLE-P03-02",
+            "COMPOSITE-01"
+          ],
+          "not_implemented_scenarios": [
+            "SINGLE-P07-01",
+            "SINGLE-P08-01",
+            "COMPOSITE-02"
+          ],
+          "reference_recorded_for_traceability": true,
+          "prototype_scope": 3,
+          "claimed": false,
+          "reason": "Three of six contract scenarios are implemented; the manifest reference is traceability metadata, not a conformance certification."
+        },
+        "ui_auxiliary_state": {
+          "notion_status_values": [
+            "진행 중"
+          ],
+          "notion_status_classification": "TASK_OR_UI_AUXILIARY_STATE",
+          "is_canonical_skill_stage": false
+        },
+        "process_instances": [
+          {
+            "lane_id": "SINGLE-P03-02/P03",
+            "process_id": "P03",
+            "stage": "BLOCKED",
+            "mapping_status": "CONFIRMED",
+            "operational_relation": "NONE",
+            "completion_candidate": false,
+            "candidate_reason": null
+          }
+        ],
+        "request": {
+          "request_text": "DUMMY-FUND-B의 고유번호증 신청 건을 확인해줘.\n신청서 초안은 있지만 날인본 원본은 아직 준비되지 않았어.",
+          "transaction_id": "PROTO-SINGLE-P03-02",
+          "scenario_id": "SINGLE-P03-02",
+          "dummy_fund_id": "DUMMY-FUND-B",
+          "process_ids": [
+            "P03"
+          ],
+          "preview_only": true,
+          "missing_information": [],
+          "clarification_question": null,
+          "overall_status": "BLOCKED"
+        },
+        "request_instances": [
+          {
+            "lane_id": "SINGLE-P03-02/P03",
+            "process_id": "P03",
+            "request_completion_allowed": false
+          }
+        ],
+        "task_instances": [
+          {
+            "lane_id": "SINGLE-P03-02/P03",
+            "process_id": "P03",
+            "operational_task_id": "P03-T03",
+            "actor": "사람 확인",
+            "next_action": "유효한 날인본 원본 재수집",
+            "blocker": "날인본 원본 미확보",
+            "stage": "BLOCKED",
+            "completion_allowed": false
+          }
+        ],
+        "tasks": [
+          {
+            "operational_task_id": "P03-T03",
+            "process_id": "P03",
+            "stage": "BLOCKED",
+            "actor": "사람 확인",
+            "next_action": "유효한 날인본 원본 재수집",
+            "blocker": "날인본 원본 미확보",
+            "completion_condition": "날인본 원본과 필수 날인 위치가 확인됐나요?",
+            "completion_evidence": [
+              "EV-P03-SUBMISSION"
+            ],
+            "completion_candidate": false,
+            "completion_allowed": false
+          }
+        ],
+        "evidence_decisions": [
+          {
+            "lane_id": "SINGLE-P03-02/P03",
+            "evidence_id": "EV-P03-SUBMISSION",
+            "evidence_type": "SUBMISSION_PACKAGE",
+            "evidence_result": "VALID",
+            "legacy_evidence_type": "SUBMISSION_PACKAGE",
+            "legacy_fixture_state": "PRESENT_VALID",
+            "required_for_completion": true,
+            "evidence_judgment": "확인됨",
+            "validity": "VALID",
+            "human_confirmation_required": false,
+            "source": "SYNTHETIC_FIXTURE"
+          },
+          {
+            "lane_id": "SINGLE-P03-02/P03",
+            "evidence_id": "EV-P03-STAMPED",
+            "evidence_type": "STAMPED_ORIGINAL",
+            "evidence_result": "MISSING",
+            "legacy_evidence_type": "STAMPED_DOCUMENT",
+            "legacy_fixture_state": "ABSENT",
+            "required_for_completion": true,
+            "evidence_judgment": "MISSING",
+            "validity": "MISSING",
+            "human_confirmation_required": true,
+            "source": "SYNTHETIC_FIXTURE"
+          }
+        ],
+        "evidence_validity": [
+          {
+            "lane_id": "SINGLE-P03-02/P03",
+            "evidence_id": "EV-P03-SUBMISSION",
+            "validity": "VALID"
+          },
+          {
+            "lane_id": "SINGLE-P03-02/P03",
+            "evidence_id": "EV-P03-STAMPED",
+            "validity": "MISSING"
+          }
+        ],
+        "human_confirmation": [
+          {
+            "lane_id": "SINGLE-P03-02/P03",
+            "operational_task_id": "P03-T03",
+            "question": "날인본 원본과 필수 날인 위치가 확인됐나요?",
+            "actor": "사람 확인",
+            "approval_required": true,
+            "completion_allowed": false
+          }
+        ],
+        "interaction": {
+          "clarification_required": false,
+          "human_confirmation_required": true,
+          "questions": [
+            "날인본 원본과 필수 날인 위치가 확인됐나요?"
+          ]
+        },
+        "actor_transitions": [
+          {
+            "lane_id": "SINGLE-P03-02/P03",
+            "actor": "사람 확인",
+            "stage": "BLOCKED"
+          }
+        ],
+        "next_actions": [
+          {
+            "lane_id": "SINGLE-P03-02/P03",
+            "next_action": "유효한 날인본 원본 재수집"
+          }
+        ],
+        "blockers": [
+          {
+            "lane_id": "SINGLE-P03-02/P03",
+            "blocker": "날인본 원본 미확보"
+          }
+        ],
+        "snapshot_timeline": [
+          {
+            "stage": "RECEIVED",
+            "lane_id": "SINGLE-P03-02/P03"
+          },
+          {
+            "stage": "EVIDENCE_REVIEW",
+            "lane_id": "SINGLE-P03-02/P03"
+          },
+          {
+            "stage": "HUMAN_CONFIRMATION",
+            "lane_id": "SINGLE-P03-02/P03",
+            "actor": "사람 확인",
+            "question": "날인본 원본과 필수 날인 위치가 확인됐나요?",
+            "blocker": "날인본 원본 미확보",
+            "next_action": "유효한 날인본 원본 재수집",
+            "completion_candidate": false,
+            "completion_allowed": false,
+            "request_completion_allowed": false
+          },
+          {
+            "stage": "BLOCKED",
+            "lane_id": "SINGLE-P03-02/P03",
+            "error_code": "MISSING_REQUIRED_EVIDENCE"
+          }
+        ],
+        "expected_actual": {
+          "source": "SYNTHETIC_FIXTURE_EXPECTATIONS",
+          "expected_source": "scenario.expectations",
+          "comparison_ready": true,
+          "entries": [
+            {
+              "check_id": "SINGLE-P03-02/P03:stage",
+              "lane_id": "SINGLE-P03-02/P03",
+              "property": "stage",
+              "expected": "BLOCKED",
+              "actual": "BLOCKED",
+              "comparison_mode": "EXACT",
+              "result": "EXACT_MATCH"
+            },
+            {
+              "check_id": "SINGLE-P03-02/P03:completion_candidate",
+              "lane_id": "SINGLE-P03-02/P03",
+              "property": "completion_candidate",
+              "expected": false,
+              "actual": false,
+              "comparison_mode": "EXACT",
+              "result": "EXACT_MATCH"
+            },
+            {
+              "check_id": "SINGLE-P03-02/P03:request_completion_allowed",
+              "lane_id": "SINGLE-P03-02/P03",
+              "property": "request_completion_allowed",
+              "expected": false,
+              "actual": false,
+              "comparison_mode": "EXACT",
+              "result": "EXACT_MATCH"
+            }
+          ],
+          "mismatch_count": 0
+        },
+        "completion_candidate": false,
+        "completion_allowed": false,
+        "request_completion_allowed": false,
+        "downstream_auto_completion": false,
+        "operational_write_allowed": false,
+        "next_process_candidates": [],
+        "duplicate_result": {
+          "replay_key": "PROTO-SINGLE-P03-02",
+          "result": "NO_NEW_RECORDS_PREVIEW_ONLY",
+          "validation_scope": "PASS_IN_PREVIEW_FIXTURE",
+          "persistent_store_duplicate_observation": "PERSISTENT_STORE_DUPLICATE_OBSERVATION_NOT_RUN",
+          "duplicates_created": 0,
+          "new_records": 0,
+          "new_duplicates": 0,
+          "limitation": "Pure preview reducer does not observe a persistent record store."
+        },
+        "resume_contract": [
+          {
+            "lane_id": "SINGLE-P03-02/P03",
+            "resume_scope": "SINGLE-P03-02/P03",
+            "allowed": true,
+            "reason": "MISSING_REQUIRED_EVIDENCE"
+          }
+        ],
+        "errors": [
+          {
+            "lane_id": "SINGLE-P03-02/P03",
+            "code": "MISSING_REQUIRED_EVIDENCE",
+            "evidence_id": "EV-P03-STAMPED"
+          }
+        ],
+        "execution": {
+          "operational_write_allowed": false,
+          "operational_write_count": 0,
+          "request_completion_allowed": false,
+          "downstream_auto_completion": false,
+          "notion_write_enabled": false,
+          "notion_write_count": 0
+        },
+        "write_plan": {
+          "mode": "preview_only",
+          "approval_required_for_future_write": true,
+          "operations": [],
+          "actual_write_count": 0
+        },
+        "write_counts": {
+          "notion": 0,
+          "drive": 0,
+          "slack": 0,
+          "file": 0,
+          "total": 0
+        },
+        "connector_calls": {
+          "notion": 0,
+          "drive": 0,
+          "slack": 0,
+          "total": 0
+        },
+        "write_count": 0,
+        "operational_write_count": 0,
+        "request_id": "REQ-DEMO-001",
+        "demo_request": {
+          "request_id": "REQ-DEMO-001",
+          "title": "고유번호증 신청 — 날인본 확인 필요",
+          "scenario_id": "SINGLE-P03-02",
+          "dummy_fund_id": "DUMMY-FUND-B",
+          "display_status": "확인 필요",
+          "source_mode": "NATURAL_LANGUAGE_PREVIEW",
+          "current_actor": "사람 확인",
+          "has_blocker": true,
+          "request_text": "DUMMY-FUND-B의 고유번호증 신청 건을 확인해줘.\n신청서 초안은 있지만 날인본 원본은 아직 준비되지 않았어."
+        },
+        "source_mode": "NATURAL_LANGUAGE_PREVIEW",
+        "evidence": [
+          {
+            "lane_id": "SINGLE-P03-02/P03",
+            "evidence_id": "EV-P03-SUBMISSION",
+            "evidence_type": "SUBMISSION_PACKAGE",
+            "evidence_result": "VALID",
+            "legacy_evidence_type": "SUBMISSION_PACKAGE",
+            "legacy_fixture_state": "PRESENT_VALID",
+            "required_for_completion": true,
+            "evidence_judgment": "확인됨",
+            "validity": "VALID",
+            "human_confirmation_required": false,
+            "source": "SYNTHETIC_FIXTURE"
+          },
+          {
+            "lane_id": "SINGLE-P03-02/P03",
+            "evidence_id": "EV-P03-STAMPED",
+            "evidence_type": "STAMPED_ORIGINAL",
+            "evidence_result": "MISSING",
+            "legacy_evidence_type": "STAMPED_DOCUMENT",
+            "legacy_fixture_state": "ABSENT",
+            "required_for_completion": true,
+            "evidence_judgment": "MISSING",
+            "validity": "MISSING",
+            "human_confirmation_required": true,
+            "source": "SYNTHETIC_FIXTURE"
+          }
+        ],
+        "manifest": {
+          "contract_id": "PROTOTYPE-SCENARIO-CONTRACT-V0.1",
+          "manifest_hash": "3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d",
+          "batch_id": "A-CP25-B18",
+          "contract_scenario_coverage": 6,
+          "implemented_scenario_coverage": 3,
+          "implemented_scenarios": [
+            "SINGLE-P03-01",
+            "SINGLE-P03-02",
+            "COMPOSITE-01"
+          ],
+          "not_implemented_scenarios": [
+            "SINGLE-P07-01",
+            "SINGLE-P08-01",
+            "COMPOSITE-02"
+          ],
+          "reference_recorded_for_traceability": true,
+          "prototype_scope": 3,
+          "claimed": false,
+          "reason": "Three of six contract scenarios are implemented; the manifest reference is traceability metadata, not a conformance certification."
+        },
+        "schema_source": "APPROVED_SESSION_TOOL_READ_ONLY",
+        "snapshot_id": "A-CP25-G25-NOTION-LIVE-READ-2026-08-03",
+        "schema_requery_kst": "2026-08-03 10:17:07 KST",
+        "backend_mode": "NOTION_LIVE_READ_PREVIEW",
+        "notion_read_enabled": true,
+        "notion_write_enabled": false,
+        "notion_write_count": 0,
+        "notion_schema": "LIVE_READ_ONLY_SESSION_SNAPSHOT",
+        "notion_backend": "READ_ONLY",
+        "request_db": "[TEST LAB] 지원팀 업무요청",
+        "task_db": "[TEST LAB] 지원팀 Task",
+        "dummy_fund_db": "[TEST LAB] TO DO LIST (FUND)",
+        "display_mapping": {
+          "RECEIVED": "요청 접수",
+          "INFORMATION_CHECK": "확인 필요",
+          "EVIDENCE_REVIEW": "확인 필요",
+          "HUMAN_CONFIRMATION": "확인 필요",
+          "EXTERNAL_WAIT": "외부 대기",
+          "RESULT_REVIEW": "진행 가능",
+          "NEXT_PROCESS": "진행 가능",
+          "COMPLETION_CANDIDATE": "완료 후보",
+          "BLOCKED": "중단"
+        },
+        "console_version": "PILOT v0.4.1"
+      },
+      "gap": {
+        "ok": true,
+        "console_version": "PILOT v0.4.2",
+        "schema_read_at_kst": "2026-08-03 11:10:02 KST",
+        "schema_source": "APPROVED_SESSION_TOOL_READ_ONLY",
+        "request_id": "REQ-DEMO-001",
+        "scenario_id": "SINGLE-P03-02",
+        "fund_relation": {
+          "dummy_fund_id": "DUMMY-FUND-B",
+          "candidate_db": "[TEST LAB] 전체관리조합",
+          "candidate_property": "조합명 / 테스트 케이스 ID",
+          "match_query": "Exact match only",
+          "match_count": 0,
+          "matched_page_id": "NOT_FOUND",
+          "candidates": [
+            {
+              "id": "existing_exact",
+              "label": "기존 TEST Record Exact Match",
+              "result": "NO_MATCH",
+              "relation_safe": false,
+              "schema_change_required": false,
+              "write_required": false
+            },
+            {
+              "id": "test_identifier",
+              "label": "기존 테스트 식별 Property",
+              "result": "CONFIRM_REQUIRED",
+              "relation_safe": false,
+              "schema_change_required": false,
+              "write_required": false,
+              "note": "추가 SQL 조회는 workspace usage limit으로 미실행"
+            },
+            {
+              "id": "text_only",
+              "label": "Relation 없이 Text Snapshot",
+              "result": "TEXT_ONLY_FALLBACK_CANDIDATE",
+              "relation_safe": false,
+              "schema_change_required": false,
+              "write_required": false,
+              "note": "Relation 검증 완료를 의미하지 않음"
+            },
+            {
+              "id": "new_test_record",
+              "label": "새 TEST Dummy Fund Record",
+              "result": "NEW_TEST_RECORD_REQUIRED",
+              "relation_safe": true,
+              "schema_change_required": false,
+              "write_required": true,
+              "note": "사용자 승인 전 생성 금지"
+            }
+          ],
+          "recommendation": "NEW_TEST_RECORD_REQUIRED",
+          "blocking": true,
+          "required_approval": "TEST Dummy Fund Record 생성 및 Exact Relation 대상 승인"
+        },
+        "transaction_candidates": [
+          {
+            "id": "test_case_id",
+            "property": "Request/Task 테스트 케이스 ID",
+            "type": "text",
+            "result": "CONFIRM_REQUIRED",
+            "durable": false,
+            "reason": "기존 Text지만 Transaction ID 용도로 확정되지 않음",
+            "schema_change_required": false
+          },
+          {
+            "id": "title_prefix",
+            "property": "Request 요청명",
+            "type": "title",
+            "result": "TITLE_PREFIX_FALLBACK",
+            "durable": false,
+            "reason": "표시명 수정으로 손상될 수 있어 durable key가 아님",
+            "schema_change_required": false
+          },
+          {
+            "id": "task_proxy",
+            "property": "Operational Task ID + 상위 요청",
+            "type": "text + relation",
+            "result": "COMPOSITE_PROXY_ONLY",
+            "durable": false,
+            "reason": "Request 재실행을 단일 키로 Exact query할 수 없음",
+            "schema_change_required": false
+          },
+          {
+            "id": "new_transaction_id",
+            "property": "전용 Transaction ID",
+            "type": "text",
+            "result": "NEW_PROPERTY_REQUIRED",
+            "durable": true,
+            "reason": "Persistent exact query 및 Request-Task 추적에 필요한 전용 식별자",
+            "schema_change_required": true
+          }
+        ],
+        "durable_duplicate_result": "NOT_READY_PROXY_ONLY",
+        "composite_process_candidates": [
+          {
+            "id": "representative_process",
+            "result": "BLOCKED",
+            "request_process": "대표 Process 1개",
+            "task_process": "P03/P04/P07",
+            "data_loss": true,
+            "schema_change_required": true,
+            "reason": "Request Process ID는 단일 Select이고 복합 Option이 확인되지 않음"
+          },
+          {
+            "id": "task_level_process",
+            "result": "TASK_LEVEL_PROCESS_SOURCE_OF_TRUTH",
+            "request_process": "NOT_WRITTEN; 요청명/요약에 복합 업무 표기",
+            "task_process": "P03/P04/P07 each on Task Process ID",
+            "data_loss": false,
+            "schema_change_required": false,
+            "reason": "Task Process ID와 상위 요청 Relation을 기존 구조로 재사용"
+          },
+          {
+            "id": "text_snapshot",
+            "result": "TEXT_SNAPSHOT_FALLBACK",
+            "request_process": "요청 배경 Text",
+            "task_process": "P03/P04/P07",
+            "data_loss": true,
+            "schema_change_required": false,
+            "reason": "필터·집계의 구조적 Process 값은 보장하지 않음"
+          },
+          {
+            "id": "new_multiselect",
+            "result": "NEW_PROPERTY_REQUIRED",
+            "request_process": "새 Multi-select",
+            "task_process": "P03/P04/P07",
+            "data_loss": false,
+            "schema_change_required": true,
+            "reason": "이번 TAP에서는 생성 금지"
+          }
+        ],
+        "composite_process_recommendation": "TASK_LEVEL_PROCESS_SOURCE_OF_TRUTH",
+        "composite_data_loss_result": "REQUEST_LEVEL_DIRECT_PROCESS_FILTER_NOT_AVAILABLE",
+        "candidate_comparison": [
+          {
+            "gap": "Fund Relation",
+            "candidate": "NEW_TEST_RECORD_REQUIRED",
+            "existing_structure_reused": "Relation target DB only",
+            "data_loss": "None after new TEST record",
+            "duplicate_safety": "N/A",
+            "relation_safety": "BLOCKED",
+            "schema_change_required": false,
+            "write_required": true,
+            "operational_risk": "Low TEST-only after approval",
+            "recommendation": "NEW_TEST_RECORD_REQUIRED",
+            "user_approval_required": true
+          },
+          {
+            "gap": "Durable Duplicate",
+            "candidate": "전용 Transaction ID",
+            "existing_structure_reused": "No",
+            "data_loss": "None",
+            "duplicate_safety": "DURABLE_READY only after property",
+            "relation_safety": "Request-Task relation reusable",
+            "schema_change_required": true,
+            "write_required": true,
+            "operational_risk": "Schema semantic decision",
+            "recommendation": "NEW_PROPERTY_REQUIRED",
+            "user_approval_required": true
+          },
+          {
+            "gap": "Composite Process",
+            "candidate": "Task-level Process source of truth",
+            "existing_structure_reused": "Task Process ID + 상위 요청 Relation",
+            "data_loss": "Request-level direct Process filter unavailable",
+            "duplicate_safety": "N/A",
+            "relation_safety": "PASS_PLANNED_RELATION",
+            "schema_change_required": false,
+            "write_required": false,
+            "operational_risk": "User decision required",
+            "recommendation": "TASK_LEVEL_PROCESS_SOURCE_OF_TRUTH",
+            "user_approval_required": false
+          }
+        ],
+        "required_approvals": [
+          "TEST Dummy Fund Record 생성 및 Exact Relation 대상 승인",
+          "전용 Transaction ID Property 생성 승인"
+        ],
+        "blocking_gaps": [
+          "fund_relation",
+          "durable_duplicate"
+        ],
+        "blocking_gap_count": 2,
+        "approval_status": "MAPPING_DECISION_REQUIRED",
+        "test_write_readiness": "TEST_WRITE_BLOCKED",
+        "proposed_decisions": {
+          "fund_relation": "DECISION_PENDING",
+          "durable_duplicate": "DECISION_PENDING",
+          "composite_process": "NOT_APPLICABLE"
+        },
+        "write_count": 0,
+        "notion_write_count": 0,
+        "operational_write_count": 0,
+        "operational_write_allowed": false,
+        "preview_output": {
+          "ok": true,
+          "skill_id": "admin-process-prototype-replay",
+          "schema_version": "prototype-replay/1",
+          "scenario_id": "SINGLE-P03-02",
+          "transaction_id": "PROTO-SINGLE-P03-02",
+          "mode": "single",
+          "conformance_claim": {
+            "contract_id": "PROTOTYPE-SCENARIO-CONTRACT-V0.1",
+            "manifest_hash": "3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d",
+            "batch_id": "A-CP25-B18",
+            "contract_scenario_coverage": 6,
+            "implemented_scenario_coverage": 3,
+            "implemented_scenarios": [
+              "SINGLE-P03-01",
+              "SINGLE-P03-02",
+              "COMPOSITE-01"
+            ],
+            "not_implemented_scenarios": [
+              "SINGLE-P07-01",
+              "SINGLE-P08-01",
+              "COMPOSITE-02"
+            ],
+            "reference_recorded_for_traceability": true,
+            "prototype_scope": 3,
+            "claimed": false,
+            "reason": "Three of six contract scenarios are implemented; the manifest reference is traceability metadata, not a conformance certification."
+          },
+          "ui_auxiliary_state": {
+            "notion_status_values": [
+              "진행 중"
+            ],
+            "notion_status_classification": "TASK_OR_UI_AUXILIARY_STATE",
+            "is_canonical_skill_stage": false
+          },
+          "process_instances": [
+            {
+              "lane_id": "SINGLE-P03-02/P03",
+              "process_id": "P03",
+              "stage": "BLOCKED",
+              "mapping_status": "CONFIRMED",
+              "operational_relation": "NONE",
+              "completion_candidate": false,
+              "candidate_reason": null
+            }
+          ],
+          "request": {
+            "request_text": "DUMMY-FUND-B의 고유번호증 신청 건을 확인해줘.\n신청서 초안은 있지만 날인본 원본은 아직 준비되지 않았어.",
+            "transaction_id": "PROTO-SINGLE-P03-02",
+            "scenario_id": "SINGLE-P03-02",
+            "dummy_fund_id": "DUMMY-FUND-B",
+            "process_ids": [
+              "P03"
+            ],
+            "preview_only": true,
+            "missing_information": [],
+            "clarification_question": null,
+            "overall_status": "BLOCKED"
+          },
+          "request_instances": [
+            {
+              "lane_id": "SINGLE-P03-02/P03",
+              "process_id": "P03",
+              "request_completion_allowed": false
+            }
+          ],
+          "task_instances": [
+            {
+              "lane_id": "SINGLE-P03-02/P03",
+              "process_id": "P03",
+              "operational_task_id": "P03-T03",
+              "actor": "사람 확인",
+              "next_action": "유효한 날인본 원본 재수집",
+              "blocker": "날인본 원본 미확보",
+              "stage": "BLOCKED",
+              "completion_allowed": false
+            }
+          ],
+          "tasks": [
+            {
+              "operational_task_id": "P03-T03",
+              "process_id": "P03",
+              "stage": "BLOCKED",
+              "actor": "사람 확인",
+              "next_action": "유효한 날인본 원본 재수집",
+              "blocker": "날인본 원본 미확보",
+              "completion_condition": "날인본 원본과 필수 날인 위치가 확인됐나요?",
+              "completion_evidence": [
+                "EV-P03-SUBMISSION"
+              ],
+              "completion_candidate": false,
+              "completion_allowed": false
+            }
+          ],
+          "evidence_decisions": [
+            {
+              "lane_id": "SINGLE-P03-02/P03",
+              "evidence_id": "EV-P03-SUBMISSION",
+              "evidence_type": "SUBMISSION_PACKAGE",
+              "evidence_result": "VALID",
+              "legacy_evidence_type": "SUBMISSION_PACKAGE",
+              "legacy_fixture_state": "PRESENT_VALID",
+              "required_for_completion": true,
+              "evidence_judgment": "확인됨",
+              "validity": "VALID",
+              "human_confirmation_required": false,
+              "source": "SYNTHETIC_FIXTURE"
+            },
+            {
+              "lane_id": "SINGLE-P03-02/P03",
+              "evidence_id": "EV-P03-STAMPED",
+              "evidence_type": "STAMPED_ORIGINAL",
+              "evidence_result": "MISSING",
+              "legacy_evidence_type": "STAMPED_DOCUMENT",
+              "legacy_fixture_state": "ABSENT",
+              "required_for_completion": true,
+              "evidence_judgment": "MISSING",
+              "validity": "MISSING",
+              "human_confirmation_required": true,
+              "source": "SYNTHETIC_FIXTURE"
+            }
+          ],
+          "evidence_validity": [
+            {
+              "lane_id": "SINGLE-P03-02/P03",
+              "evidence_id": "EV-P03-SUBMISSION",
+              "validity": "VALID"
+            },
+            {
+              "lane_id": "SINGLE-P03-02/P03",
+              "evidence_id": "EV-P03-STAMPED",
+              "validity": "MISSING"
+            }
+          ],
+          "human_confirmation": [
+            {
+              "lane_id": "SINGLE-P03-02/P03",
+              "operational_task_id": "P03-T03",
+              "question": "날인본 원본과 필수 날인 위치가 확인됐나요?",
+              "actor": "사람 확인",
+              "approval_required": true,
+              "completion_allowed": false
+            }
+          ],
+          "interaction": {
+            "clarification_required": false,
+            "human_confirmation_required": true,
+            "questions": [
+              "날인본 원본과 필수 날인 위치가 확인됐나요?"
+            ]
+          },
+          "actor_transitions": [
+            {
+              "lane_id": "SINGLE-P03-02/P03",
+              "actor": "사람 확인",
+              "stage": "BLOCKED"
+            }
+          ],
+          "next_actions": [
+            {
+              "lane_id": "SINGLE-P03-02/P03",
+              "next_action": "유효한 날인본 원본 재수집"
+            }
+          ],
+          "blockers": [
+            {
+              "lane_id": "SINGLE-P03-02/P03",
+              "blocker": "날인본 원본 미확보"
+            }
+          ],
+          "snapshot_timeline": [
+            {
+              "stage": "RECEIVED",
+              "lane_id": "SINGLE-P03-02/P03"
+            },
+            {
+              "stage": "EVIDENCE_REVIEW",
+              "lane_id": "SINGLE-P03-02/P03"
+            },
+            {
+              "stage": "HUMAN_CONFIRMATION",
+              "lane_id": "SINGLE-P03-02/P03",
+              "actor": "사람 확인",
+              "question": "날인본 원본과 필수 날인 위치가 확인됐나요?",
+              "blocker": "날인본 원본 미확보",
+              "next_action": "유효한 날인본 원본 재수집",
+              "completion_candidate": false,
+              "completion_allowed": false,
+              "request_completion_allowed": false
+            },
+            {
+              "stage": "BLOCKED",
+              "lane_id": "SINGLE-P03-02/P03",
+              "error_code": "MISSING_REQUIRED_EVIDENCE"
+            }
+          ],
+          "expected_actual": {
+            "source": "SYNTHETIC_FIXTURE_EXPECTATIONS",
+            "expected_source": "scenario.expectations",
+            "comparison_ready": true,
+            "entries": [
+              {
+                "check_id": "SINGLE-P03-02/P03:stage",
+                "lane_id": "SINGLE-P03-02/P03",
+                "property": "stage",
+                "expected": "BLOCKED",
+                "actual": "BLOCKED",
+                "comparison_mode": "EXACT",
+                "result": "EXACT_MATCH"
+              },
+              {
+                "check_id": "SINGLE-P03-02/P03:completion_candidate",
+                "lane_id": "SINGLE-P03-02/P03",
+                "property": "completion_candidate",
+                "expected": false,
+                "actual": false,
+                "comparison_mode": "EXACT",
+                "result": "EXACT_MATCH"
+              },
+              {
+                "check_id": "SINGLE-P03-02/P03:request_completion_allowed",
+                "lane_id": "SINGLE-P03-02/P03",
+                "property": "request_completion_allowed",
+                "expected": false,
+                "actual": false,
+                "comparison_mode": "EXACT",
+                "result": "EXACT_MATCH"
+              }
+            ],
+            "mismatch_count": 0
+          },
+          "completion_candidate": false,
+          "completion_allowed": false,
+          "request_completion_allowed": false,
+          "downstream_auto_completion": false,
+          "operational_write_allowed": false,
+          "next_process_candidates": [],
+          "duplicate_result": {
+            "replay_key": "PROTO-SINGLE-P03-02",
+            "result": "NO_NEW_RECORDS_PREVIEW_ONLY",
+            "validation_scope": "PASS_IN_PREVIEW_FIXTURE",
+            "persistent_store_duplicate_observation": "PERSISTENT_STORE_DUPLICATE_OBSERVATION_NOT_RUN",
+            "duplicates_created": 0,
+            "new_records": 0,
+            "new_duplicates": 0,
+            "limitation": "Pure preview reducer does not observe a persistent record store."
+          },
+          "resume_contract": [
+            {
+              "lane_id": "SINGLE-P03-02/P03",
+              "resume_scope": "SINGLE-P03-02/P03",
+              "allowed": true,
+              "reason": "MISSING_REQUIRED_EVIDENCE"
+            }
+          ],
+          "errors": [
+            {
+              "lane_id": "SINGLE-P03-02/P03",
+              "code": "MISSING_REQUIRED_EVIDENCE",
+              "evidence_id": "EV-P03-STAMPED"
+            }
+          ],
+          "execution": {
+            "operational_write_allowed": false,
+            "operational_write_count": 0,
+            "request_completion_allowed": false,
+            "downstream_auto_completion": false,
+            "notion_write_enabled": false,
+            "notion_write_count": 0
+          },
+          "write_plan": {
+            "mode": "preview_only",
+            "approval_required_for_future_write": true,
+            "operations": [],
+            "actual_write_count": 0
+          },
+          "write_counts": {
+            "notion": 0,
+            "drive": 0,
+            "slack": 0,
+            "file": 0,
+            "total": 0
+          },
+          "connector_calls": {
+            "notion": 0,
+            "drive": 0,
+            "slack": 0,
+            "total": 0
+          },
+          "write_count": 0,
+          "operational_write_count": 0,
+          "request_id": "REQ-DEMO-001",
+          "demo_request": {
+            "request_id": "REQ-DEMO-001",
+            "title": "고유번호증 신청 — 날인본 확인 필요",
+            "scenario_id": "SINGLE-P03-02",
+            "dummy_fund_id": "DUMMY-FUND-B",
+            "display_status": "확인 필요",
+            "source_mode": "NATURAL_LANGUAGE_PREVIEW",
+            "current_actor": "사람 확인",
+            "has_blocker": true,
+            "request_text": "DUMMY-FUND-B의 고유번호증 신청 건을 확인해줘.\n신청서 초안은 있지만 날인본 원본은 아직 준비되지 않았어."
+          },
+          "source_mode": "NATURAL_LANGUAGE_PREVIEW",
+          "evidence": [
+            {
+              "lane_id": "SINGLE-P03-02/P03",
+              "evidence_id": "EV-P03-SUBMISSION",
+              "evidence_type": "SUBMISSION_PACKAGE",
+              "evidence_result": "VALID",
+              "legacy_evidence_type": "SUBMISSION_PACKAGE",
+              "legacy_fixture_state": "PRESENT_VALID",
+              "required_for_completion": true,
+              "evidence_judgment": "확인됨",
+              "validity": "VALID",
+              "human_confirmation_required": false,
+              "source": "SYNTHETIC_FIXTURE"
+            },
+            {
+              "lane_id": "SINGLE-P03-02/P03",
+              "evidence_id": "EV-P03-STAMPED",
+              "evidence_type": "STAMPED_ORIGINAL",
+              "evidence_result": "MISSING",
+              "legacy_evidence_type": "STAMPED_DOCUMENT",
+              "legacy_fixture_state": "ABSENT",
+              "required_for_completion": true,
+              "evidence_judgment": "MISSING",
+              "validity": "MISSING",
+              "human_confirmation_required": true,
+              "source": "SYNTHETIC_FIXTURE"
+            }
+          ],
+          "manifest": {
+            "contract_id": "PROTOTYPE-SCENARIO-CONTRACT-V0.1",
+            "manifest_hash": "3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d",
+            "batch_id": "A-CP25-B18",
+            "contract_scenario_coverage": 6,
+            "implemented_scenario_coverage": 3,
+            "implemented_scenarios": [
+              "SINGLE-P03-01",
+              "SINGLE-P03-02",
+              "COMPOSITE-01"
+            ],
+            "not_implemented_scenarios": [
+              "SINGLE-P07-01",
+              "SINGLE-P08-01",
+              "COMPOSITE-02"
+            ],
+            "reference_recorded_for_traceability": true,
+            "prototype_scope": 3,
+            "claimed": false,
+            "reason": "Three of six contract scenarios are implemented; the manifest reference is traceability metadata, not a conformance certification."
+          },
+          "schema_source": "APPROVED_SESSION_TOOL_READ_ONLY",
+          "snapshot_id": "A-CP25-G25-NOTION-LIVE-READ-2026-08-03",
+          "schema_requery_kst": "2026-08-03 10:17:07 KST",
+          "backend_mode": "NOTION_LIVE_READ_PREVIEW",
+          "notion_read_enabled": true,
+          "notion_write_enabled": false,
+          "notion_write_count": 0,
+          "notion_schema": "LIVE_READ_ONLY_SESSION_SNAPSHOT",
+          "notion_backend": "READ_ONLY",
+          "request_db": "[TEST LAB] 지원팀 업무요청",
+          "task_db": "[TEST LAB] 지원팀 Task",
+          "dummy_fund_db": "[TEST LAB] TO DO LIST (FUND)",
+          "display_mapping": {
+            "RECEIVED": "요청 접수",
+            "INFORMATION_CHECK": "확인 필요",
+            "EVIDENCE_REVIEW": "확인 필요",
+            "HUMAN_CONFIRMATION": "확인 필요",
+            "EXTERNAL_WAIT": "외부 대기",
+            "RESULT_REVIEW": "진행 가능",
+            "NEXT_PROCESS": "진행 가능",
+            "COMPLETION_CANDIDATE": "완료 후보",
+            "BLOCKED": "중단"
+          },
+          "console_version": "PILOT v0.4.1"
+        },
+        "snapshot_id": "A-CP25-G25-NOTION-LIVE-READ-2026-08-03",
+        "schema_requery_kst": "2026-08-03 10:17:07 KST",
+        "backend_mode": "NOTION_LIVE_READ_PREVIEW",
+        "notion_read_enabled": true,
+        "notion_write_enabled": false,
+        "notion_schema": "LIVE_READ_ONLY_SESSION_SNAPSHOT",
+        "notion_backend": "READ_ONLY",
+        "request_db": "[TEST LAB] 지원팀 업무요청",
+        "task_db": "[TEST LAB] 지원팀 Task",
+        "dummy_fund_db": "[TEST LAB] TO DO LIST (FUND)",
+        "execution": {
+          "notion_write_enabled": false,
+          "notion_write_count": 0,
+          "operational_write_allowed": false,
+          "operational_write_count": 0,
+          "request_completion_allowed": false,
+          "downstream_auto_completion": false
+        }
+      }
+    },
+    "REQ-DEMO-002": {
+      "preview": {
+        "ok": true,
+        "skill_id": "admin-process-prototype-replay",
+        "schema_version": "prototype-replay/1",
+        "scenario_id": "SINGLE-P03-01",
+        "transaction_id": "PROTO-SINGLE-P03-01",
+        "mode": "single",
+        "conformance_claim": {
+          "contract_id": "PROTOTYPE-SCENARIO-CONTRACT-V0.1",
+          "manifest_hash": "3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d",
+          "batch_id": "A-CP25-B18",
+          "contract_scenario_coverage": 6,
+          "implemented_scenario_coverage": 3,
+          "implemented_scenarios": [
+            "SINGLE-P03-01",
+            "SINGLE-P03-02",
+            "COMPOSITE-01"
+          ],
+          "not_implemented_scenarios": [
+            "SINGLE-P07-01",
+            "SINGLE-P08-01",
+            "COMPOSITE-02"
+          ],
+          "reference_recorded_for_traceability": true,
+          "prototype_scope": 3,
+          "claimed": false,
+          "reason": "Three of six contract scenarios are implemented; the manifest reference is traceability metadata, not a conformance certification."
+        },
+        "ui_auxiliary_state": {
+          "notion_status_values": [
+            "진행 중"
+          ],
+          "notion_status_classification": "TASK_OR_UI_AUXILIARY_STATE",
+          "is_canonical_skill_stage": false
+        },
+        "process_instances": [
+          {
+            "lane_id": "SINGLE-P03-01/P03",
+            "process_id": "P03",
+            "stage": "COMPLETION_CANDIDATE",
+            "mapping_status": "CONFIRMED",
+            "operational_relation": "NONE",
+            "completion_candidate": true,
+            "candidate_reason": "저장·전달 Evidence 확인 필요"
+          }
+        ],
+        "request": {
+          "request_text": "고유번호증 신청 — 결과물 검토",
+          "transaction_id": "PROTO-SINGLE-P03-01",
+          "scenario_id": "SINGLE-P03-01",
+          "dummy_fund_id": "DUMMY-FUND-A",
+          "process_ids": [
+            "P03"
+          ],
+          "preview_only": true,
+          "missing_information": [],
+          "clarification_question": null,
+          "overall_status": "IN_PROGRESS"
+        },
+        "request_instances": [
+          {
+            "lane_id": "SINGLE-P03-01/P03",
+            "process_id": "P03",
+            "request_completion_allowed": false
+          }
+        ],
+        "task_instances": [
+          {
+            "lane_id": "SINGLE-P03-01/P03",
+            "process_id": "P03",
+            "operational_task_id": "P03-T06",
+            "actor": "지원팀",
+            "next_action": "저장·전달 Evidence 확인",
+            "blocker": "",
+            "stage": "COMPLETION_CANDIDATE",
+            "completion_allowed": false
+          }
+        ],
+        "tasks": [
+          {
+            "operational_task_id": "P03-T06",
+            "process_id": "P03",
+            "stage": "COMPLETION_CANDIDATE",
+            "actor": "지원팀",
+            "next_action": "저장·전달 Evidence 확인",
+            "blocker": "",
+            "completion_condition": "필수 Evidence 확인",
+            "completion_evidence": [
+              "EV-P03-SUBMISSION",
+              "EV-P03-RECEIPT",
+              "EV-P03-RESULT"
+            ],
+            "completion_candidate": true,
+            "completion_allowed": false
+          }
+        ],
+        "evidence_decisions": [
+          {
+            "lane_id": "SINGLE-P03-01/P03",
+            "evidence_id": "EV-P03-SUBMISSION",
+            "evidence_type": "SUBMISSION_PACKAGE",
+            "evidence_result": "VALID",
+            "legacy_evidence_type": "SUBMISSION_PACKAGE",
+            "legacy_fixture_state": "PRESENT_VALID",
+            "required_for_completion": true,
+            "evidence_judgment": "확인됨",
+            "validity": "VALID",
+            "human_confirmation_required": false,
+            "source": "SYNTHETIC_FIXTURE"
+          },
+          {
+            "lane_id": "SINGLE-P03-01/P03",
+            "evidence_id": "EV-P03-RECEIPT",
+            "evidence_type": "RECEIPT",
+            "evidence_result": "VALID",
+            "legacy_evidence_type": "RECEIPT",
+            "legacy_fixture_state": "PRESENT_VALID",
+            "required_for_completion": true,
+            "evidence_judgment": "확인됨",
+            "validity": "VALID",
+            "human_confirmation_required": false,
+            "source": "SYNTHETIC_FIXTURE"
+          },
+          {
+            "lane_id": "SINGLE-P03-01/P03",
+            "evidence_id": "EV-P03-RESULT",
+            "evidence_type": "RESULT_DOCUMENT",
+            "evidence_result": "VALID",
+            "legacy_evidence_type": "RESULT_DOCUMENT",
+            "legacy_fixture_state": "PRESENT_VALID",
+            "required_for_completion": true,
+            "evidence_judgment": "확인됨",
+            "validity": "VALID",
+            "human_confirmation_required": false,
+            "source": "SYNTHETIC_FIXTURE"
+          }
+        ],
+        "evidence_validity": [
+          {
+            "lane_id": "SINGLE-P03-01/P03",
+            "evidence_id": "EV-P03-SUBMISSION",
+            "validity": "VALID"
+          },
+          {
+            "lane_id": "SINGLE-P03-01/P03",
+            "evidence_id": "EV-P03-RECEIPT",
+            "validity": "VALID"
+          },
+          {
+            "lane_id": "SINGLE-P03-01/P03",
+            "evidence_id": "EV-P03-RESULT",
+            "validity": "VALID"
+          }
+        ],
+        "human_confirmation": [],
+        "interaction": {
+          "clarification_required": false,
+          "human_confirmation_required": false,
+          "questions": []
+        },
+        "actor_transitions": [
+          {
+            "lane_id": "SINGLE-P03-01/P03",
+            "actor": "지원팀",
+            "stage": "COMPLETION_CANDIDATE"
+          }
+        ],
+        "next_actions": [
+          {
+            "lane_id": "SINGLE-P03-01/P03",
+            "next_action": "저장·전달 Evidence 확인"
+          }
+        ],
+        "blockers": [],
+        "snapshot_timeline": [
+          {
+            "stage": "RECEIVED",
+            "lane_id": "SINGLE-P03-01/P03"
+          },
+          {
+            "stage": "EVIDENCE_REVIEW",
+            "lane_id": "SINGLE-P03-01/P03"
+          },
+          {
+            "stage": "COMPLETION_CANDIDATE",
+            "lane_id": "SINGLE-P03-01/P03"
+          }
+        ],
+        "expected_actual": {
+          "source": "SYNTHETIC_FIXTURE_EXPECTATIONS",
+          "expected_source": "scenario.expectations",
+          "comparison_ready": true,
+          "entries": [
+            {
+              "check_id": "SINGLE-P03-01/P03:stage",
+              "lane_id": "SINGLE-P03-01/P03",
+              "property": "stage",
+              "expected": "COMPLETION_CANDIDATE",
+              "actual": "COMPLETION_CANDIDATE",
+              "comparison_mode": "EXACT",
+              "result": "EXACT_MATCH"
+            },
+            {
+              "check_id": "SINGLE-P03-01/P03:completion_candidate",
+              "lane_id": "SINGLE-P03-01/P03",
+              "property": "completion_candidate",
+              "expected": true,
+              "actual": true,
+              "comparison_mode": "EXACT",
+              "result": "EXACT_MATCH"
+            },
+            {
+              "check_id": "SINGLE-P03-01/P03:request_completion_allowed",
+              "lane_id": "SINGLE-P03-01/P03",
+              "property": "request_completion_allowed",
+              "expected": false,
+              "actual": false,
+              "comparison_mode": "EXACT",
+              "result": "EXACT_MATCH"
+            }
+          ],
+          "mismatch_count": 0
+        },
+        "completion_candidate": true,
+        "completion_allowed": false,
+        "request_completion_allowed": false,
+        "downstream_auto_completion": false,
+        "operational_write_allowed": false,
+        "next_process_candidates": [],
+        "duplicate_result": {
+          "replay_key": "PROTO-SINGLE-P03-01",
+          "result": "NO_NEW_RECORDS_PREVIEW_ONLY",
+          "validation_scope": "PASS_IN_PREVIEW_FIXTURE",
+          "persistent_store_duplicate_observation": "PERSISTENT_STORE_DUPLICATE_OBSERVATION_NOT_RUN",
+          "duplicates_created": 0,
+          "new_records": 0,
+          "new_duplicates": 0,
+          "limitation": "Pure preview reducer does not observe a persistent record store."
+        },
+        "resume_contract": [
+          {
+            "lane_id": "SINGLE-P03-01/P03",
+            "resume_scope": "SINGLE-P03-01/P03",
+            "allowed": false,
+            "reason": "NO_RESUME_REQUIRED"
+          }
+        ],
+        "errors": [],
+        "execution": {
+          "operational_write_allowed": false,
+          "operational_write_count": 0,
+          "request_completion_allowed": false,
+          "downstream_auto_completion": false,
+          "notion_write_enabled": false,
+          "notion_write_count": 0
+        },
+        "write_plan": {
+          "mode": "preview_only",
+          "approval_required_for_future_write": true,
+          "operations": [],
+          "actual_write_count": 0
+        },
+        "write_counts": {
+          "notion": 0,
+          "drive": 0,
+          "slack": 0,
+          "file": 0,
+          "total": 0
+        },
+        "connector_calls": {
+          "notion": 0,
+          "drive": 0,
+          "slack": 0,
+          "total": 0
+        },
+        "write_count": 0,
+        "operational_write_count": 0,
+        "request_id": "REQ-DEMO-002",
+        "demo_request": {
+          "request_id": "REQ-DEMO-002",
+          "title": "고유번호증 신청 — 결과물 검토",
+          "scenario_id": "SINGLE-P03-01",
+          "dummy_fund_id": "DUMMY-FUND-A",
+          "display_status": "완료 후보",
+          "source_mode": "FIXTURE_PRESET",
+          "current_actor": "지원팀",
+          "has_blocker": false
+        },
+        "source_mode": "FIXTURE_PRESET",
+        "evidence": [
+          {
+            "lane_id": "SINGLE-P03-01/P03",
+            "evidence_id": "EV-P03-SUBMISSION",
+            "evidence_type": "SUBMISSION_PACKAGE",
+            "evidence_result": "VALID",
+            "legacy_evidence_type": "SUBMISSION_PACKAGE",
+            "legacy_fixture_state": "PRESENT_VALID",
+            "required_for_completion": true,
+            "evidence_judgment": "확인됨",
+            "validity": "VALID",
+            "human_confirmation_required": false,
+            "source": "SYNTHETIC_FIXTURE"
+          },
+          {
+            "lane_id": "SINGLE-P03-01/P03",
+            "evidence_id": "EV-P03-RECEIPT",
+            "evidence_type": "RECEIPT",
+            "evidence_result": "VALID",
+            "legacy_evidence_type": "RECEIPT",
+            "legacy_fixture_state": "PRESENT_VALID",
+            "required_for_completion": true,
+            "evidence_judgment": "확인됨",
+            "validity": "VALID",
+            "human_confirmation_required": false,
+            "source": "SYNTHETIC_FIXTURE"
+          },
+          {
+            "lane_id": "SINGLE-P03-01/P03",
+            "evidence_id": "EV-P03-RESULT",
+            "evidence_type": "RESULT_DOCUMENT",
+            "evidence_result": "VALID",
+            "legacy_evidence_type": "RESULT_DOCUMENT",
+            "legacy_fixture_state": "PRESENT_VALID",
+            "required_for_completion": true,
+            "evidence_judgment": "확인됨",
+            "validity": "VALID",
+            "human_confirmation_required": false,
+            "source": "SYNTHETIC_FIXTURE"
+          }
+        ],
+        "manifest": {
+          "contract_id": "PROTOTYPE-SCENARIO-CONTRACT-V0.1",
+          "manifest_hash": "3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d",
+          "batch_id": "A-CP25-B18",
+          "contract_scenario_coverage": 6,
+          "implemented_scenario_coverage": 3,
+          "implemented_scenarios": [
+            "SINGLE-P03-01",
+            "SINGLE-P03-02",
+            "COMPOSITE-01"
+          ],
+          "not_implemented_scenarios": [
+            "SINGLE-P07-01",
+            "SINGLE-P08-01",
+            "COMPOSITE-02"
+          ],
+          "reference_recorded_for_traceability": true,
+          "prototype_scope": 3,
+          "claimed": false,
+          "reason": "Three of six contract scenarios are implemented; the manifest reference is traceability metadata, not a conformance certification."
+        },
+        "schema_source": "APPROVED_SESSION_TOOL_READ_ONLY",
+        "snapshot_id": "A-CP25-G25-NOTION-LIVE-READ-2026-08-03",
+        "schema_requery_kst": "2026-08-03 10:17:07 KST",
+        "backend_mode": "NOTION_LIVE_READ_PREVIEW",
+        "notion_read_enabled": true,
+        "notion_write_enabled": false,
+        "notion_write_count": 0,
+        "notion_schema": "LIVE_READ_ONLY_SESSION_SNAPSHOT",
+        "notion_backend": "READ_ONLY",
+        "request_db": "[TEST LAB] 지원팀 업무요청",
+        "task_db": "[TEST LAB] 지원팀 Task",
+        "dummy_fund_db": "[TEST LAB] TO DO LIST (FUND)",
+        "display_mapping": {
+          "RECEIVED": "요청 접수",
+          "INFORMATION_CHECK": "확인 필요",
+          "EVIDENCE_REVIEW": "확인 필요",
+          "HUMAN_CONFIRMATION": "확인 필요",
+          "EXTERNAL_WAIT": "외부 대기",
+          "RESULT_REVIEW": "진행 가능",
+          "NEXT_PROCESS": "진행 가능",
+          "COMPLETION_CANDIDATE": "완료 후보",
+          "BLOCKED": "중단"
+        },
+        "console_version": "PILOT v0.4.1"
+      },
+      "gap": {
+        "ok": true,
+        "console_version": "PILOT v0.4.2",
+        "schema_read_at_kst": "2026-08-03 11:10:02 KST",
+        "schema_source": "APPROVED_SESSION_TOOL_READ_ONLY",
+        "request_id": "REQ-DEMO-002",
+        "scenario_id": "SINGLE-P03-01",
+        "fund_relation": {
+          "dummy_fund_id": "DUMMY-FUND-A",
+          "candidate_db": "[TEST LAB] 전체관리조합",
+          "candidate_property": "조합명 / 테스트 케이스 ID",
+          "match_query": "Exact match only",
+          "match_count": 0,
+          "matched_page_id": "NOT_FOUND",
+          "candidates": [
+            {
+              "id": "existing_exact",
+              "label": "기존 TEST Record Exact Match",
+              "result": "NO_MATCH",
+              "relation_safe": false,
+              "schema_change_required": false,
+              "write_required": false
+            },
+            {
+              "id": "test_identifier",
+              "label": "기존 테스트 식별 Property",
+              "result": "CONFIRM_REQUIRED",
+              "relation_safe": false,
+              "schema_change_required": false,
+              "write_required": false,
+              "note": "추가 SQL 조회는 workspace usage limit으로 미실행"
+            },
+            {
+              "id": "text_only",
+              "label": "Relation 없이 Text Snapshot",
+              "result": "TEXT_ONLY_FALLBACK_CANDIDATE",
+              "relation_safe": false,
+              "schema_change_required": false,
+              "write_required": false,
+              "note": "Relation 검증 완료를 의미하지 않음"
+            },
+            {
+              "id": "new_test_record",
+              "label": "새 TEST Dummy Fund Record",
+              "result": "NEW_TEST_RECORD_REQUIRED",
+              "relation_safe": true,
+              "schema_change_required": false,
+              "write_required": true,
+              "note": "사용자 승인 전 생성 금지"
+            }
+          ],
+          "recommendation": "NEW_TEST_RECORD_REQUIRED",
+          "blocking": true,
+          "required_approval": "TEST Dummy Fund Record 생성 및 Exact Relation 대상 승인"
+        },
+        "transaction_candidates": [
+          {
+            "id": "test_case_id",
+            "property": "Request/Task 테스트 케이스 ID",
+            "type": "text",
+            "result": "CONFIRM_REQUIRED",
+            "durable": false,
+            "reason": "기존 Text지만 Transaction ID 용도로 확정되지 않음",
+            "schema_change_required": false
+          },
+          {
+            "id": "title_prefix",
+            "property": "Request 요청명",
+            "type": "title",
+            "result": "TITLE_PREFIX_FALLBACK",
+            "durable": false,
+            "reason": "표시명 수정으로 손상될 수 있어 durable key가 아님",
+            "schema_change_required": false
+          },
+          {
+            "id": "task_proxy",
+            "property": "Operational Task ID + 상위 요청",
+            "type": "text + relation",
+            "result": "COMPOSITE_PROXY_ONLY",
+            "durable": false,
+            "reason": "Request 재실행을 단일 키로 Exact query할 수 없음",
+            "schema_change_required": false
+          },
+          {
+            "id": "new_transaction_id",
+            "property": "전용 Transaction ID",
+            "type": "text",
+            "result": "NEW_PROPERTY_REQUIRED",
+            "durable": true,
+            "reason": "Persistent exact query 및 Request-Task 추적에 필요한 전용 식별자",
+            "schema_change_required": true
+          }
+        ],
+        "durable_duplicate_result": "NOT_READY_PROXY_ONLY",
+        "composite_process_candidates": [
+          {
+            "id": "representative_process",
+            "result": "BLOCKED",
+            "request_process": "대표 Process 1개",
+            "task_process": "P03/P04/P07",
+            "data_loss": true,
+            "schema_change_required": true,
+            "reason": "Request Process ID는 단일 Select이고 복합 Option이 확인되지 않음"
+          },
+          {
+            "id": "task_level_process",
+            "result": "TASK_LEVEL_PROCESS_SOURCE_OF_TRUTH",
+            "request_process": "NOT_WRITTEN; 요청명/요약에 복합 업무 표기",
+            "task_process": "P03/P04/P07 each on Task Process ID",
+            "data_loss": false,
+            "schema_change_required": false,
+            "reason": "Task Process ID와 상위 요청 Relation을 기존 구조로 재사용"
+          },
+          {
+            "id": "text_snapshot",
+            "result": "TEXT_SNAPSHOT_FALLBACK",
+            "request_process": "요청 배경 Text",
+            "task_process": "P03/P04/P07",
+            "data_loss": true,
+            "schema_change_required": false,
+            "reason": "필터·집계의 구조적 Process 값은 보장하지 않음"
+          },
+          {
+            "id": "new_multiselect",
+            "result": "NEW_PROPERTY_REQUIRED",
+            "request_process": "새 Multi-select",
+            "task_process": "P03/P04/P07",
+            "data_loss": false,
+            "schema_change_required": true,
+            "reason": "이번 TAP에서는 생성 금지"
+          }
+        ],
+        "composite_process_recommendation": "TASK_LEVEL_PROCESS_SOURCE_OF_TRUTH",
+        "composite_data_loss_result": "REQUEST_LEVEL_DIRECT_PROCESS_FILTER_NOT_AVAILABLE",
+        "candidate_comparison": [
+          {
+            "gap": "Fund Relation",
+            "candidate": "NEW_TEST_RECORD_REQUIRED",
+            "existing_structure_reused": "Relation target DB only",
+            "data_loss": "None after new TEST record",
+            "duplicate_safety": "N/A",
+            "relation_safety": "BLOCKED",
+            "schema_change_required": false,
+            "write_required": true,
+            "operational_risk": "Low TEST-only after approval",
+            "recommendation": "NEW_TEST_RECORD_REQUIRED",
+            "user_approval_required": true
+          },
+          {
+            "gap": "Durable Duplicate",
+            "candidate": "전용 Transaction ID",
+            "existing_structure_reused": "No",
+            "data_loss": "None",
+            "duplicate_safety": "DURABLE_READY only after property",
+            "relation_safety": "Request-Task relation reusable",
+            "schema_change_required": true,
+            "write_required": true,
+            "operational_risk": "Schema semantic decision",
+            "recommendation": "NEW_PROPERTY_REQUIRED",
+            "user_approval_required": true
+          },
+          {
+            "gap": "Composite Process",
+            "candidate": "Task-level Process source of truth",
+            "existing_structure_reused": "Task Process ID + 상위 요청 Relation",
+            "data_loss": "Request-level direct Process filter unavailable",
+            "duplicate_safety": "N/A",
+            "relation_safety": "PASS_PLANNED_RELATION",
+            "schema_change_required": false,
+            "write_required": false,
+            "operational_risk": "User decision required",
+            "recommendation": "TASK_LEVEL_PROCESS_SOURCE_OF_TRUTH",
+            "user_approval_required": false
+          }
+        ],
+        "required_approvals": [
+          "TEST Dummy Fund Record 생성 및 Exact Relation 대상 승인",
+          "전용 Transaction ID Property 생성 승인"
+        ],
+        "blocking_gaps": [
+          "fund_relation",
+          "durable_duplicate"
+        ],
+        "blocking_gap_count": 2,
+        "approval_status": "MAPPING_DECISION_REQUIRED",
+        "test_write_readiness": "TEST_WRITE_BLOCKED",
+        "proposed_decisions": {
+          "fund_relation": "DECISION_PENDING",
+          "durable_duplicate": "DECISION_PENDING",
+          "composite_process": "NOT_APPLICABLE"
+        },
+        "write_count": 0,
+        "notion_write_count": 0,
+        "operational_write_count": 0,
+        "operational_write_allowed": false,
+        "preview_output": {
+          "ok": true,
+          "skill_id": "admin-process-prototype-replay",
+          "schema_version": "prototype-replay/1",
+          "scenario_id": "SINGLE-P03-01",
+          "transaction_id": "PROTO-SINGLE-P03-01",
+          "mode": "single",
+          "conformance_claim": {
+            "contract_id": "PROTOTYPE-SCENARIO-CONTRACT-V0.1",
+            "manifest_hash": "3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d",
+            "batch_id": "A-CP25-B18",
+            "contract_scenario_coverage": 6,
+            "implemented_scenario_coverage": 3,
+            "implemented_scenarios": [
+              "SINGLE-P03-01",
+              "SINGLE-P03-02",
+              "COMPOSITE-01"
+            ],
+            "not_implemented_scenarios": [
+              "SINGLE-P07-01",
+              "SINGLE-P08-01",
+              "COMPOSITE-02"
+            ],
+            "reference_recorded_for_traceability": true,
+            "prototype_scope": 3,
+            "claimed": false,
+            "reason": "Three of six contract scenarios are implemented; the manifest reference is traceability metadata, not a conformance certification."
+          },
+          "ui_auxiliary_state": {
+            "notion_status_values": [
+              "진행 중"
+            ],
+            "notion_status_classification": "TASK_OR_UI_AUXILIARY_STATE",
+            "is_canonical_skill_stage": false
+          },
+          "process_instances": [
+            {
+              "lane_id": "SINGLE-P03-01/P03",
+              "process_id": "P03",
+              "stage": "COMPLETION_CANDIDATE",
+              "mapping_status": "CONFIRMED",
+              "operational_relation": "NONE",
+              "completion_candidate": true,
+              "candidate_reason": "저장·전달 Evidence 확인 필요"
+            }
+          ],
+          "request": {
+            "request_text": "고유번호증 신청 — 결과물 검토",
+            "transaction_id": "PROTO-SINGLE-P03-01",
+            "scenario_id": "SINGLE-P03-01",
+            "dummy_fund_id": "DUMMY-FUND-A",
+            "process_ids": [
+              "P03"
+            ],
+            "preview_only": true,
+            "missing_information": [],
+            "clarification_question": null,
+            "overall_status": "IN_PROGRESS"
+          },
+          "request_instances": [
+            {
+              "lane_id": "SINGLE-P03-01/P03",
+              "process_id": "P03",
+              "request_completion_allowed": false
+            }
+          ],
+          "task_instances": [
+            {
+              "lane_id": "SINGLE-P03-01/P03",
+              "process_id": "P03",
+              "operational_task_id": "P03-T06",
+              "actor": "지원팀",
+              "next_action": "저장·전달 Evidence 확인",
+              "blocker": "",
+              "stage": "COMPLETION_CANDIDATE",
+              "completion_allowed": false
+            }
+          ],
+          "tasks": [
+            {
+              "operational_task_id": "P03-T06",
+              "process_id": "P03",
+              "stage": "COMPLETION_CANDIDATE",
+              "actor": "지원팀",
+              "next_action": "저장·전달 Evidence 확인",
+              "blocker": "",
+              "completion_condition": "필수 Evidence 확인",
+              "completion_evidence": [
+                "EV-P03-SUBMISSION",
+                "EV-P03-RECEIPT",
+                "EV-P03-RESULT"
+              ],
+              "completion_candidate": true,
+              "completion_allowed": false
+            }
+          ],
+          "evidence_decisions": [
+            {
+              "lane_id": "SINGLE-P03-01/P03",
+              "evidence_id": "EV-P03-SUBMISSION",
+              "evidence_type": "SUBMISSION_PACKAGE",
+              "evidence_result": "VALID",
+              "legacy_evidence_type": "SUBMISSION_PACKAGE",
+              "legacy_fixture_state": "PRESENT_VALID",
+              "required_for_completion": true,
+              "evidence_judgment": "확인됨",
+              "validity": "VALID",
+              "human_confirmation_required": false,
+              "source": "SYNTHETIC_FIXTURE"
+            },
+            {
+              "lane_id": "SINGLE-P03-01/P03",
+              "evidence_id": "EV-P03-RECEIPT",
+              "evidence_type": "RECEIPT",
+              "evidence_result": "VALID",
+              "legacy_evidence_type": "RECEIPT",
+              "legacy_fixture_state": "PRESENT_VALID",
+              "required_for_completion": true,
+              "evidence_judgment": "확인됨",
+              "validity": "VALID",
+              "human_confirmation_required": false,
+              "source": "SYNTHETIC_FIXTURE"
+            },
+            {
+              "lane_id": "SINGLE-P03-01/P03",
+              "evidence_id": "EV-P03-RESULT",
+              "evidence_type": "RESULT_DOCUMENT",
+              "evidence_result": "VALID",
+              "legacy_evidence_type": "RESULT_DOCUMENT",
+              "legacy_fixture_state": "PRESENT_VALID",
+              "required_for_completion": true,
+              "evidence_judgment": "확인됨",
+              "validity": "VALID",
+              "human_confirmation_required": false,
+              "source": "SYNTHETIC_FIXTURE"
+            }
+          ],
+          "evidence_validity": [
+            {
+              "lane_id": "SINGLE-P03-01/P03",
+              "evidence_id": "EV-P03-SUBMISSION",
+              "validity": "VALID"
+            },
+            {
+              "lane_id": "SINGLE-P03-01/P03",
+              "evidence_id": "EV-P03-RECEIPT",
+              "validity": "VALID"
+            },
+            {
+              "lane_id": "SINGLE-P03-01/P03",
+              "evidence_id": "EV-P03-RESULT",
+              "validity": "VALID"
+            }
+          ],
+          "human_confirmation": [],
+          "interaction": {
+            "clarification_required": false,
+            "human_confirmation_required": false,
+            "questions": []
+          },
+          "actor_transitions": [
+            {
+              "lane_id": "SINGLE-P03-01/P03",
+              "actor": "지원팀",
+              "stage": "COMPLETION_CANDIDATE"
+            }
+          ],
+          "next_actions": [
+            {
+              "lane_id": "SINGLE-P03-01/P03",
+              "next_action": "저장·전달 Evidence 확인"
+            }
+          ],
+          "blockers": [],
+          "snapshot_timeline": [
+            {
+              "stage": "RECEIVED",
+              "lane_id": "SINGLE-P03-01/P03"
+            },
+            {
+              "stage": "EVIDENCE_REVIEW",
+              "lane_id": "SINGLE-P03-01/P03"
+            },
+            {
+              "stage": "COMPLETION_CANDIDATE",
+              "lane_id": "SINGLE-P03-01/P03"
+            }
+          ],
+          "expected_actual": {
+            "source": "SYNTHETIC_FIXTURE_EXPECTATIONS",
+            "expected_source": "scenario.expectations",
+            "comparison_ready": true,
+            "entries": [
+              {
+                "check_id": "SINGLE-P03-01/P03:stage",
+                "lane_id": "SINGLE-P03-01/P03",
+                "property": "stage",
+                "expected": "COMPLETION_CANDIDATE",
+                "actual": "COMPLETION_CANDIDATE",
+                "comparison_mode": "EXACT",
+                "result": "EXACT_MATCH"
+              },
+              {
+                "check_id": "SINGLE-P03-01/P03:completion_candidate",
+                "lane_id": "SINGLE-P03-01/P03",
+                "property": "completion_candidate",
+                "expected": true,
+                "actual": true,
+                "comparison_mode": "EXACT",
+                "result": "EXACT_MATCH"
+              },
+              {
+                "check_id": "SINGLE-P03-01/P03:request_completion_allowed",
+                "lane_id": "SINGLE-P03-01/P03",
+                "property": "request_completion_allowed",
+                "expected": false,
+                "actual": false,
+                "comparison_mode": "EXACT",
+                "result": "EXACT_MATCH"
+              }
+            ],
+            "mismatch_count": 0
+          },
+          "completion_candidate": true,
+          "completion_allowed": false,
+          "request_completion_allowed": false,
+          "downstream_auto_completion": false,
+          "operational_write_allowed": false,
+          "next_process_candidates": [],
+          "duplicate_result": {
+            "replay_key": "PROTO-SINGLE-P03-01",
+            "result": "NO_NEW_RECORDS_PREVIEW_ONLY",
+            "validation_scope": "PASS_IN_PREVIEW_FIXTURE",
+            "persistent_store_duplicate_observation": "PERSISTENT_STORE_DUPLICATE_OBSERVATION_NOT_RUN",
+            "duplicates_created": 0,
+            "new_records": 0,
+            "new_duplicates": 0,
+            "limitation": "Pure preview reducer does not observe a persistent record store."
+          },
+          "resume_contract": [
+            {
+              "lane_id": "SINGLE-P03-01/P03",
+              "resume_scope": "SINGLE-P03-01/P03",
+              "allowed": false,
+              "reason": "NO_RESUME_REQUIRED"
+            }
+          ],
+          "errors": [],
+          "execution": {
+            "operational_write_allowed": false,
+            "operational_write_count": 0,
+            "request_completion_allowed": false,
+            "downstream_auto_completion": false,
+            "notion_write_enabled": false,
+            "notion_write_count": 0
+          },
+          "write_plan": {
+            "mode": "preview_only",
+            "approval_required_for_future_write": true,
+            "operations": [],
+            "actual_write_count": 0
+          },
+          "write_counts": {
+            "notion": 0,
+            "drive": 0,
+            "slack": 0,
+            "file": 0,
+            "total": 0
+          },
+          "connector_calls": {
+            "notion": 0,
+            "drive": 0,
+            "slack": 0,
+            "total": 0
+          },
+          "write_count": 0,
+          "operational_write_count": 0,
+          "request_id": "REQ-DEMO-002",
+          "demo_request": {
+            "request_id": "REQ-DEMO-002",
+            "title": "고유번호증 신청 — 결과물 검토",
+            "scenario_id": "SINGLE-P03-01",
+            "dummy_fund_id": "DUMMY-FUND-A",
+            "display_status": "완료 후보",
+            "source_mode": "FIXTURE_PRESET",
+            "current_actor": "지원팀",
+            "has_blocker": false
+          },
+          "source_mode": "FIXTURE_PRESET",
+          "evidence": [
+            {
+              "lane_id": "SINGLE-P03-01/P03",
+              "evidence_id": "EV-P03-SUBMISSION",
+              "evidence_type": "SUBMISSION_PACKAGE",
+              "evidence_result": "VALID",
+              "legacy_evidence_type": "SUBMISSION_PACKAGE",
+              "legacy_fixture_state": "PRESENT_VALID",
+              "required_for_completion": true,
+              "evidence_judgment": "확인됨",
+              "validity": "VALID",
+              "human_confirmation_required": false,
+              "source": "SYNTHETIC_FIXTURE"
+            },
+            {
+              "lane_id": "SINGLE-P03-01/P03",
+              "evidence_id": "EV-P03-RECEIPT",
+              "evidence_type": "RECEIPT",
+              "evidence_result": "VALID",
+              "legacy_evidence_type": "RECEIPT",
+              "legacy_fixture_state": "PRESENT_VALID",
+              "required_for_completion": true,
+              "evidence_judgment": "확인됨",
+              "validity": "VALID",
+              "human_confirmation_required": false,
+              "source": "SYNTHETIC_FIXTURE"
+            },
+            {
+              "lane_id": "SINGLE-P03-01/P03",
+              "evidence_id": "EV-P03-RESULT",
+              "evidence_type": "RESULT_DOCUMENT",
+              "evidence_result": "VALID",
+              "legacy_evidence_type": "RESULT_DOCUMENT",
+              "legacy_fixture_state": "PRESENT_VALID",
+              "required_for_completion": true,
+              "evidence_judgment": "확인됨",
+              "validity": "VALID",
+              "human_confirmation_required": false,
+              "source": "SYNTHETIC_FIXTURE"
+            }
+          ],
+          "manifest": {
+            "contract_id": "PROTOTYPE-SCENARIO-CONTRACT-V0.1",
+            "manifest_hash": "3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d",
+            "batch_id": "A-CP25-B18",
+            "contract_scenario_coverage": 6,
+            "implemented_scenario_coverage": 3,
+            "implemented_scenarios": [
+              "SINGLE-P03-01",
+              "SINGLE-P03-02",
+              "COMPOSITE-01"
+            ],
+            "not_implemented_scenarios": [
+              "SINGLE-P07-01",
+              "SINGLE-P08-01",
+              "COMPOSITE-02"
+            ],
+            "reference_recorded_for_traceability": true,
+            "prototype_scope": 3,
+            "claimed": false,
+            "reason": "Three of six contract scenarios are implemented; the manifest reference is traceability metadata, not a conformance certification."
+          },
+          "schema_source": "APPROVED_SESSION_TOOL_READ_ONLY",
+          "snapshot_id": "A-CP25-G25-NOTION-LIVE-READ-2026-08-03",
+          "schema_requery_kst": "2026-08-03 10:17:07 KST",
+          "backend_mode": "NOTION_LIVE_READ_PREVIEW",
+          "notion_read_enabled": true,
+          "notion_write_enabled": false,
+          "notion_write_count": 0,
+          "notion_schema": "LIVE_READ_ONLY_SESSION_SNAPSHOT",
+          "notion_backend": "READ_ONLY",
+          "request_db": "[TEST LAB] 지원팀 업무요청",
+          "task_db": "[TEST LAB] 지원팀 Task",
+          "dummy_fund_db": "[TEST LAB] TO DO LIST (FUND)",
+          "display_mapping": {
+            "RECEIVED": "요청 접수",
+            "INFORMATION_CHECK": "확인 필요",
+            "EVIDENCE_REVIEW": "확인 필요",
+            "HUMAN_CONFIRMATION": "확인 필요",
+            "EXTERNAL_WAIT": "외부 대기",
+            "RESULT_REVIEW": "진행 가능",
+            "NEXT_PROCESS": "진행 가능",
+            "COMPLETION_CANDIDATE": "완료 후보",
+            "BLOCKED": "중단"
+          },
+          "console_version": "PILOT v0.4.1"
+        },
+        "snapshot_id": "A-CP25-G25-NOTION-LIVE-READ-2026-08-03",
+        "schema_requery_kst": "2026-08-03 10:17:07 KST",
+        "backend_mode": "NOTION_LIVE_READ_PREVIEW",
+        "notion_read_enabled": true,
+        "notion_write_enabled": false,
+        "notion_schema": "LIVE_READ_ONLY_SESSION_SNAPSHOT",
+        "notion_backend": "READ_ONLY",
+        "request_db": "[TEST LAB] 지원팀 업무요청",
+        "task_db": "[TEST LAB] 지원팀 Task",
+        "dummy_fund_db": "[TEST LAB] TO DO LIST (FUND)",
+        "execution": {
+          "notion_write_enabled": false,
+          "notion_write_count": 0,
+          "operational_write_allowed": false,
+          "operational_write_count": 0,
+          "request_completion_allowed": false,
+          "downstream_auto_completion": false
+        }
+      }
+    },
+    "REQ-DEMO-003": {
+      "preview": {
+        "ok": true,
+        "skill_id": "admin-process-prototype-replay",
+        "schema_version": "prototype-replay/1",
+        "scenario_id": "COMPOSITE-01",
+        "transaction_id": "PROTO-COMPOSITE-01",
+        "mode": "composite",
+        "conformance_claim": {
+          "contract_id": "PROTOTYPE-SCENARIO-CONTRACT-V0.1",
+          "manifest_hash": "3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d",
+          "batch_id": "A-CP25-B18",
+          "contract_scenario_coverage": 6,
+          "implemented_scenario_coverage": 3,
+          "implemented_scenarios": [
+            "SINGLE-P03-01",
+            "SINGLE-P03-02",
+            "COMPOSITE-01"
+          ],
+          "not_implemented_scenarios": [
+            "SINGLE-P07-01",
+            "SINGLE-P08-01",
+            "COMPOSITE-02"
+          ],
+          "reference_recorded_for_traceability": true,
+          "prototype_scope": 3,
+          "claimed": false,
+          "reason": "Three of six contract scenarios are implemented; the manifest reference is traceability metadata, not a conformance certification."
+        },
+        "ui_auxiliary_state": {
+          "notion_status_values": [
+            "진행 중"
+          ],
+          "notion_status_classification": "TASK_OR_UI_AUXILIARY_STATE",
+          "is_canonical_skill_stage": false
+        },
+        "process_instances": [
+          {
+            "lane_id": "COMPOSITE-01/P03",
+            "process_id": "P03",
+            "stage": "RESULT_REVIEW",
+            "mapping_status": "CONFIRMED",
+            "operational_relation": "NONE",
+            "completion_candidate": false,
+            "candidate_reason": null
+          },
+          {
+            "lane_id": "COMPOSITE-01/P04",
+            "process_id": "P04",
+            "stage": "NEXT_PROCESS",
+            "mapping_status": "CANDIDATE_CONFIRMATION_REQUIRED",
+            "operational_relation": "NONE",
+            "completion_candidate": false,
+            "candidate_reason": null
+          },
+          {
+            "lane_id": "COMPOSITE-01/P07",
+            "process_id": "P07",
+            "stage": "BLOCKED",
+            "mapping_status": "CANDIDATE_CONFIRMATION_REQUIRED",
+            "operational_relation": "NONE",
+            "completion_candidate": false,
+            "candidate_reason": null
+          }
+        ],
+        "request": {
+          "request_text": "고유번호증·홈택스·계좌개설 복합 요청",
+          "transaction_id": "PROTO-COMPOSITE-01",
+          "scenario_id": "COMPOSITE-01",
+          "dummy_fund_id": "DUMMY-FUND-E",
+          "process_ids": [
+            "P03",
+            "P04",
+            "P07"
+          ],
+          "preview_only": true,
+          "missing_information": [],
+          "clarification_question": null,
+          "overall_status": "BLOCKED"
+        },
+        "request_instances": [
+          {
+            "lane_id": "COMPOSITE-01/P03",
+            "process_id": "P03",
+            "request_completion_allowed": false
+          },
+          {
+            "lane_id": "COMPOSITE-01/P04",
+            "process_id": "P04",
+            "request_completion_allowed": false
+          },
+          {
+            "lane_id": "COMPOSITE-01/P07",
+            "process_id": "P07",
+            "request_completion_allowed": false
+          }
+        ],
+        "task_instances": [
+          {
+            "lane_id": "COMPOSITE-01/P03",
+            "process_id": "P03",
+            "operational_task_id": "P03-T05",
+            "actor": "지원팀",
+            "next_action": "P03 결과물 확인 기록 유지",
+            "blocker": "",
+            "stage": "RESULT_REVIEW",
+            "completion_allowed": false
+          },
+          {
+            "lane_id": "COMPOSITE-01/P04",
+            "process_id": "P04",
+            "operational_task_id": "P04-T01",
+            "actor": "지원팀",
+            "next_action": "보안카드·홈택스 필요 여부 사람 확인",
+            "blocker": "",
+            "stage": "NEXT_PROCESS",
+            "completion_allowed": false
+          },
+          {
+            "lane_id": "COMPOSITE-01/P07",
+            "process_id": "P07",
+            "operational_task_id": "P07-T01",
+            "actor": "지원팀",
+            "next_action": "계좌개설 제출서류 수집",
+            "blocker": "P07 제출서류 미확보",
+            "stage": "BLOCKED",
+            "completion_allowed": false
+          }
+        ],
+        "tasks": [
+          {
+            "operational_task_id": "P03-T05",
+            "process_id": "P03",
+            "stage": "RESULT_REVIEW",
+            "actor": "지원팀",
+            "next_action": "P03 결과물 확인 기록 유지",
+            "blocker": "",
+            "completion_condition": "필수 Evidence 확인",
+            "completion_evidence": [
+              "EV-P03-RESULT"
+            ],
+            "completion_candidate": false,
+            "completion_allowed": false
+          },
+          {
+            "operational_task_id": "P04-T01",
+            "process_id": "P04",
+            "stage": "NEXT_PROCESS",
+            "actor": "지원팀",
+            "next_action": "보안카드·홈택스 필요 여부 사람 확인",
+            "blocker": "",
+            "completion_condition": "필수 Evidence 확인",
+            "completion_evidence": [
+              "EV-P04-REQUEST"
+            ],
+            "completion_candidate": false,
+            "completion_allowed": false
+          },
+          {
+            "operational_task_id": "P07-T01",
+            "process_id": "P07",
+            "stage": "BLOCKED",
+            "actor": "지원팀",
+            "next_action": "계좌개설 제출서류 수집",
+            "blocker": "P07 제출서류 미확보",
+            "completion_condition": "필수 Evidence 확인",
+            "completion_evidence": [],
+            "completion_candidate": false,
+            "completion_allowed": false
+          }
+        ],
+        "evidence_decisions": [
+          {
+            "lane_id": "COMPOSITE-01/P03",
+            "evidence_id": "EV-P03-RESULT",
+            "evidence_type": "RESULT_DOCUMENT",
+            "evidence_result": "VALID",
+            "legacy_evidence_type": "RESULT_DOCUMENT",
+            "legacy_fixture_state": "PRESENT_VALID",
+            "required_for_completion": true,
+            "evidence_judgment": "확인됨",
+            "validity": "VALID",
+            "human_confirmation_required": false,
+            "source": "SYNTHETIC_FIXTURE"
+          },
+          {
+            "lane_id": "COMPOSITE-01/P04",
+            "evidence_id": "EV-P04-REQUEST",
+            "evidence_type": "REQUEST_INFO",
+            "evidence_result": "VALID",
+            "legacy_evidence_type": "REQUEST_INFO",
+            "legacy_fixture_state": "PRESENT_VALID",
+            "required_for_completion": false,
+            "evidence_judgment": "확인됨",
+            "validity": "VALID",
+            "human_confirmation_required": false,
+            "source": "SYNTHETIC_FIXTURE"
+          },
+          {
+            "lane_id": "COMPOSITE-01/P07",
+            "evidence_id": "EV-P07-SUBMISSION",
+            "evidence_type": "SUBMISSION_PACKAGE",
+            "evidence_result": "MISSING",
+            "legacy_evidence_type": "SUBMISSION_PACKAGE",
+            "legacy_fixture_state": "ABSENT",
+            "required_for_completion": true,
+            "evidence_judgment": "MISSING",
+            "validity": "MISSING",
+            "human_confirmation_required": true,
+            "source": "SYNTHETIC_FIXTURE"
+          }
+        ],
+        "evidence_validity": [
+          {
+            "lane_id": "COMPOSITE-01/P03",
+            "evidence_id": "EV-P03-RESULT",
+            "validity": "VALID"
+          },
+          {
+            "lane_id": "COMPOSITE-01/P04",
+            "evidence_id": "EV-P04-REQUEST",
+            "validity": "VALID"
+          },
+          {
+            "lane_id": "COMPOSITE-01/P07",
+            "evidence_id": "EV-P07-SUBMISSION",
+            "validity": "MISSING"
+          }
+        ],
+        "human_confirmation": [],
+        "interaction": {
+          "clarification_required": false,
+          "human_confirmation_required": false,
+          "questions": []
+        },
+        "actor_transitions": [
+          {
+            "lane_id": "COMPOSITE-01/P03",
+            "actor": "지원팀",
+            "stage": "RESULT_REVIEW"
+          },
+          {
+            "lane_id": "COMPOSITE-01/P04",
+            "actor": "지원팀",
+            "stage": "NEXT_PROCESS"
+          },
+          {
+            "lane_id": "COMPOSITE-01/P07",
+            "actor": "지원팀",
+            "stage": "BLOCKED"
+          }
+        ],
+        "next_actions": [
+          {
+            "lane_id": "COMPOSITE-01/P03",
+            "next_action": "P03 결과물 확인 기록 유지"
+          },
+          {
+            "lane_id": "COMPOSITE-01/P04",
+            "next_action": "보안카드·홈택스 필요 여부 사람 확인"
+          },
+          {
+            "lane_id": "COMPOSITE-01/P07",
+            "next_action": "계좌개설 제출서류 수집"
+          }
+        ],
+        "blockers": [
+          {
+            "lane_id": "COMPOSITE-01/P07",
+            "blocker": "P07 제출서류 미확보"
+          }
+        ],
+        "snapshot_timeline": [
+          {
+            "stage": "RECEIVED",
+            "lane_id": "COMPOSITE-01/P03"
+          },
+          {
+            "stage": "EVIDENCE_REVIEW",
+            "lane_id": "COMPOSITE-01/P03"
+          },
+          {
+            "stage": "RESULT_REVIEW",
+            "lane_id": "COMPOSITE-01/P03"
+          },
+          {
+            "stage": "RECEIVED",
+            "lane_id": "COMPOSITE-01/P04"
+          },
+          {
+            "stage": "EVIDENCE_REVIEW",
+            "lane_id": "COMPOSITE-01/P04"
+          },
+          {
+            "stage": "NEXT_PROCESS",
+            "lane_id": "COMPOSITE-01/P04"
+          },
+          {
+            "stage": "RECEIVED",
+            "lane_id": "COMPOSITE-01/P07"
+          },
+          {
+            "stage": "EVIDENCE_REVIEW",
+            "lane_id": "COMPOSITE-01/P07"
+          },
+          {
+            "stage": "BLOCKED",
+            "lane_id": "COMPOSITE-01/P07",
+            "error_code": "MISSING_REQUIRED_EVIDENCE"
+          }
+        ],
+        "expected_actual": {
+          "source": "SYNTHETIC_FIXTURE_EXPECTATIONS",
+          "expected_source": "scenario.expectations",
+          "comparison_ready": true,
+          "entries": [
+            {
+              "check_id": "COMPOSITE-01/P03:stage",
+              "lane_id": "COMPOSITE-01/P03",
+              "property": "stage",
+              "expected": "RESULT_REVIEW",
+              "actual": "RESULT_REVIEW",
+              "comparison_mode": "EXACT",
+              "result": "EXACT_MATCH"
+            },
+            {
+              "check_id": "COMPOSITE-01/P03:completion_candidate",
+              "lane_id": "COMPOSITE-01/P03",
+              "property": "completion_candidate",
+              "expected": false,
+              "actual": false,
+              "comparison_mode": "EXACT",
+              "result": "EXACT_MATCH"
+            },
+            {
+              "check_id": "COMPOSITE-01/P03:request_completion_allowed",
+              "lane_id": "COMPOSITE-01/P03",
+              "property": "request_completion_allowed",
+              "expected": false,
+              "actual": false,
+              "comparison_mode": "EXACT",
+              "result": "EXACT_MATCH"
+            },
+            {
+              "check_id": "COMPOSITE-01/P04:stage",
+              "lane_id": "COMPOSITE-01/P04",
+              "property": "stage",
+              "expected": "NEXT_PROCESS",
+              "actual": "NEXT_PROCESS",
+              "comparison_mode": "EXACT",
+              "result": "EXACT_MATCH"
+            },
+            {
+              "check_id": "COMPOSITE-01/P04:completion_candidate",
+              "lane_id": "COMPOSITE-01/P04",
+              "property": "completion_candidate",
+              "expected": false,
+              "actual": false,
+              "comparison_mode": "EXACT",
+              "result": "EXACT_MATCH"
+            },
+            {
+              "check_id": "COMPOSITE-01/P04:request_completion_allowed",
+              "lane_id": "COMPOSITE-01/P04",
+              "property": "request_completion_allowed",
+              "expected": false,
+              "actual": false,
+              "comparison_mode": "EXACT",
+              "result": "EXACT_MATCH"
+            },
+            {
+              "check_id": "COMPOSITE-01/P07:stage",
+              "lane_id": "COMPOSITE-01/P07",
+              "property": "stage",
+              "expected": "BLOCKED",
+              "actual": "BLOCKED",
+              "comparison_mode": "EXACT",
+              "result": "EXACT_MATCH"
+            },
+            {
+              "check_id": "COMPOSITE-01/P07:completion_candidate",
+              "lane_id": "COMPOSITE-01/P07",
+              "property": "completion_candidate",
+              "expected": false,
+              "actual": false,
+              "comparison_mode": "EXACT",
+              "result": "EXACT_MATCH"
+            },
+            {
+              "check_id": "COMPOSITE-01/P07:request_completion_allowed",
+              "lane_id": "COMPOSITE-01/P07",
+              "property": "request_completion_allowed",
+              "expected": false,
+              "actual": false,
+              "comparison_mode": "EXACT",
+              "result": "EXACT_MATCH"
+            },
+            {
+              "check_id": "COMPOSITE-01/P07:task.next_action",
+              "lane_id": "COMPOSITE-01/P07",
+              "property": "task.next_action",
+              "expected": "계좌개설 제출서류 수집",
+              "actual": "계좌개설 제출서류 수집",
+              "comparison_mode": "EXACT",
+              "result": "EXACT_MATCH"
+            }
+          ],
+          "mismatch_count": 0
+        },
+        "completion_candidate": false,
+        "completion_allowed": false,
+        "request_completion_allowed": false,
+        "downstream_auto_completion": false,
+        "operational_write_allowed": false,
+        "next_process_candidates": [
+          {
+            "lane_id": "COMPOSITE-01/P04",
+            "process_id": "P04",
+            "mapping_status": "CANDIDATE_CONFIRMATION_REQUIRED"
+          }
+        ],
+        "duplicate_result": {
+          "replay_key": "PROTO-COMPOSITE-01",
+          "result": "NO_NEW_RECORDS_PREVIEW_ONLY",
+          "validation_scope": "PASS_IN_PREVIEW_FIXTURE",
+          "persistent_store_duplicate_observation": "PERSISTENT_STORE_DUPLICATE_OBSERVATION_NOT_RUN",
+          "duplicates_created": 0,
+          "new_records": 0,
+          "new_duplicates": 0,
+          "limitation": "Pure preview reducer does not observe a persistent record store."
+        },
+        "resume_contract": [
+          {
+            "lane_id": "COMPOSITE-01/P03",
+            "resume_scope": "COMPOSITE-01/P03",
+            "allowed": false,
+            "reason": "NO_RESUME_REQUIRED"
+          },
+          {
+            "lane_id": "COMPOSITE-01/P04",
+            "resume_scope": "COMPOSITE-01/P04",
+            "allowed": false,
+            "reason": "NO_RESUME_REQUIRED"
+          },
+          {
+            "lane_id": "COMPOSITE-01/P07",
+            "resume_scope": "COMPOSITE-01/P07",
+            "allowed": true,
+            "reason": "MISSING_REQUIRED_EVIDENCE"
+          }
+        ],
+        "errors": [
+          {
+            "lane_id": "COMPOSITE-01/P07",
+            "code": "MISSING_REQUIRED_EVIDENCE",
+            "evidence_id": "EV-P07-SUBMISSION"
+          }
+        ],
+        "execution": {
+          "operational_write_allowed": false,
+          "operational_write_count": 0,
+          "request_completion_allowed": false,
+          "downstream_auto_completion": false,
+          "notion_write_enabled": false,
+          "notion_write_count": 0
+        },
+        "write_plan": {
+          "mode": "preview_only",
+          "approval_required_for_future_write": true,
+          "operations": [],
+          "actual_write_count": 0
+        },
+        "write_counts": {
+          "notion": 0,
+          "drive": 0,
+          "slack": 0,
+          "file": 0,
+          "total": 0
+        },
+        "connector_calls": {
+          "notion": 0,
+          "drive": 0,
+          "slack": 0,
+          "total": 0
+        },
+        "write_count": 0,
+        "operational_write_count": 0,
+        "request_id": "REQ-DEMO-003",
+        "demo_request": {
+          "request_id": "REQ-DEMO-003",
+          "title": "고유번호증·홈택스·계좌개설 복합 요청",
+          "scenario_id": "COMPOSITE-01",
+          "dummy_fund_id": "DUMMY-FUND-E",
+          "display_status": "부분 중단",
+          "source_mode": "FIXTURE_PRESET",
+          "current_actor": "지원팀",
+          "has_blocker": true
+        },
+        "source_mode": "FIXTURE_PRESET",
+        "evidence": [
+          {
+            "lane_id": "COMPOSITE-01/P03",
+            "evidence_id": "EV-P03-RESULT",
+            "evidence_type": "RESULT_DOCUMENT",
+            "evidence_result": "VALID",
+            "legacy_evidence_type": "RESULT_DOCUMENT",
+            "legacy_fixture_state": "PRESENT_VALID",
+            "required_for_completion": true,
+            "evidence_judgment": "확인됨",
+            "validity": "VALID",
+            "human_confirmation_required": false,
+            "source": "SYNTHETIC_FIXTURE"
+          },
+          {
+            "lane_id": "COMPOSITE-01/P04",
+            "evidence_id": "EV-P04-REQUEST",
+            "evidence_type": "REQUEST_INFO",
+            "evidence_result": "VALID",
+            "legacy_evidence_type": "REQUEST_INFO",
+            "legacy_fixture_state": "PRESENT_VALID",
+            "required_for_completion": false,
+            "evidence_judgment": "확인됨",
+            "validity": "VALID",
+            "human_confirmation_required": false,
+            "source": "SYNTHETIC_FIXTURE"
+          },
+          {
+            "lane_id": "COMPOSITE-01/P07",
+            "evidence_id": "EV-P07-SUBMISSION",
+            "evidence_type": "SUBMISSION_PACKAGE",
+            "evidence_result": "MISSING",
+            "legacy_evidence_type": "SUBMISSION_PACKAGE",
+            "legacy_fixture_state": "ABSENT",
+            "required_for_completion": true,
+            "evidence_judgment": "MISSING",
+            "validity": "MISSING",
+            "human_confirmation_required": true,
+            "source": "SYNTHETIC_FIXTURE"
+          }
+        ],
+        "manifest": {
+          "contract_id": "PROTOTYPE-SCENARIO-CONTRACT-V0.1",
+          "manifest_hash": "3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d",
+          "batch_id": "A-CP25-B18",
+          "contract_scenario_coverage": 6,
+          "implemented_scenario_coverage": 3,
+          "implemented_scenarios": [
+            "SINGLE-P03-01",
+            "SINGLE-P03-02",
+            "COMPOSITE-01"
+          ],
+          "not_implemented_scenarios": [
+            "SINGLE-P07-01",
+            "SINGLE-P08-01",
+            "COMPOSITE-02"
+          ],
+          "reference_recorded_for_traceability": true,
+          "prototype_scope": 3,
+          "claimed": false,
+          "reason": "Three of six contract scenarios are implemented; the manifest reference is traceability metadata, not a conformance certification."
+        },
+        "schema_source": "APPROVED_SESSION_TOOL_READ_ONLY",
+        "snapshot_id": "A-CP25-G25-NOTION-LIVE-READ-2026-08-03",
+        "schema_requery_kst": "2026-08-03 10:17:07 KST",
+        "backend_mode": "NOTION_LIVE_READ_PREVIEW",
+        "notion_read_enabled": true,
+        "notion_write_enabled": false,
+        "notion_write_count": 0,
+        "notion_schema": "LIVE_READ_ONLY_SESSION_SNAPSHOT",
+        "notion_backend": "READ_ONLY",
+        "request_db": "[TEST LAB] 지원팀 업무요청",
+        "task_db": "[TEST LAB] 지원팀 Task",
+        "dummy_fund_db": "[TEST LAB] TO DO LIST (FUND)",
+        "display_mapping": {
+          "RECEIVED": "요청 접수",
+          "INFORMATION_CHECK": "확인 필요",
+          "EVIDENCE_REVIEW": "확인 필요",
+          "HUMAN_CONFIRMATION": "확인 필요",
+          "EXTERNAL_WAIT": "외부 대기",
+          "RESULT_REVIEW": "진행 가능",
+          "NEXT_PROCESS": "진행 가능",
+          "COMPLETION_CANDIDATE": "완료 후보",
+          "BLOCKED": "중단"
+        },
+        "console_version": "PILOT v0.4.1"
+      },
+      "gap": {
+        "ok": true,
+        "console_version": "PILOT v0.4.2",
+        "schema_read_at_kst": "2026-08-03 11:10:02 KST",
+        "schema_source": "APPROVED_SESSION_TOOL_READ_ONLY",
+        "request_id": "REQ-DEMO-003",
+        "scenario_id": "COMPOSITE-01",
+        "fund_relation": {
+          "dummy_fund_id": "DUMMY-FUND-E",
+          "candidate_db": "[TEST LAB] 전체관리조합",
+          "candidate_property": "조합명 / 테스트 케이스 ID",
+          "match_query": "Exact match only",
+          "match_count": 0,
+          "matched_page_id": "NOT_FOUND",
+          "candidates": [
+            {
+              "id": "existing_exact",
+              "label": "기존 TEST Record Exact Match",
+              "result": "NO_MATCH",
+              "relation_safe": false,
+              "schema_change_required": false,
+              "write_required": false
+            },
+            {
+              "id": "test_identifier",
+              "label": "기존 테스트 식별 Property",
+              "result": "CONFIRM_REQUIRED",
+              "relation_safe": false,
+              "schema_change_required": false,
+              "write_required": false,
+              "note": "추가 SQL 조회는 workspace usage limit으로 미실행"
+            },
+            {
+              "id": "text_only",
+              "label": "Relation 없이 Text Snapshot",
+              "result": "TEXT_ONLY_FALLBACK_CANDIDATE",
+              "relation_safe": false,
+              "schema_change_required": false,
+              "write_required": false,
+              "note": "Relation 검증 완료를 의미하지 않음"
+            },
+            {
+              "id": "new_test_record",
+              "label": "새 TEST Dummy Fund Record",
+              "result": "NEW_TEST_RECORD_REQUIRED",
+              "relation_safe": true,
+              "schema_change_required": false,
+              "write_required": true,
+              "note": "사용자 승인 전 생성 금지"
+            }
+          ],
+          "recommendation": "NEW_TEST_RECORD_REQUIRED",
+          "blocking": true,
+          "required_approval": "TEST Dummy Fund Record 생성 및 Exact Relation 대상 승인"
+        },
+        "transaction_candidates": [
+          {
+            "id": "test_case_id",
+            "property": "Request/Task 테스트 케이스 ID",
+            "type": "text",
+            "result": "CONFIRM_REQUIRED",
+            "durable": false,
+            "reason": "기존 Text지만 Transaction ID 용도로 확정되지 않음",
+            "schema_change_required": false
+          },
+          {
+            "id": "title_prefix",
+            "property": "Request 요청명",
+            "type": "title",
+            "result": "TITLE_PREFIX_FALLBACK",
+            "durable": false,
+            "reason": "표시명 수정으로 손상될 수 있어 durable key가 아님",
+            "schema_change_required": false
+          },
+          {
+            "id": "task_proxy",
+            "property": "Operational Task ID + 상위 요청",
+            "type": "text + relation",
+            "result": "COMPOSITE_PROXY_ONLY",
+            "durable": false,
+            "reason": "Request 재실행을 단일 키로 Exact query할 수 없음",
+            "schema_change_required": false
+          },
+          {
+            "id": "new_transaction_id",
+            "property": "전용 Transaction ID",
+            "type": "text",
+            "result": "NEW_PROPERTY_REQUIRED",
+            "durable": true,
+            "reason": "Persistent exact query 및 Request-Task 추적에 필요한 전용 식별자",
+            "schema_change_required": true
+          }
+        ],
+        "durable_duplicate_result": "NOT_READY_PROXY_ONLY",
+        "composite_process_candidates": [
+          {
+            "id": "representative_process",
+            "result": "BLOCKED",
+            "request_process": "대표 Process 1개",
+            "task_process": "P03/P04/P07",
+            "data_loss": true,
+            "schema_change_required": true,
+            "reason": "Request Process ID는 단일 Select이고 복합 Option이 확인되지 않음"
+          },
+          {
+            "id": "task_level_process",
+            "result": "TASK_LEVEL_PROCESS_SOURCE_OF_TRUTH",
+            "request_process": "NOT_WRITTEN; 요청명/요약에 복합 업무 표기",
+            "task_process": "P03/P04/P07 each on Task Process ID",
+            "data_loss": false,
+            "schema_change_required": false,
+            "reason": "Task Process ID와 상위 요청 Relation을 기존 구조로 재사용"
+          },
+          {
+            "id": "text_snapshot",
+            "result": "TEXT_SNAPSHOT_FALLBACK",
+            "request_process": "요청 배경 Text",
+            "task_process": "P03/P04/P07",
+            "data_loss": true,
+            "schema_change_required": false,
+            "reason": "필터·집계의 구조적 Process 값은 보장하지 않음"
+          },
+          {
+            "id": "new_multiselect",
+            "result": "NEW_PROPERTY_REQUIRED",
+            "request_process": "새 Multi-select",
+            "task_process": "P03/P04/P07",
+            "data_loss": false,
+            "schema_change_required": true,
+            "reason": "이번 TAP에서는 생성 금지"
+          }
+        ],
+        "composite_process_recommendation": "TASK_LEVEL_PROCESS_SOURCE_OF_TRUTH",
+        "composite_data_loss_result": "REQUEST_LEVEL_DIRECT_PROCESS_FILTER_NOT_AVAILABLE",
+        "candidate_comparison": [
+          {
+            "gap": "Fund Relation",
+            "candidate": "NEW_TEST_RECORD_REQUIRED",
+            "existing_structure_reused": "Relation target DB only",
+            "data_loss": "None after new TEST record",
+            "duplicate_safety": "N/A",
+            "relation_safety": "BLOCKED",
+            "schema_change_required": false,
+            "write_required": true,
+            "operational_risk": "Low TEST-only after approval",
+            "recommendation": "NEW_TEST_RECORD_REQUIRED",
+            "user_approval_required": true
+          },
+          {
+            "gap": "Durable Duplicate",
+            "candidate": "전용 Transaction ID",
+            "existing_structure_reused": "No",
+            "data_loss": "None",
+            "duplicate_safety": "DURABLE_READY only after property",
+            "relation_safety": "Request-Task relation reusable",
+            "schema_change_required": true,
+            "write_required": true,
+            "operational_risk": "Schema semantic decision",
+            "recommendation": "NEW_PROPERTY_REQUIRED",
+            "user_approval_required": true
+          },
+          {
+            "gap": "Composite Process",
+            "candidate": "Task-level Process source of truth",
+            "existing_structure_reused": "Task Process ID + 상위 요청 Relation",
+            "data_loss": "Request-level direct Process filter unavailable",
+            "duplicate_safety": "N/A",
+            "relation_safety": "PASS_PLANNED_RELATION",
+            "schema_change_required": false,
+            "write_required": false,
+            "operational_risk": "User decision required",
+            "recommendation": "TASK_LEVEL_PROCESS_SOURCE_OF_TRUTH",
+            "user_approval_required": true
+          }
+        ],
+        "required_approvals": [
+          "TEST Dummy Fund Record 생성 및 Exact Relation 대상 승인",
+          "전용 Transaction ID Property 생성 승인",
+          "Request Process를 비우고 Task-level Process를 source of truth로 사용할지 결정"
+        ],
+        "blocking_gaps": [
+          "fund_relation",
+          "durable_duplicate",
+          "composite_mapping_decision"
+        ],
+        "blocking_gap_count": 3,
+        "approval_status": "MAPPING_DECISION_REQUIRED",
+        "test_write_readiness": "TEST_WRITE_BLOCKED",
+        "proposed_decisions": {
+          "fund_relation": "DECISION_PENDING",
+          "durable_duplicate": "DECISION_PENDING",
+          "composite_process": "DECISION_PENDING"
+        },
+        "write_count": 0,
+        "notion_write_count": 0,
+        "operational_write_count": 0,
+        "operational_write_allowed": false,
+        "preview_output": {
+          "ok": true,
+          "skill_id": "admin-process-prototype-replay",
+          "schema_version": "prototype-replay/1",
+          "scenario_id": "COMPOSITE-01",
+          "transaction_id": "PROTO-COMPOSITE-01",
+          "mode": "composite",
+          "conformance_claim": {
+            "contract_id": "PROTOTYPE-SCENARIO-CONTRACT-V0.1",
+            "manifest_hash": "3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d",
+            "batch_id": "A-CP25-B18",
+            "contract_scenario_coverage": 6,
+            "implemented_scenario_coverage": 3,
+            "implemented_scenarios": [
+              "SINGLE-P03-01",
+              "SINGLE-P03-02",
+              "COMPOSITE-01"
+            ],
+            "not_implemented_scenarios": [
+              "SINGLE-P07-01",
+              "SINGLE-P08-01",
+              "COMPOSITE-02"
+            ],
+            "reference_recorded_for_traceability": true,
+            "prototype_scope": 3,
+            "claimed": false,
+            "reason": "Three of six contract scenarios are implemented; the manifest reference is traceability metadata, not a conformance certification."
+          },
+          "ui_auxiliary_state": {
+            "notion_status_values": [
+              "진행 중"
+            ],
+            "notion_status_classification": "TASK_OR_UI_AUXILIARY_STATE",
+            "is_canonical_skill_stage": false
+          },
+          "process_instances": [
+            {
+              "lane_id": "COMPOSITE-01/P03",
+              "process_id": "P03",
+              "stage": "RESULT_REVIEW",
+              "mapping_status": "CONFIRMED",
+              "operational_relation": "NONE",
+              "completion_candidate": false,
+              "candidate_reason": null
+            },
+            {
+              "lane_id": "COMPOSITE-01/P04",
+              "process_id": "P04",
+              "stage": "NEXT_PROCESS",
+              "mapping_status": "CANDIDATE_CONFIRMATION_REQUIRED",
+              "operational_relation": "NONE",
+              "completion_candidate": false,
+              "candidate_reason": null
+            },
+            {
+              "lane_id": "COMPOSITE-01/P07",
+              "process_id": "P07",
+              "stage": "BLOCKED",
+              "mapping_status": "CANDIDATE_CONFIRMATION_REQUIRED",
+              "operational_relation": "NONE",
+              "completion_candidate": false,
+              "candidate_reason": null
+            }
+          ],
+          "request": {
+            "request_text": "고유번호증·홈택스·계좌개설 복합 요청",
+            "transaction_id": "PROTO-COMPOSITE-01",
+            "scenario_id": "COMPOSITE-01",
+            "dummy_fund_id": "DUMMY-FUND-E",
+            "process_ids": [
+              "P03",
+              "P04",
+              "P07"
+            ],
+            "preview_only": true,
+            "missing_information": [],
+            "clarification_question": null,
+            "overall_status": "BLOCKED"
+          },
+          "request_instances": [
+            {
+              "lane_id": "COMPOSITE-01/P03",
+              "process_id": "P03",
+              "request_completion_allowed": false
+            },
+            {
+              "lane_id": "COMPOSITE-01/P04",
+              "process_id": "P04",
+              "request_completion_allowed": false
+            },
+            {
+              "lane_id": "COMPOSITE-01/P07",
+              "process_id": "P07",
+              "request_completion_allowed": false
+            }
+          ],
+          "task_instances": [
+            {
+              "lane_id": "COMPOSITE-01/P03",
+              "process_id": "P03",
+              "operational_task_id": "P03-T05",
+              "actor": "지원팀",
+              "next_action": "P03 결과물 확인 기록 유지",
+              "blocker": "",
+              "stage": "RESULT_REVIEW",
+              "completion_allowed": false
+            },
+            {
+              "lane_id": "COMPOSITE-01/P04",
+              "process_id": "P04",
+              "operational_task_id": "P04-T01",
+              "actor": "지원팀",
+              "next_action": "보안카드·홈택스 필요 여부 사람 확인",
+              "blocker": "",
+              "stage": "NEXT_PROCESS",
+              "completion_allowed": false
+            },
+            {
+              "lane_id": "COMPOSITE-01/P07",
+              "process_id": "P07",
+              "operational_task_id": "P07-T01",
+              "actor": "지원팀",
+              "next_action": "계좌개설 제출서류 수집",
+              "blocker": "P07 제출서류 미확보",
+              "stage": "BLOCKED",
+              "completion_allowed": false
+            }
+          ],
+          "tasks": [
+            {
+              "operational_task_id": "P03-T05",
+              "process_id": "P03",
+              "stage": "RESULT_REVIEW",
+              "actor": "지원팀",
+              "next_action": "P03 결과물 확인 기록 유지",
+              "blocker": "",
+              "completion_condition": "필수 Evidence 확인",
+              "completion_evidence": [
+                "EV-P03-RESULT"
+              ],
+              "completion_candidate": false,
+              "completion_allowed": false
+            },
+            {
+              "operational_task_id": "P04-T01",
+              "process_id": "P04",
+              "stage": "NEXT_PROCESS",
+              "actor": "지원팀",
+              "next_action": "보안카드·홈택스 필요 여부 사람 확인",
+              "blocker": "",
+              "completion_condition": "필수 Evidence 확인",
+              "completion_evidence": [
+                "EV-P04-REQUEST"
+              ],
+              "completion_candidate": false,
+              "completion_allowed": false
+            },
+            {
+              "operational_task_id": "P07-T01",
+              "process_id": "P07",
+              "stage": "BLOCKED",
+              "actor": "지원팀",
+              "next_action": "계좌개설 제출서류 수집",
+              "blocker": "P07 제출서류 미확보",
+              "completion_condition": "필수 Evidence 확인",
+              "completion_evidence": [],
+              "completion_candidate": false,
+              "completion_allowed": false
+            }
+          ],
+          "evidence_decisions": [
+            {
+              "lane_id": "COMPOSITE-01/P03",
+              "evidence_id": "EV-P03-RESULT",
+              "evidence_type": "RESULT_DOCUMENT",
+              "evidence_result": "VALID",
+              "legacy_evidence_type": "RESULT_DOCUMENT",
+              "legacy_fixture_state": "PRESENT_VALID",
+              "required_for_completion": true,
+              "evidence_judgment": "확인됨",
+              "validity": "VALID",
+              "human_confirmation_required": false,
+              "source": "SYNTHETIC_FIXTURE"
+            },
+            {
+              "lane_id": "COMPOSITE-01/P04",
+              "evidence_id": "EV-P04-REQUEST",
+              "evidence_type": "REQUEST_INFO",
+              "evidence_result": "VALID",
+              "legacy_evidence_type": "REQUEST_INFO",
+              "legacy_fixture_state": "PRESENT_VALID",
+              "required_for_completion": false,
+              "evidence_judgment": "확인됨",
+              "validity": "VALID",
+              "human_confirmation_required": false,
+              "source": "SYNTHETIC_FIXTURE"
+            },
+            {
+              "lane_id": "COMPOSITE-01/P07",
+              "evidence_id": "EV-P07-SUBMISSION",
+              "evidence_type": "SUBMISSION_PACKAGE",
+              "evidence_result": "MISSING",
+              "legacy_evidence_type": "SUBMISSION_PACKAGE",
+              "legacy_fixture_state": "ABSENT",
+              "required_for_completion": true,
+              "evidence_judgment": "MISSING",
+              "validity": "MISSING",
+              "human_confirmation_required": true,
+              "source": "SYNTHETIC_FIXTURE"
+            }
+          ],
+          "evidence_validity": [
+            {
+              "lane_id": "COMPOSITE-01/P03",
+              "evidence_id": "EV-P03-RESULT",
+              "validity": "VALID"
+            },
+            {
+              "lane_id": "COMPOSITE-01/P04",
+              "evidence_id": "EV-P04-REQUEST",
+              "validity": "VALID"
+            },
+            {
+              "lane_id": "COMPOSITE-01/P07",
+              "evidence_id": "EV-P07-SUBMISSION",
+              "validity": "MISSING"
+            }
+          ],
+          "human_confirmation": [],
+          "interaction": {
+            "clarification_required": false,
+            "human_confirmation_required": false,
+            "questions": []
+          },
+          "actor_transitions": [
+            {
+              "lane_id": "COMPOSITE-01/P03",
+              "actor": "지원팀",
+              "stage": "RESULT_REVIEW"
+            },
+            {
+              "lane_id": "COMPOSITE-01/P04",
+              "actor": "지원팀",
+              "stage": "NEXT_PROCESS"
+            },
+            {
+              "lane_id": "COMPOSITE-01/P07",
+              "actor": "지원팀",
+              "stage": "BLOCKED"
+            }
+          ],
+          "next_actions": [
+            {
+              "lane_id": "COMPOSITE-01/P03",
+              "next_action": "P03 결과물 확인 기록 유지"
+            },
+            {
+              "lane_id": "COMPOSITE-01/P04",
+              "next_action": "보안카드·홈택스 필요 여부 사람 확인"
+            },
+            {
+              "lane_id": "COMPOSITE-01/P07",
+              "next_action": "계좌개설 제출서류 수집"
+            }
+          ],
+          "blockers": [
+            {
+              "lane_id": "COMPOSITE-01/P07",
+              "blocker": "P07 제출서류 미확보"
+            }
+          ],
+          "snapshot_timeline": [
+            {
+              "stage": "RECEIVED",
+              "lane_id": "COMPOSITE-01/P03"
+            },
+            {
+              "stage": "EVIDENCE_REVIEW",
+              "lane_id": "COMPOSITE-01/P03"
+            },
+            {
+              "stage": "RESULT_REVIEW",
+              "lane_id": "COMPOSITE-01/P03"
+            },
+            {
+              "stage": "RECEIVED",
+              "lane_id": "COMPOSITE-01/P04"
+            },
+            {
+              "stage": "EVIDENCE_REVIEW",
+              "lane_id": "COMPOSITE-01/P04"
+            },
+            {
+              "stage": "NEXT_PROCESS",
+              "lane_id": "COMPOSITE-01/P04"
+            },
+            {
+              "stage": "RECEIVED",
+              "lane_id": "COMPOSITE-01/P07"
+            },
+            {
+              "stage": "EVIDENCE_REVIEW",
+              "lane_id": "COMPOSITE-01/P07"
+            },
+            {
+              "stage": "BLOCKED",
+              "lane_id": "COMPOSITE-01/P07",
+              "error_code": "MISSING_REQUIRED_EVIDENCE"
+            }
+          ],
+          "expected_actual": {
+            "source": "SYNTHETIC_FIXTURE_EXPECTATIONS",
+            "expected_source": "scenario.expectations",
+            "comparison_ready": true,
+            "entries": [
+              {
+                "check_id": "COMPOSITE-01/P03:stage",
+                "lane_id": "COMPOSITE-01/P03",
+                "property": "stage",
+                "expected": "RESULT_REVIEW",
+                "actual": "RESULT_REVIEW",
+                "comparison_mode": "EXACT",
+                "result": "EXACT_MATCH"
+              },
+              {
+                "check_id": "COMPOSITE-01/P03:completion_candidate",
+                "lane_id": "COMPOSITE-01/P03",
+                "property": "completion_candidate",
+                "expected": false,
+                "actual": false,
+                "comparison_mode": "EXACT",
+                "result": "EXACT_MATCH"
+              },
+              {
+                "check_id": "COMPOSITE-01/P03:request_completion_allowed",
+                "lane_id": "COMPOSITE-01/P03",
+                "property": "request_completion_allowed",
+                "expected": false,
+                "actual": false,
+                "comparison_mode": "EXACT",
+                "result": "EXACT_MATCH"
+              },
+              {
+                "check_id": "COMPOSITE-01/P04:stage",
+                "lane_id": "COMPOSITE-01/P04",
+                "property": "stage",
+                "expected": "NEXT_PROCESS",
+                "actual": "NEXT_PROCESS",
+                "comparison_mode": "EXACT",
+                "result": "EXACT_MATCH"
+              },
+              {
+                "check_id": "COMPOSITE-01/P04:completion_candidate",
+                "lane_id": "COMPOSITE-01/P04",
+                "property": "completion_candidate",
+                "expected": false,
+                "actual": false,
+                "comparison_mode": "EXACT",
+                "result": "EXACT_MATCH"
+              },
+              {
+                "check_id": "COMPOSITE-01/P04:request_completion_allowed",
+                "lane_id": "COMPOSITE-01/P04",
+                "property": "request_completion_allowed",
+                "expected": false,
+                "actual": false,
+                "comparison_mode": "EXACT",
+                "result": "EXACT_MATCH"
+              },
+              {
+                "check_id": "COMPOSITE-01/P07:stage",
+                "lane_id": "COMPOSITE-01/P07",
+                "property": "stage",
+                "expected": "BLOCKED",
+                "actual": "BLOCKED",
+                "comparison_mode": "EXACT",
+                "result": "EXACT_MATCH"
+              },
+              {
+                "check_id": "COMPOSITE-01/P07:completion_candidate",
+                "lane_id": "COMPOSITE-01/P07",
+                "property": "completion_candidate",
+                "expected": false,
+                "actual": false,
+                "comparison_mode": "EXACT",
+                "result": "EXACT_MATCH"
+              },
+              {
+                "check_id": "COMPOSITE-01/P07:request_completion_allowed",
+                "lane_id": "COMPOSITE-01/P07",
+                "property": "request_completion_allowed",
+                "expected": false,
+                "actual": false,
+                "comparison_mode": "EXACT",
+                "result": "EXACT_MATCH"
+              },
+              {
+                "check_id": "COMPOSITE-01/P07:task.next_action",
+                "lane_id": "COMPOSITE-01/P07",
+                "property": "task.next_action",
+                "expected": "계좌개설 제출서류 수집",
+                "actual": "계좌개설 제출서류 수집",
+                "comparison_mode": "EXACT",
+                "result": "EXACT_MATCH"
+              }
+            ],
+            "mismatch_count": 0
+          },
+          "completion_candidate": false,
+          "completion_allowed": false,
+          "request_completion_allowed": false,
+          "downstream_auto_completion": false,
+          "operational_write_allowed": false,
+          "next_process_candidates": [
+            {
+              "lane_id": "COMPOSITE-01/P04",
+              "process_id": "P04",
+              "mapping_status": "CANDIDATE_CONFIRMATION_REQUIRED"
+            }
+          ],
+          "duplicate_result": {
+            "replay_key": "PROTO-COMPOSITE-01",
+            "result": "NO_NEW_RECORDS_PREVIEW_ONLY",
+            "validation_scope": "PASS_IN_PREVIEW_FIXTURE",
+            "persistent_store_duplicate_observation": "PERSISTENT_STORE_DUPLICATE_OBSERVATION_NOT_RUN",
+            "duplicates_created": 0,
+            "new_records": 0,
+            "new_duplicates": 0,
+            "limitation": "Pure preview reducer does not observe a persistent record store."
+          },
+          "resume_contract": [
+            {
+              "lane_id": "COMPOSITE-01/P03",
+              "resume_scope": "COMPOSITE-01/P03",
+              "allowed": false,
+              "reason": "NO_RESUME_REQUIRED"
+            },
+            {
+              "lane_id": "COMPOSITE-01/P04",
+              "resume_scope": "COMPOSITE-01/P04",
+              "allowed": false,
+              "reason": "NO_RESUME_REQUIRED"
+            },
+            {
+              "lane_id": "COMPOSITE-01/P07",
+              "resume_scope": "COMPOSITE-01/P07",
+              "allowed": true,
+              "reason": "MISSING_REQUIRED_EVIDENCE"
+            }
+          ],
+          "errors": [
+            {
+              "lane_id": "COMPOSITE-01/P07",
+              "code": "MISSING_REQUIRED_EVIDENCE",
+              "evidence_id": "EV-P07-SUBMISSION"
+            }
+          ],
+          "execution": {
+            "operational_write_allowed": false,
+            "operational_write_count": 0,
+            "request_completion_allowed": false,
+            "downstream_auto_completion": false,
+            "notion_write_enabled": false,
+            "notion_write_count": 0
+          },
+          "write_plan": {
+            "mode": "preview_only",
+            "approval_required_for_future_write": true,
+            "operations": [],
+            "actual_write_count": 0
+          },
+          "write_counts": {
+            "notion": 0,
+            "drive": 0,
+            "slack": 0,
+            "file": 0,
+            "total": 0
+          },
+          "connector_calls": {
+            "notion": 0,
+            "drive": 0,
+            "slack": 0,
+            "total": 0
+          },
+          "write_count": 0,
+          "operational_write_count": 0,
+          "request_id": "REQ-DEMO-003",
+          "demo_request": {
+            "request_id": "REQ-DEMO-003",
+            "title": "고유번호증·홈택스·계좌개설 복합 요청",
+            "scenario_id": "COMPOSITE-01",
+            "dummy_fund_id": "DUMMY-FUND-E",
+            "display_status": "부분 중단",
+            "source_mode": "FIXTURE_PRESET",
+            "current_actor": "지원팀",
+            "has_blocker": true
+          },
+          "source_mode": "FIXTURE_PRESET",
+          "evidence": [
+            {
+              "lane_id": "COMPOSITE-01/P03",
+              "evidence_id": "EV-P03-RESULT",
+              "evidence_type": "RESULT_DOCUMENT",
+              "evidence_result": "VALID",
+              "legacy_evidence_type": "RESULT_DOCUMENT",
+              "legacy_fixture_state": "PRESENT_VALID",
+              "required_for_completion": true,
+              "evidence_judgment": "확인됨",
+              "validity": "VALID",
+              "human_confirmation_required": false,
+              "source": "SYNTHETIC_FIXTURE"
+            },
+            {
+              "lane_id": "COMPOSITE-01/P04",
+              "evidence_id": "EV-P04-REQUEST",
+              "evidence_type": "REQUEST_INFO",
+              "evidence_result": "VALID",
+              "legacy_evidence_type": "REQUEST_INFO",
+              "legacy_fixture_state": "PRESENT_VALID",
+              "required_for_completion": false,
+              "evidence_judgment": "확인됨",
+              "validity": "VALID",
+              "human_confirmation_required": false,
+              "source": "SYNTHETIC_FIXTURE"
+            },
+            {
+              "lane_id": "COMPOSITE-01/P07",
+              "evidence_id": "EV-P07-SUBMISSION",
+              "evidence_type": "SUBMISSION_PACKAGE",
+              "evidence_result": "MISSING",
+              "legacy_evidence_type": "SUBMISSION_PACKAGE",
+              "legacy_fixture_state": "ABSENT",
+              "required_for_completion": true,
+              "evidence_judgment": "MISSING",
+              "validity": "MISSING",
+              "human_confirmation_required": true,
+              "source": "SYNTHETIC_FIXTURE"
+            }
+          ],
+          "manifest": {
+            "contract_id": "PROTOTYPE-SCENARIO-CONTRACT-V0.1",
+            "manifest_hash": "3cb20f707649e3d628bdc0e2ce2d32c67cb27430a0de47a1bafc5a806be3402d",
+            "batch_id": "A-CP25-B18",
+            "contract_scenario_coverage": 6,
+            "implemented_scenario_coverage": 3,
+            "implemented_scenarios": [
+              "SINGLE-P03-01",
+              "SINGLE-P03-02",
+              "COMPOSITE-01"
+            ],
+            "not_implemented_scenarios": [
+              "SINGLE-P07-01",
+              "SINGLE-P08-01",
+              "COMPOSITE-02"
+            ],
+            "reference_recorded_for_traceability": true,
+            "prototype_scope": 3,
+            "claimed": false,
+            "reason": "Three of six contract scenarios are implemented; the manifest reference is traceability metadata, not a conformance certification."
+          },
+          "schema_source": "APPROVED_SESSION_TOOL_READ_ONLY",
+          "snapshot_id": "A-CP25-G25-NOTION-LIVE-READ-2026-08-03",
+          "schema_requery_kst": "2026-08-03 10:17:07 KST",
+          "backend_mode": "NOTION_LIVE_READ_PREVIEW",
+          "notion_read_enabled": true,
+          "notion_write_enabled": false,
+          "notion_write_count": 0,
+          "notion_schema": "LIVE_READ_ONLY_SESSION_SNAPSHOT",
+          "notion_backend": "READ_ONLY",
+          "request_db": "[TEST LAB] 지원팀 업무요청",
+          "task_db": "[TEST LAB] 지원팀 Task",
+          "dummy_fund_db": "[TEST LAB] TO DO LIST (FUND)",
+          "display_mapping": {
+            "RECEIVED": "요청 접수",
+            "INFORMATION_CHECK": "확인 필요",
+            "EVIDENCE_REVIEW": "확인 필요",
+            "HUMAN_CONFIRMATION": "확인 필요",
+            "EXTERNAL_WAIT": "외부 대기",
+            "RESULT_REVIEW": "진행 가능",
+            "NEXT_PROCESS": "진행 가능",
+            "COMPLETION_CANDIDATE": "완료 후보",
+            "BLOCKED": "중단"
+          },
+          "console_version": "PILOT v0.4.1"
+        },
+        "snapshot_id": "A-CP25-G25-NOTION-LIVE-READ-2026-08-03",
+        "schema_requery_kst": "2026-08-03 10:17:07 KST",
+        "backend_mode": "NOTION_LIVE_READ_PREVIEW",
+        "notion_read_enabled": true,
+        "notion_write_enabled": false,
+        "notion_schema": "LIVE_READ_ONLY_SESSION_SNAPSHOT",
+        "notion_backend": "READ_ONLY",
+        "request_db": "[TEST LAB] 지원팀 업무요청",
+        "task_db": "[TEST LAB] 지원팀 Task",
+        "dummy_fund_db": "[TEST LAB] TO DO LIST (FUND)",
+        "execution": {
+          "notion_write_enabled": false,
+          "notion_write_count": 0,
+          "operational_write_allowed": false,
+          "operational_write_count": 0,
+          "request_completion_allowed": false,
+          "downstream_auto_completion": false
+        }
+      }
+    }
+  },
+  "notion_write_count": 0,
+  "operational_write_count": 0
+}

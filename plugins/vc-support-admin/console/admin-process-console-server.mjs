@@ -15,6 +15,7 @@ import {
   notionReadinessMetadata
 } from "./notion-readiness-snapshot.mjs";
 import { buildBusinessDecisionView } from "./business-decision-view.mjs";
+import { buildGapResolutionPreview as buildGapResolutionCandidatePreview } from "./notion-gap-resolution-preview.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.join(here, "public");
@@ -627,6 +628,24 @@ export async function buildRelationPreview(input = {}) {
   };
 }
 
+/**
+ * v0.4.2 is a local, read-only decision preview.  The returned candidates are
+ * derived from sanitized schema evidence; no Node-side Notion client exists.
+ */
+export async function buildGapResolutionPreview(input = {}) {
+  const preview = await previewForNotionInput(input);
+  return {
+    ...buildGapResolutionCandidatePreview({
+      requestId: preview.request_id,
+      scenarioId: preview.scenario_id,
+      preview
+    }),
+    preview_output: preview,
+    ...backendStatus(),
+    execution: safeExecution()
+  };
+}
+
 export async function buildTestWritePayloadPreview(input = {}) {
   const mapping = await buildMappingPreview(input);
   return {
@@ -688,6 +707,10 @@ export function createConsoleServer() {
       }
       if (request.method === "POST" && url.pathname === "/api/notion/relation-preview") {
         sendJson(response, 200, await buildRelationPreview(await readJsonBody(request)));
+        return;
+      }
+      if (request.method === "POST" && url.pathname === "/api/notion/gap-resolution-preview") {
+        sendJson(response, 200, await buildGapResolutionPreview(await readJsonBody(request)));
         return;
       }
       if (request.method === "POST" && url.pathname === "/api/notion/test-write-payload-preview") {
