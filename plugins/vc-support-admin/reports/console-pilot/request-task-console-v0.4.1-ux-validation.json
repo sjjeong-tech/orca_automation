@@ -1,0 +1,173 @@
+{
+  "console_version": "PILOT v0.4.1",
+  "validation_at_kst": "2026-08-03 10:54:08 KST",
+  "questions_per_request": [
+    {
+      "request_id": "REQ-DEMO-001",
+      "scenario_id": "SINGLE-P03-02",
+      "answers": [
+        {
+          "question": "현재 어떤 요청인가?",
+          "expected_ui_location": "업무 요청 요약",
+          "actual_text": "고유번호증 신청 — 날인본 확인 필요 / DUMMY-FUND-B",
+          "result": "PASS",
+          "gap": null
+        },
+        {
+          "question": "Notion에 반영 가능한가?",
+          "expected_ui_location": "반영 가능 여부 Hero",
+          "actual_text": "반영 전 확인 필요",
+          "result": "PASS",
+          "gap": null
+        },
+        {
+          "question": "반영할 수 없다면 이유가 무엇인가?",
+          "expected_ui_location": "차단 사유와 다음 조치",
+          "actual_text": "조합 연결 대상 없음, 중복 방지 기준 미확정",
+          "result": "PASS",
+          "gap": null
+        },
+        {
+          "question": "무엇을 확인해야 하는가?",
+          "expected_ui_location": "현재 해야 할 일",
+          "actual_text": "조합 관계 대상 및 거래 식별 Property 확정",
+          "result": "PASS",
+          "gap": null
+        },
+        {
+          "question": "누가 확인해야 하는가?",
+          "expected_ui_location": "현재 해야 할 일",
+          "actual_text": "사람 확인",
+          "result": "PASS",
+          "gap": null
+        },
+        {
+          "question": "생성 예정 Record는 몇 건인가?",
+          "expected_ui_location": "반영 가능 여부 Hero",
+          "actual_text": "Request 1건 / Task 1건",
+          "result": "PASS",
+          "gap": null
+        },
+        {
+          "question": "실제로 반영된 Record는 몇 건인가?",
+          "expected_ui_location": "반영 가능 여부 Hero 및 승인 영역",
+          "actual_text": "Notion 0건",
+          "result": "PASS",
+          "gap": null
+        }
+      ]
+    },
+    {
+      "request_id": "REQ-DEMO-002",
+      "scenario_id": "SINGLE-P03-01",
+      "answers": [
+        {
+          "question": "현재 어떤 요청인가?",
+          "expected_ui_location": "업무 요청 요약",
+          "actual_text": "고유번호증 신청 — 결과물 검토 / DUMMY-FUND-A",
+          "result": "PASS",
+          "gap": null
+        },
+        {
+          "question": "Notion에 반영 가능한가?",
+          "expected_ui_location": "반영 가능 여부 Hero",
+          "actual_text": "반영 전 확인 필요",
+          "result": "PASS",
+          "gap": null
+        },
+        {
+          "question": "반영할 수 없다면 이유가 무엇인가?",
+          "expected_ui_location": "차단 사유와 다음 조치",
+          "actual_text": "조합 연결 대상 없음, 중복 방지 기준 미확정",
+          "result": "PASS",
+          "gap": null
+        },
+        {
+          "question": "무엇을 확인해야 하는가?",
+          "expected_ui_location": "현재 해야 할 일",
+          "actual_text": "조합 관계 대상 및 거래 식별 Property 확정",
+          "result": "PASS",
+          "gap": null
+        },
+        {
+          "question": "누가 확인해야 하는가?",
+          "expected_ui_location": "현재 해야 할 일",
+          "actual_text": "지원팀",
+          "result": "PASS",
+          "gap": null
+        },
+        {
+          "question": "생성 예정 Record는 몇 건인가?",
+          "expected_ui_location": "반영 가능 여부 Hero",
+          "actual_text": "Request 1건 / Task 1건",
+          "result": "PASS",
+          "gap": null
+        },
+        {
+          "question": "실제로 반영된 Record는 몇 건인가?",
+          "expected_ui_location": "반영 가능 여부 Hero 및 승인 영역",
+          "actual_text": "Notion 0건",
+          "result": "PASS",
+          "gap": null
+        }
+      ]
+    },
+    {
+      "request_id": "REQ-DEMO-003",
+      "scenario_id": "COMPOSITE-01",
+      "answers": [
+        {
+          "question": "현재 어떤 요청인가?",
+          "expected_ui_location": "업무 요청 요약",
+          "actual_text": "고유번호증·홈택스·계좌개설 복합 요청 / DUMMY-FUND-E",
+          "result": "PASS",
+          "gap": null
+        },
+        {
+          "question": "Notion에 반영 가능한가?",
+          "expected_ui_location": "반영 가능 여부 Hero",
+          "actual_text": "반영 전 확인 필요",
+          "result": "PASS",
+          "gap": null
+        },
+        {
+          "question": "반영할 수 없다면 이유가 무엇인가?",
+          "expected_ui_location": "차단 사유와 다음 조치",
+          "actual_text": "조합 연결 대상 없음, 중복 방지 기준 미확정, 복합 업무 분류 기준 미확정",
+          "result": "PASS",
+          "gap": null
+        },
+        {
+          "question": "무엇을 확인해야 하는가?",
+          "expected_ui_location": "현재 해야 할 일",
+          "actual_text": "조합 관계 대상 및 거래 식별 Property 확정",
+          "result": "PASS",
+          "gap": null
+        },
+        {
+          "question": "누가 확인해야 하는가?",
+          "expected_ui_location": "현재 해야 할 일",
+          "actual_text": "지원팀",
+          "result": "PASS",
+          "gap": null
+        },
+        {
+          "question": "생성 예정 Record는 몇 건인가?",
+          "expected_ui_location": "반영 가능 여부 Hero",
+          "actual_text": "Request 1건 / Task 3건",
+          "result": "PASS",
+          "gap": null
+        },
+        {
+          "question": "실제로 반영된 Record는 몇 건인가?",
+          "expected_ui_location": "반영 가능 여부 Hero 및 승인 영역",
+          "actual_text": "Notion 0건",
+          "result": "PASS",
+          "gap": null
+        }
+      ]
+    }
+  ],
+  "notion_write_count": 0,
+  "operational_write_count": 0
+}

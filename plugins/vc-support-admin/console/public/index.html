@@ -3,96 +3,98 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>지원팀 행정업무 Console · PILOT v0.4</title>
+    <title>지원팀 행정업무 반영 검토 · PILOT v0.4.1</title>
     <link rel="stylesheet" href="/console.css">
   </head>
   <body>
     <main class="shell">
       <header class="header card">
         <div>
-          <p class="eyebrow">BACKEND_MODE=NOTION_LIVE_READ_PREVIEW · NOTION_SCHEMA=LIVE_READ_ONLY_SESSION_SNAPSHOT · NOTION_BACKEND=READ_ONLY</p>
-          <h1>지원팀 행정업무 Console</h1>
-          <p class="subhead">PILOT v0.4 · <strong>READ-ONLY · PREVIEW ONLY</strong> · 실제 Schema Snapshot, Duplicate Lookup과 TEST Write Payload 후보만 표시합니다.</p>
+          <p class="eyebrow">로컬 미리보기 · NOTION TEST DB 읽기 전용</p>
+          <h1>지원팀 행정업무 반영 검토</h1>
+          <p class="subhead">선택한 요청을 Notion TEST DB에 반영할 수 있는지 검토하고, 부족한 조건과 다음 확인 업무를 안내합니다.</p>
+          <div class="header-badges" aria-label="현재 보호 상태"><span class="badge">읽기 전용</span><span class="badge">승인 전</span><span class="badge">실제 반영 없음</span></div>
         </div>
         <dl class="header-facts">
-          <div><dt>Skill Baseline</dt><dd id="skill-commit">2814ce0</dd></div>
-          <div><dt>지원 범위</dt><dd>3 / 6 Scenario</dd></div>
-          <div><dt>Notion Write</dt><dd>NOTION_WRITE_ENABLED=false · 0</dd></div>
+          <div><dt>지원 범위</dt><dd>구현 Scenario 3 / 6</dd></div>
+          <div><dt>실제 Notion 반영</dt><dd>0건</dd></div>
+          <div><dt>운영 데이터 반영</dt><dd>0건</dd></div>
         </dl>
       </header>
 
       <div class="workspace">
         <aside class="inbox card" aria-labelledby="inbox-title">
-          <div class="section-heading compact-heading"><div><p class="eyebrow">REQUEST INBOX</p><h2 id="inbox-title">요청 3건</h2></div><span class="badge">DEMO</span></div>
-          <p class="muted inbox-note">자연어 Preview 지원 여부와 Fixture 시연을 구분합니다.</p>
+          <div class="section-heading compact-heading"><div><p class="eyebrow">요청 선택</p><h2 id="inbox-title">업무 요청 3건</h2></div></div>
+          <p class="muted inbox-note">요청을 선택하면 반영 가능 여부와 다음 확인 업무가 함께 갱신됩니다.</p>
           <div id="request-inbox" class="request-inbox" aria-live="polite"></div>
-          <section class="backend-note" aria-label="Backend mode"><strong>LOCAL PREVIEW</strong><span>Notion Backend 미연결</span></section>
+          <section class="backend-note" aria-label="Backend mode"><strong>로컬 Preview</strong><span>Notion Schema는 검증된 읽기 전용 기준으로만 사용합니다.</span></section>
         </aside>
 
         <div class="main-content">
           <section class="card request-runner" aria-labelledby="runner-title">
-            <div class="section-heading"><div><p class="eyebrow">SELECTED REQUEST</p><h2 id="runner-title">선택한 요청 Preview</h2></div><span id="source-mode" class="badge">-</span></div>
+            <div class="section-heading"><div><p class="eyebrow">선택한 요청</p><h2 id="runner-title">요청 원문 확인</h2></div><button id="preview-button" type="button" class="secondary">Preview 새로고침</button></div>
             <label for="request-text">요청 원문</label>
             <textarea id="request-text" rows="3"></textarea>
-            <div class="controls"><p id="mode-note" class="muted">선택한 Request의 처리 방식에 따라 Preview를 실행합니다.</p><div class="button-row"><button id="preview-button" type="button">실행 Preview</button><button id="mapping-preview-button" type="button" class="secondary" disabled>DB Mapping Preview</button></div></div>
-            <p id="run-status" class="status" role="status">Request Inbox에서 항목을 선택하면 현재 Task를 불러옵니다.</p>
+            <p id="mode-note" class="muted">현재 선택한 요청의 검증된 Preview 결과를 사용합니다.</p>
+            <p id="run-status" class="status" role="status">요청 정보를 불러오는 중입니다.</p>
           </section>
 
-          <section class="card" aria-labelledby="backend-status-title">
-            <div class="section-heading"><div><p class="eyebrow">BACKEND STATUS</p><h2 id="backend-status-title">Notion Live Readiness</h2></div><span class="badge status-preview">READ ONLY</span></div>
-            <dl id="backend-status-panel" class="fact-grid compact"></dl>
-          </section>
-
-          <div id="empty-state" class="card empty-state">Request, Task, Evidence, Timeline을 불러오는 중입니다.</div>
+          <div id="empty-state" class="card empty-state">요청, 반영 검토, 현재 업무를 불러오는 중입니다.</div>
 
           <div id="console-content" hidden>
+            <section id="readiness-hero" class="readiness-hero card" aria-labelledby="readiness-title">
+              <div><p class="eyebrow">반영 가능 여부</p><h2 id="readiness-title">반영 전 확인 필요</h2><p id="readiness-description" class="hero-description"></p></div>
+              <dl id="readiness-stats" class="hero-stats"></dl>
+            </section>
+
+            <section class="card" aria-labelledby="blockers-title">
+              <div class="section-heading"><div><p class="eyebrow">먼저 확인할 사항</p><h2 id="blockers-title">차단 사유와 다음 조치</h2></div><span id="blocking-count-badge" class="badge status-blocked">차단 0건</span></div>
+              <div id="blocking-reasons" class="blocking-reasons"></div>
+            </section>
+
             <div class="top-grid">
               <section class="card" aria-labelledby="request-panel-title">
-                <div class="section-heading"><div><p class="eyebrow">REQUEST</p><h2 id="request-panel-title">Request Summary</h2></div><span id="overall-status" class="badge">-</span></div>
+                <div class="section-heading"><div><p class="eyebrow">업무 요청 요약</p><h2 id="request-panel-title">현재 요청</h2></div><span id="overall-status" class="badge">-</span></div>
                 <dl id="request-panel" class="fact-grid summary-grid"></dl>
-                <details class="metadata"><summary>상세 Metadata</summary><dl id="metadata-panel" class="fact-grid compact"></dl></details>
+                <details class="metadata"><summary>기술 정보</summary><dl id="metadata-panel" class="fact-grid compact"></dl></details>
               </section>
-              <aside id="current-action-panel" class="card current-action" aria-labelledby="current-action-title"><p class="eyebrow">CURRENT ACTION</p><h2 id="current-action-title">지금 해야 할 일</h2><div id="current-action-content"></div></aside>
+              <aside id="current-action-panel" class="card current-action" aria-labelledby="current-action-title"><p class="eyebrow">현재 해야 할 일</p><h2 id="current-action-title">누가 무엇을 확인해야 하나요?</h2><div id="current-action-content"></div></aside>
+            </div>
+
+            <section class="card planned-section" aria-labelledby="planned-title">
+              <div class="section-heading"><div><p class="eyebrow">생성 예정 내용</p><h2 id="planned-title">반영 전 생성 내용 미리보기</h2></div><span class="badge">아직 생성하지 않음</span></div>
+              <div class="mapping-grid"><section class="inset"><h3>생성 예정 Request 1건</h3><div id="request-record-preview"></div></section><section class="inset"><h3>생성 예정 Task</h3><div id="task-record-previews" class="planned-tasks"></div></section></div>
+            </section>
+
+            <div class="mid-grid">
+              <section class="card" aria-labelledby="checklist-title"><div class="section-heading"><div><p class="eyebrow">반영 준비 체크리스트</p><h2 id="checklist-title">필수 확인 항목</h2></div></div><div id="readiness-checklist" class="readiness-checklist"></div></section>
+              <section class="card approval-card" aria-labelledby="approval-title"><p class="eyebrow">승인 영역</p><h2 id="approval-title">TEST 반영 범위 검토</h2><p id="approval-description" class="muted">승인은 실제 반영을 실행하지 않습니다.</p><button id="approval-button" type="button" disabled>TEST 반영 범위 검토</button><p id="approval-disabled-reason" class="disabled-reason"></p><p id="approval-status" class="status">검토 전 · 실제 Notion 반영: 0건</p><span id="mapping-write-badge" class="sr-only">실제 반영 없음</span></section>
             </div>
 
             <section class="kanban-section" aria-labelledby="kanban-title">
-              <div class="section-heading"><div><p class="eyebrow">CURRENT TASK</p><h2 id="kanban-title">현재 Task Kanban</h2></div><span class="badge">과거 상태는 Timeline에서 확인</span></div>
+              <div class="section-heading"><div><p class="eyebrow">현재 업무</p><h2 id="kanban-title">현재 업무 Kanban</h2></div><span class="badge">과거 상태는 상태 이력에서 확인</span></div>
               <div id="kanban" class="kanban" aria-live="polite"></div><div id="composite-summary" hidden></div>
             </section>
 
-            <div class="details-grid">
-              <section class="card" aria-labelledby="interaction-title"><div class="section-heading"><div><p class="eyebrow">INTERACTION</p><h2 id="interaction-title">사람 확인</h2></div></div><div id="interaction-panel"></div></section>
-              <section class="card" aria-labelledby="evidence-title"><div class="section-heading"><div><p class="eyebrow">EVIDENCE</p><h2 id="evidence-title">Evidence 검토</h2></div></div><div id="evidence-panel"></div></section>
-              <section class="card" aria-labelledby="execution-title"><div class="section-heading"><div><p class="eyebrow">EXECUTION SAFETY</p><h2 id="execution-title">실행 안전</h2></div></div><dl id="execution-panel" class="fact-grid compact"></dl></section>
+            <div class="details-grid business-details">
+              <section class="card" aria-labelledby="interaction-title"><div class="section-heading"><div><p class="eyebrow">사람 확인</p><h2 id="interaction-title">확인 질문</h2></div></div><div id="interaction-panel"></div></section>
+              <section class="card" aria-labelledby="evidence-title"><div class="section-heading"><div><p class="eyebrow">Evidence 검토</p><h2 id="evidence-title">제출·확인 자료</h2></div></div><div id="evidence-panel"></div></section>
+              <section class="card" aria-labelledby="execution-title"><div class="section-heading"><div><p class="eyebrow">실행 안전</p><h2 id="execution-title">완료와 반영 차단</h2></div></div><dl id="execution-panel" class="fact-grid compact"></dl></section>
             </div>
 
-            <section id="mapping-section" class="mapping-section" hidden aria-labelledby="mapping-title">
-              <div class="section-heading"><div><p class="eyebrow">NOTION MAPPING PREVIEW</p><h2 id="mapping-title">DB Mapping Preview</h2></div><span id="mapping-write-badge" class="badge status-preview">WRITE NOT EXECUTED</span></div>
-              <div id="mapping-summary" class="mapping-summary"></div>
-              <div class="mapping-actions"><p class="muted">승인 시뮬레이션은 UI 상태만 변경합니다. 실제 Read-only Snapshot에서 확인된 Blocking Gap은 승인으로 우회할 수 없습니다.</p><button id="open-approval-drawer" type="button" class="secondary">Notion 반영 Preview 열기</button></div>
-              <div class="mapping-grid">
-                <section class="card inset"><p class="eyebrow">PLANNED REQUEST RECORD</p><h3>생성 예정 Request 1건</h3><div id="request-record-preview"></div></section>
-                <section class="card inset"><p class="eyebrow">VALIDATION</p><h3>Validation Summary</h3><div id="validation-summary"></div></section>
-              </div>
-              <section class="card inset"><p class="eyebrow">PLANNED TASK RECORDS</p><h3>생성 예정 Task</h3><div id="task-record-previews" class="planned-tasks"></div></section>
-              <section class="card inset table-card"><p class="eyebrow">EXACT PROPERTY MAPPING</p><h3>Property Mapping Table</h3><div class="table-wrap"><table id="property-mappings"><thead><tr><th>Console Field</th><th>Source Value</th><th>Target DB</th><th>Actual Property</th><th>Type</th><th>Mapping Rule</th><th>Validation</th><th>Write Value</th><th>Gap</th></tr></thead><tbody></tbody></table></div></section>
-              <div class="mapping-grid"><section class="card inset"><p class="eyebrow">DUMMY FUND RELATION</p><h3>Exact Match</h3><div id="relation-preview-panel"></div></section><section class="card inset"><p class="eyebrow">TRANSACTION DUPLICATE</p><h3>Read-only Lookup</h3><div id="duplicate-preview-panel"></div></section></div>
-              <div class="mapping-grid">
-                <section class="card inset"><p class="eyebrow">EXPECTED — ACTUAL</p><h3>생성 전후 비교</h3><div id="expected-actual"></div></section>
-                <section class="card inset"><p class="eyebrow">AUDIT</p><h3>Preview Audit</h3><dl id="audit-panel" class="fact-grid compact"></dl></section>
-              </div>
-            </section>
+            <section class="card" aria-labelledby="timeline-title"><div class="section-heading"><div><p class="eyebrow">상태 이력</p><h2 id="timeline-title">시점별 진행 흐름</h2></div><span class="badge">현재 Task가 기준</span></div><ol id="timeline" class="timeline"></ol></section>
 
-            <section class="card" aria-labelledby="timeline-title"><div class="section-heading"><div><p class="eyebrow">SNAPSHOT TIMELINE</p><h2 id="timeline-title">시점별 상태 이력</h2></div><span class="badge">Task가 현재 상태 Source of Truth</span></div><ol id="timeline" class="timeline"></ol></section>
-            <details class="card raw-json"><summary>기술 상세 보기</summary><pre id="raw-json"></pre></details>
+            <details id="technical-details" class="card technical-details">
+              <summary>기술 검증 상세</summary>
+              <p class="muted">Canonical 값과 실제 Schema Read 정보는 아래에서만 확인합니다. 이 영역의 값은 업무 판단을 대신하지 않습니다.</p>
+              <section class="technical-block"><h3>읽기 전용 Schema 확인</h3><dl id="backend-status-panel" class="fact-grid compact"></dl></section>
+              <section id="mapping-section" class="technical-block" aria-labelledby="mapping-title"><h3 id="mapping-title">Property Mapping</h3><div id="mapping-summary" class="mapping-summary"></div><div class="mapping-grid"><div><h4>조합 관계 조회</h4><div id="relation-preview-panel"></div></div><div><h4>Transaction Proxy 조회</h4><div id="duplicate-preview-panel"></div></div></div><div class="table-wrap"><table id="property-mappings"><thead><tr><th>화면 데이터</th><th>원본 값</th><th>대상 DB</th><th>실제 Notion Property</th><th>Property 유형</th><th>Mapping 규칙</th><th>검증 결과</th><th>생성 예정 값</th><th>확인 필요 사항</th></tr></thead><tbody></tbody></table></div><div class="mapping-grid"><div><h4>생성 전후 비교</h4><div id="expected-actual"></div></div><div><h4>검토 기록</h4><dl id="audit-panel" class="fact-grid compact"></dl></div></div></section>
+              <details class="raw-json"><summary>Payload JSON</summary><pre id="raw-json"></pre></details>
+            </details>
           </div>
         </div>
       </div>
     </main>
-
-    <dialog id="approval-drawer" aria-labelledby="approval-title">
-      <section class="drawer-content"><div class="section-heading"><div><p class="eyebrow">SIMULATION ONLY</p><h2 id="approval-title">Notion 반영 Preview</h2></div><button id="close-approval-drawer" type="button" class="icon-button" aria-label="닫기">×</button></div><span id="drawer-write-badge" class="badge status-preview">WRITE NOT EXECUTED</span><div id="approval-drawer-content"></div><div class="drawer-actions"><button id="approval-button" type="button">TEST Write 범위 승인</button><button id="needs-changes-button" type="button" class="secondary">수정 필요</button><button id="cancel-approval-button" type="button" class="ghost">취소</button></div><p id="approval-status" class="status">승인 상태: NOT_REVIEWED · Write Count 0</p></section>
-    </dialog>
     <script type="module" src="/console.js"></script>
   </body>
 </html>

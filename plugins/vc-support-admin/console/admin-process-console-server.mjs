@@ -14,6 +14,7 @@ import {
   NOTION_READINESS_SNAPSHOT,
   notionReadinessMetadata
 } from "./notion-readiness-snapshot.mjs";
+import { buildBusinessDecisionView } from "./business-decision-view.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.join(here, "public");
@@ -23,7 +24,7 @@ const fixturePaths = Object.freeze({
   "COMPOSITE-01": path.resolve(here, "../fixtures/prototype-composite-p03-p04-p07.json")
 });
 
-export const CONSOLE_VERSION = "PILOT v0.4";
+export const CONSOLE_VERSION = "PILOT v0.4.1";
 export const SUPPORTED_SCENARIOS = Object.freeze(Object.keys(fixturePaths));
 export const DEFAULT_SCENARIO_ID = "SINGLE-P03-02";
 export const DEFAULT_REQUEST_TEXT = "DUMMY-FUND-B의 고유번호증 신청 건을 확인해줘.\n신청서 초안은 있지만 날인본 원본은 아직 준비되지 않았어.";
@@ -494,7 +495,7 @@ export async function buildMappingPreview({ request_id: requestId, scenario_id: 
     approved_by: "NOT_WRITTEN",
     write_count: 0
   };
-  return {
+  const mappingPreview = {
     ok: true,
     console_version: CONSOLE_VERSION,
     schema_source: SCHEMA_SOURCE,
@@ -542,6 +543,12 @@ export async function buildMappingPreview({ request_id: requestId, scenario_id: 
     execution: safeExecution(),
     write_count: 0,
     operational_write_count: 0
+  };
+  return {
+    ...mappingPreview,
+    // This is a display adapter only. The raw mapping above remains the
+    // canonical read-only evidence used by the technical details view.
+    business_decision_view: buildBusinessDecisionView(mappingPreview)
   };
 }
 
